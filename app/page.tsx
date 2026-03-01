@@ -193,6 +193,26 @@ function defaultStats(): QStats {
   return { correctCount: 0, wrongCount: 0, lastCorrectAt: null, lastWrongAt: null };
 }
 
+/**
+ * ✅ NOWE: Tasowanie odpowiedzi w MCQ (A/B/C/D) + przeliczenie correctKey
+ * Działa w NAUCE i EGZAMINIE, bo robimy to na etapie wczytania bazy pytań.
+ */
+function shuffleMcqChoices(q: Question): Question {
+  if (q.type !== "mcq") return q;
+
+  const correctText = q.choices.find((c) => c.key === q.correctKey)?.text ?? "";
+  const shuffledChoices = shuffle(q.choices);
+
+  const newCorrectKey = shuffledChoices.find((c) => c.text === correctText)?.key;
+  if (!newCorrectKey) return q; // awaryjnie (nie powinno się zdarzyć)
+
+  return {
+    ...q,
+    choices: shuffledChoices,
+    correctKey: newCorrectKey,
+  };
+}
+
 /** Study: 50% sesji = powtórki (z historii błędów) */
 function buildSessionIdsWithStats(questions: Question[], sessionSize: number, stats: StatsMap, repeatRatio = 0.5) {
   const allIds = questions.map((q) => q.id);
@@ -427,10 +447,13 @@ export default function Page() {
         const validated = validateQuestions(data);
         if (!validated.ok) return;
 
+        // ✅ NOWE: tasowanie odpowiedzi MCQ przy wczytaniu bazy
+        const shuffledQuestions = validated.questions.map(shuffleMcqChoices);
+
         setRawJsonName("questions.json (auto)");
         setState((prev) => ({
           ...prev,
-          questions: validated.questions,
+          questions: shuffledQuestions,
           phase: "setup",
           sessionIds: [],
           reviewIds: [],
@@ -440,7 +463,7 @@ export default function Page() {
 
         setStats((prev) => {
           const next = { ...prev };
-          for (const q of validated.questions) {
+          for (const q of shuffledQuestions) {
             const k = toKey(q.id);
             if (!next[k]) next[k] = defaultStats();
           }
@@ -585,9 +608,12 @@ export default function Page() {
       const validated = validateQuestions(parsed.data);
       if (!validated.ok) return setError(validated.error);
 
+      // ✅ NOWE: tasowanie odpowiedzi MCQ przy wczytaniu pliku
+      const shuffledQuestions = validated.questions.map(shuffleMcqChoices);
+
       setState((prev) => ({
         ...prev,
-        questions: validated.questions,
+        questions: shuffledQuestions,
         phase: "setup",
         sessionIds: [],
         reviewIds: [],
@@ -597,7 +623,7 @@ export default function Page() {
 
       setStats((prev) => {
         const next = { ...prev };
-        for (const q of validated.questions) {
+        for (const q of shuffledQuestions) {
           const k = toKey(q.id);
           if (!next[k]) next[k] = defaultStats();
         }
@@ -964,6 +990,7 @@ export default function Page() {
               <h1 className="text-2xl font-bold tracking-tight">Quiz Agent</h1>
               <Pill theme={theme}>v12</Pill>
               <Pill theme={theme}>{state.mode === "exam" ? "Tryb EGZAMIN" : "Tryb NAUKA"}</Pill>
+              <Pill theme={theme}>Odpowiedzi: losowe</Pill>
             </div>
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -1452,7 +1479,7 @@ export default function Page() {
         )}
 
         <div className={cx("mt-10 text-center text-xs", theme === "dark" ? "text-neutral-500" : "text-neutral-500")}>
-          v12: logowanie + nauka + egzamin + zapis wyniku do rankingu.
+          v12: logowanie + nauka + egzamin + zapis wyniku do rankingu + losowe odpowiedzi.
         </div>
       </div>
     </main>
