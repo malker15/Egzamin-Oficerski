@@ -843,34 +843,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "34",
-    "question": "Która substancja chemiczna nie należy do Toksycznych Środków Przemysłowych?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Cyjanowodór"
-      },
-      {
-        "key": "B",
-        "text": "Chlor"
-      },
-      {
-        "key": "C",
-        "text": "Dwutlenek węgla"
-      },
-      {
-        "key": "D",
-        "text": "Sarin"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "35",
@@ -1263,34 +1236,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "49",
-    "question": "Jakie wyróżniamy sposoby stawiania zapór ogniowych w ramach POPL?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Okrężna i liniowa"
-      },
-      {
-        "key": "B",
-        "text": "Pionowa i pochyła"
-      },
-      {
-        "key": "C",
-        "text": "Centralna i sektorowa"
-      },
-      {
-        "key": "D",
-        "text": "Stała i ruchoma"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "50",
@@ -1431,34 +1377,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "55",
-    "question": "Przygotowanie mapy do pracy nie obejmuje?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Zorientowania mapy w terenie"
-      },
-      {
-        "key": "B",
-        "text": "Sprawdzenia aktualności treści mapy"
-      },
-      {
-        "key": "C",
-        "text": "Sprawdzenia wydawcy mapy, godła i numeru serii"
-      },
-      {
-        "key": "D",
-        "text": "Sprawdzenia skali mapy"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "56",
@@ -2887,34 +2806,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "107",
-    "question": "Podstawowymi dokumentami dowodzenia są?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Regulaminy i instrukcje"
-      },
-      {
-        "key": "B",
-        "text": "Rozkaz bojowy, zarządzenie bojowe, wstępne zarządzenie bojowe"
-      },
-      {
-        "key": "C",
-        "text": "Mapy i szkice"
-      },
-      {
-        "key": "D",
-        "text": "Meldunki medyczne"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "108",
@@ -3531,34 +3423,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "130",
-    "question": "Czy SERE to?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "System ewakuacji rannych z pola walki"
-      },
-      {
-        "key": "B",
-        "text": "Program szkoleniowy obejmujący przetrwanie, unikanie, opór i ucieczkę"
-      },
-      {
-        "key": "C",
-        "text": "Rodzaj szkolenia strzeleckiego"
-      },
-      {
-        "key": "D",
-        "text": "Procedura reagowania kryzysowego"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   
   {
     "type": "mcq",
@@ -4989,34 +4854,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "184",
-    "question": "Czego nie dotyczy zasada 10-1-2?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Pierwsze 10 minut dla ratowania życia"
-      },
-      {
-        "key": "B",
-        "text": "Dwie osoby ratujące"
-      },
-      {
-        "key": "C",
-        "text": "Resuscytacja urazowa do 1 godziny"
-      },
-      {
-        "key": "D",
-        "text": "Chirurgia ratunkowa do 2 godzin"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "185",
@@ -5158,34 +4996,7 @@
     "trap": ""
   },
  
-  {
-    "type": "mcq",
-    "id": "191",
-    "question": "Jakie wyróżniamy sposoby ustawiania pól minowych?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Ręczny, lotniczy, morski"
-      },
-      {
-        "key": "B",
-        "text": "Narzutowy, ręczny, mechaniczny"
-      },
-      {
-        "key": "C",
-        "text": "Tylko ręczny"
-      },
-      {
-        "key": "D",
-        "text": "Mechaniczny i zdalny"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "192",
@@ -6726,34 +6537,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "247",
-    "question": "Struktura ponadetatowych potrzeb mobilizacyjnych obejmuje?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Grupę zabezpieczenia ukompletowania"
-      },
-      {
-        "key": "B",
-        "text": "Wyłącznie rezerwy osobowe"
-      },
-      {
-        "key": "C",
-        "text": "Wyłącznie sprzęt rezerwowy"
-      },
-      {
-        "key": "D",
-        "text": "Jednostki szkolne"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+ 
   {
     "type": "mcq",
     "id": "248",
@@ -6866,62 +6650,8 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "252",
-    "question": "Rodzaj ładunku kruszącego w granacie F-1?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Heksogen"
-      },
-      {
-        "key": "B",
-        "text": "Trotyl"
-      },
-      {
-        "key": "C",
-        "text": "Plastyczny materiał wybuchowy"
-      },
-      {
-        "key": "D",
-        "text": "Amonal"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "253",
-    "question": "Waga ładunku kruszącego w granacie RG-42 wynosi?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "90 g"
-      },
-      {
-        "key": "B",
-        "text": "100 g"
-      },
-      {
-        "key": "C",
-        "text": "120 g"
-      },
-      {
-        "key": "D",
-        "text": "150 g"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
+  
   {
     "type": "mcq",
     "id": "254",
@@ -7203,34 +6933,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "265",
-    "question": "Co oznacza skrót PSBS?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Program Szkolenia Bojowego Strzelców"
-      },
-      {
-        "key": "B",
-        "text": "Program Strzelań z Broni Strzeleckiej"
-      },
-      {
-        "key": "C",
-        "text": "Podstawowe Szkolenie Bojowe Strzeleckie"
-      },
-      {
-        "key": "D",
-        "text": "Procedury Strzelania z Broni Służbowej"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "266",
@@ -7623,34 +7326,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "280",
-    "question": "Kto jest przełożonym wszystkich żołnierzy?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Wyłącznie Prezydent RP"
-      },
-      {
-        "key": "B",
-        "text": "Prezydent RP, Prezes Rady Ministrów, Minister Obrony Narodowej"
-      },
-      {
-        "key": "C",
-        "text": "Szef Sztabu Generalnego"
-      },
-      {
-        "key": "D",
-        "text": "Dowódca Generalny RSZ"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "281",
@@ -8547,34 +8223,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "313",
-    "question": "Celem instruktażu jest?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Kontrola dyscypliny"
-      },
-      {
-        "key": "B",
-        "text": "Doskonalenie umiejętności metodycznych i sprawdzenie przygotowania do zajęć"
-      },
-      {
-        "key": "C",
-        "text": "Wydanie rozkazu bojowego"
-      },
-      {
-        "key": "D",
-        "text": "Weryfikacja sprzętu"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "314",
@@ -13158,30 +12807,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "500",
-    "question": "Waga ładunku kruszącego w granacie RG-42:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "120 g"
-      },
-      {
-        "key": "B",
-        "text": "220 g"
-      },
-      {
-        "key": "C",
-        "text": "60 g"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "501",
@@ -13224,7 +12850,7 @@
         "text": "pionowa, pochyła, prostopadła"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -13350,30 +12976,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "508",
-    "question": "W ramach ofensywnej walki o przewagę w powietrzu (Offensive Counter Air) siły powietrzne nie realizują:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "osłony lotnictwa uderzeniowego"
-      },
-      {
-        "key": "B",
-        "text": "bezpośredniego wsparcia lotniczego"
-      },
-      {
-        "key": "C",
-        "text": "uderzeń na lotniska i bazy lotnicze"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "509",
@@ -13398,54 +13001,8 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "510",
-    "question": "1 linia w SERE to:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "kamizelka taktyczna"
-      },
-      {
-        "key": "B",
-        "text": "plecak patrolowy 45l"
-      },
-      {
-        "key": "C",
-        "text": "mundur"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "511",
-    "question": "Fazy procesu dowodzenia to:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "analiza zadania, ocena czynników wpływających na wykonanie zadania, rozważenie i porównanie wariantów działania"
-      },
-      {
-        "key": "B",
-        "text": "planowanie, organizowanie, przewodzenie, kontrolowanie"
-      },
-      {
-        "key": "C",
-        "text": "ustalenie położenia, planowanie, stawianie zadań, kontrola"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
+  
   {
     "type": "mcq",
     "id": "512",
@@ -13566,30 +13123,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "517",
-    "question": "Rodzaj ładunku kruszącego w granacie F-1:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Heksogen."
-      },
-      {
-        "key": "B",
-        "text": "Nitrogliceryna;"
-      },
-      {
-        "key": "C",
-        "text": "Trotyl;"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "518",
@@ -13710,30 +13244,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "523",
-    "question": "Przygotowanie mapy do pracy nie obejmuje:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "sprawdzenia zgodności pokrycia mapy z wykonywanym zadaniem"
-      },
-      {
-        "key": "B",
-        "text": "sprawdzenia aktualności treści mapy"
-      },
-      {
-        "key": "C",
-        "text": "sprawdzenia wydawcy mapy, jej godła i nr serii"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "524",
@@ -14064,7 +13575,7 @@
         "text": "honorowej;"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -15535,30 +15046,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "580",
-    "question": "Jakie wyróżniamy sposoby stawiania zapór ogniowych",
-    "choices": [
-      {
-        "key": "A",
-        "text": "pionowa pochyła pozioma"
-      },
-      {
-        "key": "B",
-        "text": "pionowa pochyła"
-      },
-      {
-        "key": "C",
-        "text": "pionowa pochyła prostopadła"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "581",
@@ -15751,30 +15239,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "589",
-    "question": "Która substancja chemiczna nie należy do Toksycznych Środków Przemysłowych",
-    "choices": [
-      {
-        "key": "A",
-        "text": "dwutlenek węgla"
-      },
-      {
-        "key": "B",
-        "text": "cyjanowodór"
-      },
-      {
-        "key": "C",
-        "text": "chlor"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "590",
@@ -15943,30 +15408,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "597",
-    "question": "Celem szczegółowym obrony nie jest",
-    "choices": [
-      {
-        "key": "A",
-        "text": "rozbicie przeciwnika który włamał się w ugrupowanie bojowe"
-      },
-      {
-        "key": "B",
-        "text": "zmuszenie przeciwnika do przyjęcia walki w niedogodnym dla niego terenie"
-      },
-      {
-        "key": "C",
-        "text": "zakłócenie swobody prowadzenia działań obronnych"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "598",
@@ -16063,30 +15505,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "602",
-    "question": "Poziomy opieki medycznej wg Doktryny Logistycznej DD 4 2 nie obejmują",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Poziom 2 rutynowo realizowane na poziomie oddziału Brygadowy Punkt Opatrywania BPO lub odpowiednik Rozwinięcie urządzeń tego poziomu jest uzależnione od realizowanego zadania"
-      },
-      {
-        "key": "B",
-        "text": "Poziom 3 poziom ekwiwalentny do pierwszego poziomu hospitalizacji Dywizyjny Punkt Opatrunkowy DPO odpowiednik lub Szpital Polowy SzP"
-      },
-      {
-        "key": "C",
-        "text": "Poziom 4 rutynowo realizowane na poziomie oddziału Brygadowy Punkt Opatrywania BPO lub odpowiednik Rozwinięcie urządzeń tego poziomu jest uzależnione od realizowanego zadania"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "603",
@@ -16975,30 +16394,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "640",
-    "question": "Podstawowymi dokumentami dowodzenia są",
-    "choices": [
-      {
-        "key": "A",
-        "text": "komunikaty rozpoznawcze meldunki bojowe dzienniki działań mapy sytuacyjne"
-      },
-      {
-        "key": "B",
-        "text": "warianty działania przeciwnika i wojsk własnych meldunki sytuacyjne dokumenty planistyczne sztabu"
-      },
-      {
-        "key": "C",
-        "text": "rozkaz bojowy zarządzenie bojowe wstępne zarządzenie bojowe"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "641",
@@ -17385,30 +16781,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "659",
-    "question": "Co to jest zabezpieczenie inżynieryjne",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Zorganizowane działanie wojsk polegające na przystosowaniu terenu do prowadzenia działań taktycznych"
-      },
-      {
-        "key": "B",
-        "text": "Całokształt podejmowanych i realizowanych przedsięwzięć zapewniających ochronę i obronę stanów osobowych i sprzętu wojskowego"
-      },
-      {
-        "key": "C",
-        "text": "Ubezpieczenie pododdziałów w celu ich obrony przed obserwacją ogniem bezpośrednim oraz niespodziewanym atakiem przeciwnika"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "660",
@@ -18226,30 +17599,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "695",
-    "question": "Jakie elementy powinien zawierać rozkaz inżynieryjny",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Zadania w zakresie fortyfikacji zapór i wsparcia inżynieryjnego"
-      },
-      {
-        "key": "B",
-        "text": "Wyłącznie dane meteorologiczne"
-      },
-      {
-        "key": "C",
-        "text": "Meldunki finansowe"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "696",
