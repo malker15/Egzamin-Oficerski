@@ -3559,34 +3559,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "131",
-    "question": "Kto podlega przeszkoleniu w zakresie SERE poziomu A?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Wyłącznie piloci i załogi statków powietrznych"
-      },
-      {
-        "key": "B",
-        "text": "Personel misji zagranicznych"
-      },
-      {
-        "key": "C",
-        "text": "Żołnierze Sił Zbrojnych"
-      },
-      {
-        "key": "D",
-        "text": "Tylko Wojska Specjalne"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "132",
@@ -4679,34 +4652,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "171",
-    "question": "Jaką procedurę stosuje się w przypadku wykrycia lub podejrzenia podłożenia IED?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "5–25"
-      },
-      {
-        "key": "B",
-        "text": "5xC"
-      },
-      {
-        "key": "C",
-        "text": "MEDEVAC"
-      },
-      {
-        "key": "D",
-        "text": "CASEVAC"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "172",
@@ -5211,34 +5157,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "190",
-    "question": "Jakie powinno być maskowanie?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Jednorazowe i doraźne"
-      },
-      {
-        "key": "B",
-        "text": "Aktywne, ciągłe, wiarygodne, różnorodne"
-      },
-      {
-        "key": "C",
-        "text": "Wyłącznie pasywne"
-      },
-      {
-        "key": "D",
-        "text": "Widoczne dla wojsk własnych"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+ 
   {
     "type": "mcq",
     "id": "191",
@@ -7199,34 +7118,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "261",
-    "question": "Kogo wyznacza się do przestrzeliwania karabinu wyborowego?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Dowódcę drużyny"
-      },
-      {
-        "key": "B",
-        "text": "Instruktora strzelania"
-      },
-      {
-        "key": "C",
-        "text": "Żołnierza, któremu broń została przydzielona"
-      },
-      {
-        "key": "D",
-        "text": "Najstarszego stopniem żołnierza"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "262",
@@ -10407,30 +10299,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "378",
-    "question": "Co to jest EOD?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Pododdział do zwalczania improwizowanych urządzeń wybuchowych"
-      },
-      {
-        "key": "B",
-        "text": "Improwizowane urządzenie wybuchowe z elementem nieusuwalności"
-      },
-      {
-        "key": "C",
-        "text": "Procedura postępowania w przypadku wykrycia niewybuchu"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+
   {
     "type": "mcq",
     "id": "379",
@@ -12279,30 +12148,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "456",
-    "question": "Czym jest komunikowanie społeczne?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "procesem wytwarzania informacji od nadawcy do odbiorcy"
-      },
-      {
-        "key": "B",
-        "text": "procesem i stanem gromadzenia informacji"
-      },
-      {
-        "key": "C",
-        "text": "procesem wytwarzania i przekształcania wytwarzania informacji"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "457",
@@ -12543,30 +12389,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "467",
-    "question": "Magazyn pododdziałowy powinien być zabezpieczony i ochraniany przez:",
-    "choices": [
-      {
-        "key": "A",
-        "text": "służbę dyżurną właściwego pododdziału"
-      },
-      {
-        "key": "B",
-        "text": "wartę lub służbę dyżurną, elektronicznie (alarm), fizycznie (kraty, drzwi antywłamaniowe)"
-      },
-      {
-        "key": "C",
-        "text": "elektronicznie (alarm), fizycznie (kraty, drzwi antywłamaniowe)"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "468",
@@ -17319,30 +17142,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "646",
-    "question": "Co nazywamy łącznością radiową",
-    "choices": [
-      {
-        "key": "A",
-        "text": "sposób wymiany wiadomości wykorzystujący propagację fal elektromagnetycznych w kanale radiowym z wykorzystaniem środków radiowych urządzeń radiowych"
-      },
-      {
-        "key": "B",
-        "text": "sposób wymiany wiadomości wykorzystujący propagację fal magnetycznych w kanale radiowym z wykorzystaniem środków radiowych urządzeń radiowych"
-      },
-      {
-        "key": "C",
-        "text": "sposób wymiany wiadomości wykorzystujący propagację fal elektromagnetycznych w sieci radiowej z wykorzystaniem środków radiowych urządzeń radiowych"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "647",
@@ -17559,34 +17359,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "656",
-    "question": "Prawidłowa definicja broni jądrowej to",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Kompletny zestaw urządzeń który w ostatecznej konfiguracji po zakończeniu procesu uzbrajania prowadzi do zainicjowania niekontrolowanej reakcji jądrowej z uwolnieniem energii"
-      },
-      {
-        "key": "B",
-        "text": "Kompletny zestaw urządzeń który w ostatecznej konfiguracji po zakończeniu procesu uzbrajania i odpalania prowadzi do zainicjowania niekontrolowanej reakcji jądrowej z uwolnieniem energii"
-      },
-      {
-        "key": "C",
-        "text": "Zestaw urządzeń który w ostatecznej konfiguracji po zakończeniu procesu odpalania prowadzi do zainicjowania niekontrolowanej reakcji jądrowej"
-      },
-      {
-        "key": "D",
-        "text": "Urządzenia inicjujące reakcję jądrową z udziałem uwolnionej energii o ogromnej sile"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "657",
@@ -17803,30 +17576,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "666",
-    "question": "Jakie obiekty fortyfikacyjne wykonuje się w ramach prac pierwszej kolejności rozbudowy fortyfikacyjnej terenu",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Okopy dla karabinów maszynowych i granatników przeciwpancernych oraz pojedyncze okopy strzeleckie"
-      },
-      {
-        "key": "B",
-        "text": "Schrony przeciwodłamkowe"
-      },
-      {
-        "key": "C",
-        "text": "Schrony typu lekkiego na stanowiskach dowodzenia"
-      }
-    ],
-    "correctKey": "A",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "667",
