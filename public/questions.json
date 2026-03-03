@@ -8509,7 +8509,7 @@
         "text": "Wyłącznie w święta państwowe"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -9297,7 +9297,7 @@
         "text": "pluton"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -16185,7 +16185,7 @@
         "text": "Przez pierś"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -17001,7 +17001,7 @@
         "text": "W czasie podchodzenia do przełożonego występując indywidualnie"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -17086,18 +17086,18 @@
     "choices": [
       {
         "key": "A",
-        "text": "Prezydent RP Prezes Rady Ministrów i Minister Obrony Narodowej"
+        "text": "Prezydent RP, Prezes Rady Ministrów i Minister Obrony Narodowej"
       },
       {
         "key": "B",
-        "text": "Prezydent RP Minister Obrony Narodowej Marszałek Sejmu"
+        "text": "Prezydent RP, Minister Obrony Narodowej, Marszałek Sejmu"
       },
       {
         "key": "C",
         "text": "Prezydent RP i Minister Obrony Narodowej"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -19974,14 +19974,14 @@
       },
       {
         "key": "B",
-        "text": "Artylerii przeciwlotniczej"
+        "text": "Znak rubieży i kierunku obrony"
       },
       {
         "key": "C",
         "text": "Artylerii rakietowej"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "B",
     "image": "/images/artillery_symbol_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -19994,15 +19994,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "MQ 9 Reaper RQ 7 Shadow Orbiter TB2 Bayraktar"
+        "text": "MQ 9 Reaper, FLYEYE,  Bayraktar, ORION"
       },
       {
         "key": "B",
-        "text": "Global Hawk Predator Bayraktar TB2 Warmate"
+        "text": "Global Hawk, Predator, Bayraktar TB2, Warmate"
       },
       {
         "key": "C",
-        "text": "Predator Reaper RQ 7 Shadow Bayraktar TB2"
+        "text": "Predator, Reaper RQ 7, Shadow, Bayraktar TB2"
       }
     ],
     "correctKey": "A",
@@ -20018,15 +20018,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "E 3 Sentry E 2 Hawkeye RC 135 Rivet Joint KC 135 Stratotanker"
+        "text": "E 3 Sentry, A50 SZMIEL, RC 135 Rivet Joint, KC 135 Stratotanker"
       },
       {
         "key": "B",
-        "text": "E 2 Hawkeye E 3 Sentry KC 135 RC 135"
+        "text": "E 2 Hawkeye, E 3 Sentry, KC 135, RC 135"
       },
       {
         "key": "C",
-        "text": "Rivet Joint Hawkeye Sentry Stratotanker"
+        "text": "Rivet Joint, Hawkeye, Sentry, Stratotanker"
       }
     ],
     "correctKey": "A",
@@ -20042,15 +20042,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "E 3 Sentry P 3 Orion Ił 20 E 2 Hawkeye"
+        "text": "E 3 Sentry, SAAB 340, KJ 2000, Hawkeye"
       },
       {
         "key": "B",
-        "text": "P 3 Orion E 3 Sentry E 2 Hawkeye Ił 20"
+        "text": "P 3 Orion, E 3 Sentry, E 2 Hawkeye, Ił 20"
       },
       {
         "key": "C",
-        "text": "E 2 Hawkeye Ił 20 E 3 Sentry P 3 Orion"
+        "text": "E 2 Hawkeye, Ił 20, E 3 Sentry, P 3 Orion"
       }
     ],
     "correctKey": "A",
@@ -20066,15 +20066,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "C 130 Hercules C 130 Hercules An 12 An 72"
+        "text": "CASA C-295, C130, AN 12,  IL-76"
       },
       {
         "key": "B",
-        "text": "C 295 Hercules An 12 An 124"
+        "text": "C 295, Hercules, An 12, An 124"
       },
       {
         "key": "C",
-        "text": "Hercules An 26 An 12 C 17"
+        "text": "Hercules, An 26, An 12, C 17"
       }
     ],
     "correctKey": "A",
@@ -20090,15 +20090,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "Mi 24 Mi 8 AH 64 Apache Mi 28"
+        "text": "Mi 24, Mi 8, KA52, AH 64 Apache"
       },
       {
         "key": "B",
-        "text": "Mi 8 Mi 24 Apache Mi 28"
+        "text": "Mi 8, Mi 24, Apache, Mi 28"
       },
       {
         "key": "C",
-        "text": "Apache Mi 24 Mi 8 Mi 28"
+        "text": "Apache, Mi 24, Mi 8, Mi 28"
       }
     ],
     "correctKey": "A",
@@ -20114,15 +20114,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "F 16 MiG 29 C 130 Mi 17"
+        "text": "F 16, MiG 29, C 130, Mi 17"
       },
       {
         "key": "B",
-        "text": "MiG 29 F 16 C 130 Mi 24"
+        "text": "MiG 29, SU 27, AN 12, Mi 24"
       },
       {
         "key": "C",
-        "text": "F 15 Su 27 An 26 Mi 8"
+        "text": "F 15, Su 27, An 26, Mi 8"
       }
     ],
     "correctKey": "A",
@@ -20138,7 +20138,7 @@
     "choices": [
       {
         "key": "A",
-        "text": "T 72 PT 91 Leopard 2A4 M1 Abrams"
+        "text": "T 72, T80, T90, T14"
       },
       {
         "key": "B",
