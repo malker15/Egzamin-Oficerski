@@ -11686,7 +11686,7 @@
         "text": "AK TOAW"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -12022,7 +12022,7 @@
         "text": "50–60 strz./min."
       }
     ],
-    "correctKey": "A",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -13104,7 +13104,7 @@
         "text": "grupę zabezpieczenia ukompletowania"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -14016,7 +14016,7 @@
         "text": "grupy 1;"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -15438,30 +15438,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "575",
-    "question": "Struktura ponadetatowych potrzeb mobilizacyjnych obejmuje",
-    "choices": [
-      {
-        "key": "A",
-        "text": "uzupełnienie zasadnicze grupę zabezpieczenia ukompletowania"
-      },
-      {
-        "key": "B",
-        "text": "mobilizacyjne uzupełnienie wakatów grupę zabezpieczenia ukompletowania"
-      },
-      {
-        "key": "C",
-        "text": "grupę zabezpieczenia ukompletowania"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "576",
