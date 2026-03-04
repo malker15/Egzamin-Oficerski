@@ -6538,34 +6538,7 @@
     "trap": ""
   },
  
-  {
-    "type": "mcq",
-    "id": "248",
-    "question": "Decyzję o wprowadzeniu określonego stanu gotowości bojowej w SZ RP wydaje?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Prezydent RP"
-      },
-      {
-        "key": "B",
-        "text": "Szef Sztabu Generalnego"
-      },
-      {
-        "key": "C",
-        "text": "Minister Obrony Narodowej"
-      },
-      {
-        "key": "D",
-        "text": "Dowódca Generalny RSZ"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "249",
@@ -8105,7 +8078,7 @@
         "text": "Tylko za zgodą MON"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -8814,7 +8787,7 @@
         "text": "batalion"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -8838,7 +8811,7 @@
         "text": "pluton"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -8995,7 +8968,7 @@
       },
       {
         "key": "C",
-        "text": "Lotnictwo Śmigłowcowe"
+        "text": "Artyleria"
       },
       {
         "key": "D",
@@ -9639,7 +9612,7 @@
       },
       {
         "key": "C",
-        "text": "Wojska przeciwpancerne"
+        "text": "Lotnictwo Śmigłowcowe"
       },
       {
         "key": "D",
@@ -10831,7 +10804,7 @@
         "text": "400 ml/h"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -11023,7 +10996,7 @@
         "text": "niespecjalistyczne środki rażenia"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -11942,30 +11915,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "463",
-    "question": "W „Kodeksie honorowym żołnierza zawodowego Wojska Polskiego”, zapisano, że w trakcie walki zbrojnej żołnierz ma przestrzegać norm międzynarodowego prawa humanitarnego konfliktów zbrojnych. Jak brzmi tytuł rozdziału „Kodeksu honorowego żołnierza zawodowego Wojska Polskiego”, w którym ujęto te zapisy?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "„Żołnierz zawodowy w sytuacjach bojowych”"
-      },
-      {
-        "key": "B",
-        "text": "„Żołnierz zawodowy w czasie prowadzenia walki”"
-      },
-      {
-        "key": "C",
-        "text": "„Żołnierz w walce”"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "464",
@@ -12777,7 +12727,7 @@
         "text": "brygadę"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -13238,7 +13188,7 @@
         "text": "skrytość, wierność, terminowość"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -13815,7 +13765,7 @@
         "text": "Minister Obrony Narodowej;"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -14950,30 +14900,7 @@
     "trap": ""
   },
   
-  {
-    "type": "mcq",
-    "id": "576",
-    "question": "Wskaźnik wielkości jednostki II przy znaku taktycznym oznacza",
-    "choices": [
-      {
-        "key": "A",
-        "text": "batalion"
-      },
-      {
-        "key": "B",
-        "text": "dywizję"
-      },
-      {
-        "key": "C",
-        "text": "brygadę"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "577",
@@ -16437,7 +16364,7 @@
         "text": "oddział szpitalny biały"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -16461,7 +16388,7 @@
         "text": "Żołnierz zawodowy w sytuacjach bojowych"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -19202,7 +19129,7 @@
         "text": "F 15, Su 27, An 26, Mi 8"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "B",
     "image": "/images/aircraft_mix_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
