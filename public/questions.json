@@ -1490,34 +1490,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "60",
-    "question": "Swoje położenie w terenie możemy określić za pomocą?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Wyłącznie odbiornika GPS"
-      },
-      {
-        "key": "B",
-        "text": "Mapy i busoli"
-      },
-      {
-        "key": "C",
-        "text": "Jedynie obserwacji drzew i mrowisk"
-      },
-      {
-        "key": "D",
-        "text": "Tylko kompasu bez mapy"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "61",
@@ -11692,7 +11665,7 @@
         "text": "sól"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -12703,7 +12676,7 @@
         "text": "grupę zabezpieczenia ukompletowania"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "A",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -14122,10 +14095,10 @@
       },
       {
         "key": "C",
-        "text": "przewodowe bezprzewodowe i satelitarne;"
+        "text": "przewodowe, bezprzewodowe i satelitarne;"
       }
     ],
-    "correctKey": "C",
+    "correctKey": "B",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -14258,15 +14231,15 @@
     "choices": [
       {
         "key": "A",
-        "text": "mechaniczny narzutowy elektromagnetyczny"
+        "text": "mechaniczny, narzutowy, elektromagnetyczny"
       },
       {
         "key": "B",
-        "text": "ręczny mechaniczny elektromagnetyczny"
+        "text": "ręczny, mechaniczny, elektromagnetyczny"
       },
       {
         "key": "C",
-        "text": "narzutowy ręczny mechaniczny"
+        "text": "narzutowy, ręczny, mechaniczny"
       }
     ],
     "correctKey": "C",
@@ -15311,30 +15284,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "596",
-    "question": "Jako jedyny z wybitnych polskich dowódców epoki napoleońskiej został przez Napoleona mianowany marszałkiem Francji",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Wincenty Krasiński"
-      },
-      {
-        "key": "B",
-        "text": "Henryk Dąbrowski"
-      },
-      {
-        "key": "C",
-        "text": "Józef Poniatowski"
-      }
-    ],
-    "correctKey": "C",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   
   {
     "type": "mcq",
@@ -15384,30 +15334,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "600",
-    "question": "Wymagania stawiane systemowi łączności to",
-    "choices": [
-      {
-        "key": "A",
-        "text": "ciągłość wierność niezawodność"
-      },
-      {
-        "key": "B",
-        "text": "skrytość wierność niezawodność"
-      },
-      {
-        "key": "C",
-        "text": "skrytość wierność terminowość"
-      }
-    ],
-    "correctKey": "B",
-    "image": "",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+  
   {
     "type": "mcq",
     "id": "601",
