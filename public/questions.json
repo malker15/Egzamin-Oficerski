@@ -473,7 +473,7 @@
         "text": "Cztery"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -894,7 +894,7 @@
         "text": "Zaburzenia widzenia"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -8749,7 +8749,7 @@
     "choices": [
       {
         "key": "A",
-        "text": "pluton"
+        "text": "Drużynę"
       },
       {
         "key": "B",
@@ -8773,7 +8773,7 @@
     "choices": [
       {
         "key": "A",
-        "text": "kompanię"
+        "text": "Sekcję"
       },
       {
         "key": "B",
@@ -8797,7 +8797,7 @@
     "choices": [
       {
         "key": "A",
-        "text": "batalion"
+        "text": "pluton"
       },
       {
         "key": "B",
@@ -9508,7 +9508,7 @@
         "text": "Artyleria"
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "/images/wojskainzynieryjne.png",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -10057,7 +10057,7 @@
         "text": "przekazanie wiedzy, nauka i doskonalenie umiejętności, a także zgranie w działaniu zespołowym. Zajęcia te prowadzone są w ramach całego procesu szkolenia programowego tj.: indywidualnego, pododdziałów, oddziałów i ZT."
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -10489,7 +10489,7 @@
         "text": "zdobywanie nowych umiejętności przez łączenie wiedzy teoretycznej zdobytej uprzednio podczas wykładów, samokształcenia itp. z umiejętnościami praktycznymi i wykorzystanie ich w określonych sytuacjach."
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -10633,7 +10633,7 @@
         "text": "przybory, magazynki, bagnety, itp."
       }
     ],
-    "correctKey": "B",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -11907,7 +11907,7 @@
         "text": "Krycie, równanie, odstępowanie, łączenie"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "C",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -18805,7 +18805,7 @@
     "choices": [
       {
         "key": "A",
-        "text": "Władysław Anders"
+        "text": "Stanisław Sosabowski"
       },
       {
         "key": "B",
