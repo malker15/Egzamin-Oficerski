@@ -10747,62 +10747,8 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "415",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Piechota"
-      },
-      {
-        "key": "B",
-        "text": "Saperzy"
-      },
-      {
-        "key": "C",
-        "text": "Artyleria"
-      },
-      {
-        "key": "D",
-        "text": "Wojska pancerne"
-      }
-    ],
-    "correctKey": "C",
-    "image": "/images/artleria.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "416",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Artyleria lufowa"
-      },
-      {
-        "key": "B",
-        "text": "Wojska rakietowe"
-      },
-      {
-        "key": "C",
-        "text": "Obrona przeciwlotnicza"
-      },
-      {
-        "key": "D",
-        "text": "Artyleria rakietowa"
-      }
-    ],
-    "correctKey": "D",
-    "image": "/images/artyleriarakietowa.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+
+ 
   {
     "type": "mcq",
     "id": "417",
@@ -11083,34 +11029,7 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "427",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Lotnictwo transportowe"
-      },
-      {
-        "key": "B",
-        "text": "Lotnictwo rozpoznawcze"
-      },
-      {
-        "key": "C",
-        "text": "Lotnictwo taktyczne"
-      },
-      {
-        "key": "D",
-        "text": "Lotnictwo szkolne"
-      }
-    ],
-    "correctKey": "C",
-    "image": "/images/lotnictwotaktyczne.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+
   {
     "type": "mcq",
     "id": "428",
@@ -11223,258 +11142,11 @@
     "why_correct_long": "",
     "trap": ""
   },
-  {
-    "type": "mcq",
-    "id": "432",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Artyleria"
-      },
-      {
-        "key": "B",
-        "text": "Wojska pancerne"
-      },
-      {
-        "key": "C",
-        "text": "Piechota"
-      },
-      {
-        "key": "D",
-        "text": "Kawaleria"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/pancerna.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "433",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Logistyka"
-      },
-      {
-        "key": "B",
-        "text": "Piechota"
-      },
-      {
-        "key": "C",
-        "text": "Saperzy"
-      },
-      {
-        "key": "D",
-        "text": "Piechota zmechanizowana"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/piechota.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "434",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Piechota zmotoryzowana"
-      },
-      {
-        "key": "B",
-        "text": "Piechota górska"
-      },
-      {
-        "key": "C",
-        "text": "Desantowa"
-      },
-      {
-        "key": "D",
-        "text": "Piechota morska"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/piechotagorska.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "435",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Łączność"
-      },
-      {
-        "key": "B",
-        "text": "Wojska inżynieryjne"
-      },
-      {
-        "key": "C",
-        "text": "Logistyka"
-      },
-      {
-        "key": "D",
-        "text": "Artyleria"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/wojskainzynieryjne.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "436",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Lotnictwo"
-      },
-      {
-        "key": "B",
-        "text": "Wojska powietrznodesantowe"
-      },
-      {
-        "key": "C",
-        "text": "Piechota"
-      },
-      {
-        "key": "D",
-        "text": "Obrona plot."
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/wojskapowietrznodesantowe.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "437",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Snajperzy"
-      },
-      {
-        "key": "B",
-        "text": "Wojska rozpoznawcze"
-      },
-      {
-        "key": "C",
-        "text": "Lotnictwo"
-      },
-      {
-        "key": "D",
-        "text": "Piechota"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/wojskarozpoznawcze.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "438",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Wojska pancerne"
-      },
-      {
-        "key": "B",
-        "text": "Artyleria"
-      },
-      {
-        "key": "C",
-        "text": "Wojska przeciwpancerne"
-      },
-      {
-        "key": "D",
-        "text": "Piechota"
-      }
-    ],
-    "correctKey": "C",
-    "image": "/images/wojskaprzeciwpancerne.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "439",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Logistyka"
-      },
-      {
-        "key": "B",
-        "text": "Wojska zabezpieczenia technicznego"
-      },
-      {
-        "key": "C",
-        "text": "Łączność"
-      },
-      {
-        "key": "D",
-        "text": "Inżynieryjne"
-      }
-    ],
-    "correctKey": "B",
-    "image": "/images/wojskazabezpieczeniatechnicznego.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "440",
-    "question": "Co oznacza ten znak taktyczny?",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Pancerna"
-      },
-      {
-        "key": "B",
-        "text": "Desantowa"
-      },
-      {
-        "key": "C",
-        "text": "Zmechanizowana"
-      },
-      {
-        "key": "D",
-        "text": "Piechota"
-      }
-    ],
-    "correctKey": "C",
-    "image": "/images/zmechanizowana.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
+
+  
+  
+  
+  
   {
     "type": "mcq",
     "id": "441",
@@ -11882,5 +11554,118 @@
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
-  }
+  },
+  {
+  "type": "mcq",
+  "id": "459",
+  "question": "Co oznacza ten znak taktyczny?",
+  "choices": [
+    {
+      "key": "A",
+      "text": "Artyleria"
+    },
+    {
+      "key": "B",
+      "text": "Obrony przeciwlotniczej"
+    },
+    {
+      "key": "C",
+      "text": "Siły powietrzne"
+    },
+    {
+      "key": "D",
+      "text": "Wojska pancerne"
+    }
+  ],
+  "correctKey": "B",
+  "image": "/images/Obrony przeciwlotniczej.png",
+  "why_correct_short": "",
+    "why_correct_long": "",
+    "trap": ""
+  },
+  {
+    "type": "mcq",
+    "id": "459",
+    "question": "Co oznacza ten znak taktyczny?",
+    "choices": [
+      {
+        "key": "A",
+        "text": "Zaopatrzenie"
+      },
+      {
+        "key": "B",
+        "text": "Inżynieryjna"
+      },
+      {
+        "key": "C",
+        "text": "ABC – nuklearna, biologiczna, chemiczna"
+      },
+      {
+        "key": "D",
+        "text": "Medyczna"
+      }
+    ],
+    "correctKey": "C",
+    "image": "/images/ABC – nuklearna, biologiczna, chemiczna.png",
+    "why_correct_short": "",
+    "why_correct_long": "",
+    "trap": ""
+  },
+    {
+    "type": "mcq",
+    "id": "460",
+    "question": "Co oznacza ten znak taktyczny?",
+    "choices": [
+      {
+        "key": "A",
+        "text": "Pancerna"
+      },
+      {
+        "key": "B",
+        "text": "Artyleria"
+      },
+      {
+        "key": "C",
+        "text": "Rakietowa"
+      },
+      {
+        "key": "D",
+        "text": "Piechoty"
+      }
+    ],
+    "correctKey": "B",
+    "image": "/images/Artyleria.png",
+    "why_correct_short": "",
+    "why_correct_long": "",
+    "trap": ""
+  },
+  {
+    "type": "mcq",
+    "id": "461",
+    "question": "Co oznacza ten znak taktyczny?",
+    "choices": [
+      {
+        "key": "A",
+        "text": "Sił powietrznych"
+      },
+      {
+        "key": "B",
+        "text": "Lotnictwa Wojsk Lądowych"
+      },
+      {
+        "key": "C",
+        "text": "Lotnictwa Wojsk Lądowych (preferowany w systemach APD)"
+      },
+      {
+        "key": "D",
+        "text": "Aeromobilna"
+      }
+    ],
+    "correctKey": "C",
+    "image": "/images/Lotnictwa Wojsk Lądowych (preferowany w systemach APD).png",
+    "why_correct_short": "",
+    "why_correct_long": "",
+    "trap": ""
+  },
+
 ]
