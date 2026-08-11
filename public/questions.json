@@ -1361,7 +1361,7 @@
         "text": "wszystkie powyższe odpowiedzi są poprawne"
       }
     ],
-    "correctKey": "A",
+    "correctKey": "D",
     "image": "",
     "why_correct_short": "",
     "why_correct_long": "",
@@ -10962,7 +10962,7 @@
       },
       {
         "key": "D",
-        "text": "F-18"
+        "text": "Flyeye"
       }
     ],
     "correctKey": "B",
@@ -11519,30 +11519,6 @@
     ],
     "correctKey": "A",
     "image": "gettysburg_plan_01.png",
-    "why_correct_short": "",
-    "why_correct_long": "",
-    "trap": ""
-  },
-  {
-    "type": "mcq",
-    "id": "443",
-    "question": "Plan obrazuje oblężenie na początku XX wieku carskiej twierdzy pod",
-    "choices": [
-      {
-        "key": "A",
-        "text": "Brześciem"
-      },
-      {
-        "key": "B",
-        "text": "Port Arthur"
-      },
-      {
-        "key": "C",
-        "text": "Przemyślem"
-      }
-    ],
-    "correctKey": "B",
-    "image": "port_arthur_siege_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
