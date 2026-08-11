@@ -11166,7 +11166,7 @@
       }
     ],
     "correctKey": "B",
-    "image": "waterloo_plan_01.png",
+    "image": "/images/waterloo_plan_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11190,7 +11190,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "gettysburg_plan_01.png",
+    "image": "/images/gettysburg_plan_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11214,7 +11214,7 @@
       }
     ],
     "correctKey": "B",
-    "image": "patton_portrait_01.png",
+    "image": "/images/patton_portrait_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11238,7 +11238,7 @@
       }
     ],
     "correctKey": "B",
-    "image": "iwo_jima_flag_01.png",
+    "image": "/images/iwo_jima_flag_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11262,7 +11262,7 @@
       }
     ],
     "correctKey": "C",
-    "image": "monte_cassino_battle_01.png",
+    "image": "/images/monte_cassino_battle_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11286,7 +11286,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "anders_portrait_01.png",
+    "image": "/images/anders_portrait_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11310,7 +11310,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "kursk_plan_01.png",
+    "image": "/images/kursk_plan_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11334,7 +11334,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "pzl_p11_model_01.png",
+    "image": "/images/pzl_p11_model_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11358,7 +11358,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "przemysl_fortress_01.png",
+    "image": "/images/przemysl_fortress_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11382,7 +11382,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "artillery_symbol_01.png",
+    "image": "/images/artillery_symbol_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11406,7 +11406,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "uav_set_01.png",
+    "image": "/images/uav_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11430,7 +11430,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "special_aircraft_set_01.png",
+    "image": "/images/special_aircraft_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11454,7 +11454,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "recon_aircraft_set_01.png",
+    "image": "/images/recon_aircraft_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11478,7 +11478,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "transport_aircraft_set_01.png",
+    "image": "/images/transport_aircraft_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11502,7 +11502,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "helicopter_set_01.png",
+    "image": "/images/helicopter_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11526,7 +11526,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "aircraft_mix_set_01.png",
+    "image": "/images/aircraft_mix_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
@@ -11550,7 +11550,7 @@
       }
     ],
     "correctKey": "A",
-    "image": "tank_set_01.png",
+    "image": "/images/tank_set_01.png",
     "why_correct_short": "",
     "why_correct_long": "",
     "trap": ""
