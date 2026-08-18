@@ -16,6 +16,13 @@ const COPY_REPLACEMENTS: Record<string, string> = {
   "Reset": "Resetuj sesję",
 };
 
+const STAGE_META = {
+  stage1: { code: "MOD-01", label: "TEST WIEDZY" },
+  stage2: { code: "MOD-02", label: "TEORIA I PRAKTYKA" },
+  stage3: { code: "MOD-03", label: "MUSZTRA" },
+  stage4: { code: "MOD-04", label: "PĘTLA TAKTYCZNA" },
+} as const;
+
 function polishStageOneCopy() {
   const elements = document.querySelectorAll<HTMLElement>("h1, span, button");
   elements.forEach((element) => {
@@ -28,6 +35,7 @@ function polishStageOneCopy() {
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const stage = pathname === "/" ? "home" : pathname.startsWith("/stage1") ? "stage1" : pathname.startsWith("/stage2") ? "stage2" : pathname.startsWith("/stage3") ? "stage3" : pathname.startsWith("/stage4") ? "stage4" : "other";
+  const meta = stage in STAGE_META ? STAGE_META[stage as keyof typeof STAGE_META] : null;
 
   useEffect(() => {
     if (stage !== "stage1") return;
@@ -37,5 +45,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return () => observer.disconnect();
   }, [stage]);
 
-  return <div data-app-stage={stage}>{children}</div>;
+  return (
+    <div data-app-stage={stage} className={meta ? "mil-stage-shell" : undefined}>
+      {meta && (
+        <div className="mil-stage-ident" aria-hidden="true">
+          <span className="mil-stage-ident-code">{meta.code}</span>
+          <span className="mil-stage-ident-sep">//</span>
+          <span>{meta.label}</span>
+        </div>
+      )}
+      {children}
+    </div>
+  );
 }
