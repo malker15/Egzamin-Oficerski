@@ -51,7 +51,7 @@ export default function Stage2Page(){
   const summary=useMemo(()=>{const all=[...activeTheory,...activePractical];let seen=0,weak=0,strong=0;for(const q of all){const r=progress[q.id]?.rating;if(r!==undefined)seen++;if(r!==undefined&&r<=2)weak++;if(r!==undefined&&r>=3)strong++;}return{total:all.length,seen,weak,strong,unseen:all.length-seen}},[activeTheory,activePractical,progress]);
 
   function setQuestion(q:Theory|Practical){setCurrent(q);setRevealed(false);setFull(false);setChecked({});}
-  function start(kind:"theory"|"practical") { setView(kind); setQuestion(pickWeighted(kind==="theory"?activeTheory:activePractical,progress)); }
+  function start(kind:"theory"|"practical") { setView(kind); if(kind==="theory") setQuestion(pickWeighted(activeTheory,progress)); else setQuestion(pickWeighted(activePractical,progress)); }
   function next(){if(view==="theory")setQuestion(pickWeighted(activeTheory,progress));else if(view==="practical")setQuestion(pickWeighted(activePractical,progress));}
   function rate(r:Rating){if(!current)return;setProgress(p=>({...p,[current.id]:{rating:r,seen:(p[current.id]?.seen??0)+1,updatedAt:Date.now()}}));next();}
   function startMock(){const t=shuffle(activeTheory).slice(0,2).map(q=>({kind:"theory" as const,q}));const p=shuffle(activePractical).slice(0,1).map(q=>({kind:"practical" as const,q}));setMock([...t,...p]);setMockIndex(0);setView("mock");setRevealed(false);setFull(false);setChecked({});}
