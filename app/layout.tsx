@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import AppShell from "../components/AppShell";
 import StageDock from "../components/StageDock";
 import "./globals.css";
 
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Egzamin Oficerski",
-  description: "Trener przygotowania do egzaminu oficerskiego",
+  description: "Profesjonalny trener przygotowania do egzaminu oficerskiego",
 };
 
 export default function RootLayout({
@@ -26,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
+        <AppShell>{children}</AppShell>
         <StageDock />
       </body>
     </html>
