@@ -38,17 +38,17 @@ function Btn({children,onClick,kind="primary",disabled=false}:{children:React.Re
 function RatingBar({onRate}:{onRate:(r:Rating)=>void}){return <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">{ratings.map(r=><button key={r.value} onClick={()=>onRate(r.value)} className="rounded-xl border border-neutral-700 bg-neutral-950 px-3 py-3 text-left text-xs hover:border-neutral-400"><b className="mr-2 text-base">{r.short}</b>{r.label}</button>)}</div>}
 
 export default function Stage2Page(){
-  const [data,setData]=useState<Data|null>(null); const [progress,setProgress]=useState<Progress>({}); const [view,setView]=useState<View>("home");
+  const [data,setData]=useState<Data|null>(null); const [progress,setProgress]=useState<Progress>({}); const [progressLoaded,setProgressLoaded]=useState(false); const [view,setView]=useState<View>("home");
   const [current,setCurrent]=useState<Theory|Practical|null>(null); const [revealed,setRevealed]=useState(false); const [full,setFull]=useState(false);
   const [checked,setChecked]=useState<Record<string,boolean>>({}); const [mock,setMock]=useState<MockItem[]>([]); const [mockIndex,setMockIndex]=useState(0); const [error,setError]=useState("");
 
   useEffect(()=>{(async()=>{const {data:s}=await supabase.auth.getSession();if(!s.session?.user){location.href="/";return;}try{setData(await loadData())}catch(e:any){setError(e?.message||"Nie udało się wczytać bazy.")}})()},[]);
-  useEffect(()=>{try{const s=localStorage.getItem(LS);if(s)setProgress(JSON.parse(s))}catch{}},[]);
-  useEffect(()=>{localStorage.setItem(LS,JSON.stringify(progress))},[progress]);
+  useEffect(()=>{try{const s=localStorage.getItem(LS);if(s)setProgress(JSON.parse(s))}catch{}finally{setProgressLoaded(true)}},[]);
+  useEffect(()=>{if(progressLoaded)localStorage.setItem(LS,JSON.stringify(progress))},[progress,progressLoaded]);
 
   const activeTheory=useMemo(()=>data?.theory.filter(q=>q.activeForRandomization)??[],[data]);
   const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);
-  const summary=useMemo(()=>{const all=[...activeTheory,...activePractical];let seen=0,weak=0,strong=0;for(const q of all){const r=progress[q.id]?.rating;if(r!==undefined)seen++;if(r!==undefined&&r<=2)weak++;if(r>=3)strong++;}return{total:all.length,seen,weak,strong,unseen:all.length-seen}},[activeTheory,activePractical,progress]);
+  const summary=useMemo(()=>{const all=[...activeTheory,...activePractical];let seen=0,weak=0,strong=0;for(const q of all){const r=progress[q.id]?.rating;if(r!==undefined)seen++;if(r!==undefined&&r<=2)weak++;if(r!==undefined&&r>=3)strong++;}return{total:all.length,seen,weak,strong,unseen:all.length-seen}},[activeTheory,activePractical,progress]);
 
   function setQuestion(q:Theory|Practical){setCurrent(q);setRevealed(false);setFull(false);setChecked({});}
   function start(kind:"theory"|"practical") { setView(kind); setQuestion(pickWeighted(kind==="theory"?activeTheory:activePractical,progress)); }
