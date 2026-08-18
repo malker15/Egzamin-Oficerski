@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --mil-olive: #7f8d70;
+  --mil-olive-dark: #394334;
+  --mil-khaki: #b9b39b;
 }
 
 @theme inline {
@@ -32,13 +35,120 @@ body {
 
 main {
   background-image:
-    radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.07), transparent 30%),
-    radial-gradient(circle at 90% 18%, rgba(139, 92, 246, 0.06), transparent 28%);
+    radial-gradient(circle at 10% 0%, rgba(127, 141, 112, 0.08), transparent 30%),
+    radial-gradient(circle at 90% 18%, rgba(185, 179, 155, 0.045), transparent 28%);
   background-attachment: fixed;
 }
 
 ::selection {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(127, 141, 112, 0.34);
+}
+
+/* Subtelny wariant militarny: siatka mapowa, oliwkowe akcenty i detale techniczne. */
+.mil-app-shell {
+  position: relative;
+  isolation: isolate;
+  background-image:
+    linear-gradient(rgba(127, 141, 112, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 141, 112, 0.028) 1px, transparent 1px),
+    radial-gradient(circle at 16% 4%, rgba(99, 116, 82, 0.12), transparent 28%),
+    radial-gradient(circle at 86% 20%, rgba(153, 145, 116, 0.07), transparent 24%);
+  background-size: 44px 44px, 44px 44px, auto, auto;
+  background-attachment: fixed;
+}
+
+.mil-app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.16;
+  background:
+    radial-gradient(ellipse at 15% 38%, transparent 0 27%, rgba(117, 132, 103, 0.18) 27.3% 27.8%, transparent 28.1% 33%, rgba(117, 132, 103, 0.11) 33.3% 33.7%, transparent 34%),
+    radial-gradient(ellipse at 82% 72%, transparent 0 21%, rgba(117, 132, 103, 0.15) 21.3% 21.8%, transparent 22.1% 28%, rgba(117, 132, 103, 0.09) 28.3% 28.7%, transparent 29%);
+}
+
+.mil-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(127, 141, 112, 0.07), transparent 32%),
+    repeating-linear-gradient(90deg, transparent 0 95px, rgba(127, 141, 112, 0.018) 96px 97px);
+}
+
+.mil-corner {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  z-index: 2;
+  opacity: 0.55;
+}
+
+.mil-corner-tl {
+  top: 14px;
+  left: 14px;
+  border-top: 1px solid rgba(151, 167, 133, 0.55);
+  border-left: 1px solid rgba(151, 167, 133, 0.55);
+}
+
+.mil-corner-br {
+  right: 14px;
+  bottom: 14px;
+  border-right: 1px solid rgba(151, 167, 133, 0.55);
+  border-bottom: 1px solid rgba(151, 167, 133, 0.55);
+}
+
+.mil-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.mil-stat-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  height: 28px;
+  border-right: 1px solid rgba(127, 141, 112, 0.28);
+  border-bottom: 1px solid rgba(127, 141, 112, 0.28);
+}
+
+.mil-card-grid {
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(127, 141, 112, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 141, 112, 0.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom right, black, transparent 72%);
+}
+
+.mil-stage-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 26px;
+  width: 72px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(153, 169, 134, 0.75), rgba(153, 169, 134, 0));
+  opacity: 0.6;
+}
+
+.mil-countdown::after {
+  content: "";
+  position: absolute;
+  right: -42px;
+  top: -42px;
+  width: 130px;
+  height: 130px;
+  border: 1px solid rgba(127, 141, 112, 0.08);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 22px rgba(127, 141, 112, 0.025),
+    0 0 0 44px rgba(127, 141, 112, 0.018);
 }
 
 /* Etap I — bardziej profesjonalny, aplikacyjny wygląd bez zmiany logiki quizu. */
@@ -52,7 +162,7 @@ main {
 }
 
 [data-app-stage="stage1"] main > div > .mb-6.flex.flex-col.gap-3 {
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(127, 141, 112, 0.22);
   border-radius: 1.5rem;
   padding: 1.25rem;
   background: rgba(255, 255, 255, 0.62);
@@ -61,8 +171,8 @@ main {
 }
 
 [data-app-stage="stage1"] main.bg-neutral-950 > div > .mb-6.flex.flex-col.gap-3 {
-  border-color: rgba(148, 163, 184, 0.14);
-  background: rgba(10, 10, 10, 0.68);
+  border-color: rgba(127, 141, 112, 0.18);
+  background: rgba(10, 12, 9, 0.72);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
 }
 
