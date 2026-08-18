@@ -29,9 +29,9 @@ const stages = [
     href: "/stage4",
     roman: "IV",
     title: "Pętla taktyczna",
-    description: "Miejsce na Call for Fire i kolejne elementy pętli taktycznej.",
-    status: "W przygotowaniu",
-    ready: false,
+    description: "Trenażer wykonania zadań dowódczych, samoocena 80/20 i trening bez podpowiedzi.",
+    status: "Trening v1",
+    ready: true,
   },
 ];
 
@@ -59,7 +59,7 @@ export default function HomePage() {
                 <div className="mt-1 text-xs uppercase tracking-wider text-neutral-500">Etapy egzaminu</div>
               </div>
               <div className="rounded-2xl border border-neutral-800 bg-neutral-950/70 p-4">
-                <div className="text-3xl font-black text-white">2</div>
+                <div className="text-3xl font-black text-white">3</div>
                 <div className="mt-1 text-xs uppercase tracking-wider text-neutral-500">Aktywne moduły</div>
               </div>
             </div>
