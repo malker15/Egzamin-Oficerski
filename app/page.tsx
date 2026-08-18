@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ExamCountdown from "../components/ExamCountdown";
 
 const stages = [
   {
@@ -48,6 +49,7 @@ export default function HomePage() {
               <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Egzamin Oficerski
               </h1>
+              <ExamCountdown />
               <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg">
                 Jedno miejsce do przygotowania wszystkich etapów egzaminu. Wybierz moduł i ucz się w formie dopasowanej do tego, jak wygląda dany etap w praktyce.
               </p>
