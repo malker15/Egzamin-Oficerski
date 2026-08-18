@@ -45,21 +45,29 @@ export default function ExamCountdown() {
   );
 
   return (
-    <div className="mt-7 max-w-2xl rounded-2xl border border-neutral-700/80 bg-neutral-950/65 p-4 shadow-inner shadow-black/20 sm:p-5">
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Termin egzaminu</div>
-          <div className="mt-1 text-sm font-semibold text-neutral-200">30 września 2026</div>
+    <div className="mil-countdown relative mt-7 max-w-2xl overflow-hidden rounded-2xl border border-[#46523f] bg-[#0a0d09]/78 p-4 shadow-inner shadow-black/30 sm:p-5">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#819272]/70 to-transparent" />
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-11 min-w-16 place-items-center rounded-xl border border-[#526049] bg-[#151a12] px-3 font-mono text-sm font-black tracking-[0.12em] text-[#bec9ae]">
+            {remaining?.finished ? "D+" : `D-${remaining?.days ?? "—"}`}
+          </div>
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#697763]">Termin egzaminu</div>
+            <div className="mt-1 text-sm font-semibold text-[#d5d9ce]">30 września 2026</div>
+          </div>
         </div>
-        <div className="text-xs font-medium text-neutral-500">{remaining?.finished ? "Termin egzaminu nadszedł" : "Do egzaminu zostało"}</div>
+        <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[#66725e]">
+          {remaining?.finished ? "TERMIN OSIĄGNIĘTY" : "ODLICZANIE AKTYWNE"}
+        </div>
       </div>
 
       {!remaining?.finished && (
-        <div className="mt-4 grid grid-cols-4 gap-2 sm:gap-3" aria-label="Odliczanie do egzaminu oficerskiego">
+        <div className="relative z-10 mt-4 grid grid-cols-4 gap-2 sm:gap-3" aria-label="Odliczanie do egzaminu oficerskiego">
           {values.map((item) => (
-            <div key={item.label} className="rounded-xl border border-neutral-800 bg-neutral-900/90 px-2 py-3 text-center sm:px-3">
-              <div className="font-mono text-xl font-black tabular-nums text-white sm:text-2xl">{item.value}</div>
-              <div className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-500 sm:text-xs">{item.label}</div>
+            <div key={item.label} className="rounded-xl border border-[#293126] bg-[#11150f]/95 px-2 py-3 text-center sm:px-3">
+              <div className="font-mono text-xl font-black tabular-nums text-[#e2e5db] sm:text-2xl">{item.value}</div>
+              <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#65705e] sm:text-xs">{item.label}</div>
             </div>
           ))}
         </div>
