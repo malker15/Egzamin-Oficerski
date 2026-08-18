@@ -27,6 +27,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 main {
@@ -38,4 +39,67 @@ main {
 
 ::selection {
   background: rgba(148, 163, 184, 0.35);
+}
+
+/* Etap I — bardziej profesjonalny, aplikacyjny wygląd bez zmiany logiki quizu. */
+[data-app-stage="stage1"] main > div {
+  padding-bottom: 7.5rem;
+}
+
+[data-app-stage="stage1"] h1 {
+  letter-spacing: -0.035em;
+  font-weight: 800;
+}
+
+[data-app-stage="stage1"] main > div > .mb-6.flex.flex-col.gap-3 {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
+}
+
+[data-app-stage="stage1"] main.bg-neutral-950 > div > .mb-6.flex.flex-col.gap-3 {
+  border-color: rgba(148, 163, 184, 0.14);
+  background: rgba(10, 10, 10, 0.68);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+[data-app-stage="stage1"] main section {
+  border-radius: 1.5rem;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.05);
+}
+
+[data-app-stage="stage1"] main.bg-neutral-950 section {
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
+}
+
+[data-app-stage="stage1"] main button,
+[data-app-stage="stage1"] main a {
+  transition: transform 160ms ease, opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+[data-app-stage="stage1"] main button:not(:disabled):hover,
+[data-app-stage="stage1"] main a:hover {
+  transform: translateY(-1px);
+}
+
+[data-app-stage="stage1"] details {
+  overflow: hidden;
+}
+
+[data-app-stage="stage1"] input {
+  min-height: 2.5rem;
+}
+
+@media (max-width: 640px) {
+  [data-app-stage="stage1"] main > div {
+    padding-top: 1.5rem;
+  }
+
+  [data-app-stage="stage1"] main > div > .mb-6.flex.flex-col.gap-3 {
+    padding: 1rem;
+    border-radius: 1.25rem;
+  }
 }
