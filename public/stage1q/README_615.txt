@@ -1,0 +1,1 @@
+Baza Etapu I: 615 pytań po deduplikacji. Plik kontrolny; endpoint używa data_01.txt..data_20.txt.
