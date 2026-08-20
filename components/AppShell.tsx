@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Stage3ExamTimer from "./Stage3ExamTimer";
 
 const COPY_REPLACEMENTS: Record<string, string> = {
   "Quiz Agent": "Egzamin Oficerski",
@@ -55,6 +56,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
       {children}
+      {stage === "stage3" && <Stage3ExamTimer />}
     </div>
   );
 }
