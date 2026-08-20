@@ -11,7 +11,7 @@ type Practical = { id:string; category:string; practicalKind:string; question:st
 type Data = { title:string; counts:{theoryActive:number;practicalActive:number;totalActive:number}; theory:Theory[]; practical:Practical[] };
 type MockItem = { kind:"theory"|"practical"; q:Theory|Practical };
 
-const LS = "officer_stage2_progress_v1";
+const LS = "officer_stage2_progress_v2";
 const ratings: { value:Rating; label:string; short:string }[] = [
   {value:0,label:"Nie wiem",short:"0"},{value:1,label:"Słabo",short:"1"},{value:2,label:"Z pomocą",short:"2"},{value:3,label:"Samodzielnie",short:"3"},{value:4,label:"Płynnie",short:"4"},
 ];
@@ -23,7 +23,7 @@ function pickWeighted<T extends {id:string}>(items:T[], p:Progress){
 }
 async function loadData(): Promise<Data> {
   if (!("DecompressionStream" in window)) throw new Error("Ta przeglądarka nie obsługuje dekompresji danych. Użyj aktualnego Chrome/Edge/Firefox.");
-  const urls=Array.from({length:12},(_,i)=>`/stage2/data_${String(i+1).padStart(2,"0")}.txt`);
+  const urls=Array.from({length:3},(_,i)=>`/stage2/data_${String(i+1).padStart(2,"0")}.txt`);
   const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error(`Brak pliku ${u}`);return r.text();}));
   const bin=atob(parts.join("")); const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
   const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
@@ -58,7 +58,7 @@ export default function Stage2Page(){
   function mockNext(){if(mockIndex+1<mock.length){setMockIndex(i=>i+1);setRevealed(false);setFull(false);setChecked({});}else setView("home");}
   const mockCurrent=mock[mockIndex];
 
-  if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><a href="/" className="mt-5 inline-block underline">Wróć do Etapu I</a></Card></div></main>;
+  if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><a href="/" className="mt-5 inline-block underline">Wróć do startu</a></Card></div></main>;
   if(!data)return <main className="grid min-h-screen place-items-center bg-neutral-950 text-neutral-300">Wczytuję Etap II…</main>;
 
   const QuestionView=({q,kind,exam=false}:{q:Theory|Practical;kind:"theory"|"practical";exam?:boolean})=><div className="space-y-4">
@@ -72,11 +72,11 @@ export default function Stage2Page(){
   </div>;
 
   return <main className="min-h-screen bg-neutral-950 text-neutral-100"><div className="mx-auto max-w-5xl px-4 py-8">
-    <header className="mb-6 flex flex-wrap items-center gap-3"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-neutral-500">Egzamin oficerski</p><h1 className="text-2xl font-bold">Etap II — teoria i praktyka</h1></div><div className="ml-auto flex gap-2"><a href="/" className="rounded-xl border border-neutral-700 px-4 py-2 text-sm font-semibold">Etap I</a>{view!=="home"&&<Btn kind="secondary" onClick={()=>setView("home")}>Menu Etapu II</Btn>}</div></header>
+    <header className="mb-6 flex flex-wrap items-center gap-3"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-neutral-500">Egzamin oficerski</p><h1 className="text-2xl font-bold">Etap II — teoria i praktyka</h1></div><div className="ml-auto flex gap-2"><a href="/" className="rounded-xl border border-neutral-700 px-4 py-2 text-sm font-semibold">Start</a>{view!=="home"&&<Btn kind="secondary" onClick={()=>setView("home")}>Menu Etapu II</Btn>}</div></header>
 
     {view==="home"&&<div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-5">{[["Aktywne",summary.total],["Przerobione",summary.seen],["Niepoznane",summary.unseen],["Do poprawy",summary.weak],["Mocne",summary.strong]].map(([a,b])=><Card key={String(a)} className="p-4"><div className="text-xs text-neutral-500">{a}</div><div className="mt-1 text-2xl font-bold">{b}</div></Card>)}</div>
-      <div className="grid gap-4 md:grid-cols-3"><button onClick={()=>start("theory")} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500"><div className="text-sm text-neutral-400">109 aktywnych</div><div className="mt-2 text-xl font-bold">Nauka teorii</div><p className="mt-2 text-sm text-neutral-400">Pytanie → odpowiedź na głos → punkty kontrolne → samoocena.</p></button><button onClick={()=>start("practical")} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500"><div className="text-sm text-neutral-400">22 aktywne</div><div className="mt-2 text-xl font-bold">Nauka praktyki</div><p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p></button><button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200"><div className="text-sm text-neutral-600">2 teoria + 1 praktyka</div><div className="mt-2 text-xl font-bold">Symulacja Etapu II</div><p className="mt-2 text-sm text-neutral-600">Trzy losowe zadania bez podpowiedzi do momentu sprawdzenia.</p></button></div>
+      <div className="grid gap-4 md:grid-cols-3"><button onClick={()=>start("theory")} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500"><div className="text-sm text-neutral-400">{data.counts.theoryActive} aktywne</div><div className="mt-2 text-xl font-bold">Nauka teorii</div><p className="mt-2 text-sm text-neutral-400">Pytanie → odpowiedź na głos → punkty kontrolne → samoocena.</p></button><button onClick={()=>start("practical")} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500"><div className="text-sm text-neutral-400">{data.counts.practicalActive} aktywne</div><div className="mt-2 text-xl font-bold">Nauka praktyki</div><p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p></button><button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200"><div className="text-sm text-neutral-600">2 teoria + 1 praktyka</div><div className="mt-2 text-xl font-bold">Symulacja Etapu II</div><p className="mt-2 text-sm text-neutral-600">Trzy losowe zadania bez podpowiedzi do momentu sprawdzenia.</p></button></div>
       <Card><div className="flex flex-wrap items-center gap-3"><div><h3 className="font-bold">System powtórek</h3><p className="mt-1 text-sm text-neutral-400">Pytania ocenione 0–2 są losowane częściej. Ocena 3–4 stopniowo zmniejsza ich wagę.</p></div><Btn kind="danger" onClick={()=>{if(confirm("Wyczyścić cały postęp Etapu II?"))setProgress({})}}>Wyczyść postęp</Btn></div></Card>
     </div>}
     {view==="theory"&&current&&<QuestionView q={current} kind="theory"/>}
