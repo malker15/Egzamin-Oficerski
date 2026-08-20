@@ -24,9 +24,9 @@ const stages = [
     href: "/stage3",
     roman: "III",
     title: "Musztra",
-    description: "Moduł przygotowany do rozbudowy o komendy, przebieg i ocenę wykonania.",
-    status: "W przygotowaniu",
-    ready: false,
+    description: "22 zagadnienia, schemat odpowiedzi, nauka krok po kroku i losowanie egzaminacyjne.",
+    status: "Gotowy",
+    ready: true,
     code: "MOD-03",
   },
   {
@@ -60,7 +60,7 @@ export default function HomePage() {
                 <span className="text-[#3c4637]">/</span>
                 <span>TRYB SZKOLENIOWY</span>
                 <span className="text-[#3c4637]">/</span>
-                <span>3 z 4 modułów aktywnych</span>
+                <span>4 z 4 modułów aktywnych</span>
               </div>
 
               <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
@@ -80,7 +80,7 @@ export default function HomePage() {
                 <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#66725e]">Etapy egzaminu</div>
               </div>
               <div className="mil-stat-card rounded-2xl border border-[#364031] bg-[#0b0e0a]/80 p-4">
-                <div className="text-3xl font-black text-[#a7b68f]">3</div>
+                <div className="text-3xl font-black text-[#a7b68f]">4</div>
                 <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#66725e]">Aktywne moduły</div>
               </div>
             </div>
