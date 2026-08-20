@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 
 export const runtime = "nodejs";
@@ -6,25 +8,13 @@ export const dynamic = "force-dynamic";
 const STAGE1_QUESTION_COUNT = 615;
 const STAGE1_CHUNK_COUNT = 12;
 
-export async function GET(request: Request) {
+export function GET() {
   try {
-    const origin = new URL(request.url).origin;
+    const encoded = Array.from({ length: STAGE1_CHUNK_COUNT }, (_, index) => {
+      const name = `data_${String(index + 1).padStart(2, "0")}.txt`;
+      return readFileSync(join(process.cwd(), "public", "stage1q615", name), "utf8").trim();
+    }).join("");
 
-    const chunks = await Promise.all(
-      Array.from({ length: STAGE1_CHUNK_COUNT }, async (_, index) => {
-        const name = `data_${String(index + 1).padStart(2, "0")}.txt`;
-        const url = `${origin}/stage1q615/${name}?bank=615-v2`;
-        const response = await fetch(url, { cache: "no-store" });
-
-        if (!response.ok) {
-          throw new Error(`Nie udało się pobrać ${name}: HTTP ${response.status}`);
-        }
-
-        return (await response.text()).trim();
-      })
-    );
-
-    const encoded = chunks.join("");
     const jsonText = gunzipSync(Buffer.from(encoded, "base64")).toString("utf8");
     const questions = JSON.parse(jsonText);
 
@@ -34,27 +24,17 @@ export async function GET(request: Request) {
       );
     }
 
-    return Response.json(questions, {
+    return new Response(jsonText, {
       headers: {
-        "cache-control": "no-store, no-cache, must-revalidate",
-        pragma: "no-cache",
-        expires: "0",
-        "x-stage1-bank": "615-v2",
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
       },
     });
   } catch (error) {
     console.error("Nie udało się wczytać bazy pytań Etapu I:", error);
     return Response.json(
-      {
-        error: "Nie udało się wczytać bazy pytań Etapu I.",
-        bank: "615-v2",
-      },
-      {
-        status: 500,
-        headers: {
-          "cache-control": "no-store",
-        },
-      }
+      { error: "Nie udało się wczytać bazy pytań Etapu I." },
+      { status: 500 }
     );
   }
 }
