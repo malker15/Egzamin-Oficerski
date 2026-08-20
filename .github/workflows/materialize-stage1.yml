@@ -1,0 +1,68 @@
+name: Materialize Stage1 questions
+
+on:
+  push:
+    paths:
+      - ".github/workflows/materialize-stage1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build static public/questions.json
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import gzip
+          import json
+          from pathlib import Path
+
+          source = Path("public/stage1q615")
+          parts = sorted(source.glob("data_*.txt"))
+          if len(parts) != 12:
+              raise SystemExit(f"Expected 12 Stage1 chunks, got {len(parts)}")
+
+          encoded = "".join(p.read_text(encoding="utf-8").strip() for p in parts)
+          raw = gzip.decompress(base64.b64decode(encoded)).decode("utf-8")
+          questions = json.loads(raw)
+
+          if not isinstance(questions, list) or len(questions) != 615:
+              raise SystemExit(f"Expected 615 questions, got {len(questions) if isinstance(questions, list) else 'not-a-list'}")
+
+          Path("public/questions.json").write_text(
+              json.dumps(questions, ensure_ascii=False, separators=(",", ":")),
+              encoding="utf-8",
+          )
+          print(f"Wrote public/questions.json with {len(questions)} questions")
+          PY
+
+      - name: Remove serverless questions route and tracing workaround
+        shell: bash
+        run: |
+          rm -rf app/questions.json
+          cat > next.config.ts <<'EOF'
+          import type { NextConfig } from "next";
+
+          const nextConfig: NextConfig = {};
+
+          export default nextConfig;
+          EOF
+
+      - name: Commit static bank
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/questions.json app/questions.json next.config.ts
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Etap I: użyj statycznego questions.json"
+          git push
