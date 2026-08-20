@@ -23,11 +23,14 @@ function pickWeighted<T extends {id:string}>(items:T[], p:Progress){
 }
 async function loadData(): Promise<Data> {
   if (!("DecompressionStream" in window)) throw new Error("Ta przeglądarka nie obsługuje dekompresji danych. Użyj aktualnego Chrome/Edge/Firefox.");
-  const urls=Array.from({length:3},(_,i)=>`/stage2/data_${String(i+1).padStart(2,"0")}.txt`);
+  const urls=["/stage2/data_v2.txt","/stage2/data_v2_02.txt","/stage2/data_v2_03.txt","/stage2/data_v2_04.txt"];
   const parts=await Promise.all(urls.map(async u=>{const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw new Error(`Brak pliku ${u}`);return r.text();}));
-  const bin=atob(parts.join("")); const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+  const encoded=parts.join("").replace(/\s+/g,"");
+  const bin=atob(encoded); const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
   const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
-  return JSON.parse(await new Response(stream).text()) as Data;
+  const loaded=JSON.parse(await new Response(stream).text()) as Data;
+  if(loaded.counts.totalActive!==109 || loaded.counts.theoryActive!==73 || loaded.counts.practicalActive!==36) throw new Error("Baza Etapu II ma nieprawidłową liczbę pytań.");
+  return loaded;
 }
 function cls(...x:(string|false|undefined)[]){return x.filter(Boolean).join(" ");}
 function Card({children,className=""}:{children:React.ReactNode;className?:string}){return <section className={cls("rounded-2xl border border-neutral-800 bg-neutral-900 p-5 shadow-sm",className)}>{children}</section>}
