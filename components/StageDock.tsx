@@ -15,8 +15,12 @@ export default function StageDock() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-4 z-50 px-3" aria-label="Nawigacja egzaminu oficerskiego">
-      <div className="mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-[#3d4837] bg-[#0b0e0a]/94 p-1.5 shadow-2xl shadow-black/40 backdrop-blur-xl">
+    <nav
+      className="pointer-events-none fixed inset-x-0 z-50 px-3"
+      style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      aria-label="Nawigacja egzaminu oficerskiego"
+    >
+      <div className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-[#3d4837] bg-[#0b0e0a]/94 p-1.5 shadow-2xl shadow-black/40 backdrop-blur-xl">
         {stages.map((stage) => {
           const active = stage.exact ? pathname === stage.href : pathname.startsWith(stage.href);
           return (
