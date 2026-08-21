@@ -1,19 +1,21 @@
 name: Materialize exact Stage I questions.json
 
 on:
-  push:
+  pull_request:
     branches:
-      - stage1-single-questions-615-clean
+      - main
 
 permissions:
   contents: write
 
 jobs:
   materialize:
-    if: github.event.head_commit.message != 'Materialize exact public/questions.json'
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'stage1-single-questions-615-clean'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: stage1-single-questions-615-clean
 
       - name: Rebuild and verify exact questions.json
         shell: bash
@@ -60,11 +62,20 @@ jobs:
           print(f'OK: {len(result)} questions, sha256={file_hash}')
           PY
 
-      - name: Commit generated file on test branch
+      - name: Remove obsolete Stage I loaders and temporary files
+        shell: bash
+        run: |
+          rm -f app/questions.json/route.ts
+          rm -rf public/stage1q
+          rm -rf .stage1-source
+          rm -f .stage1-trigger
+          rm -f .github/workflows/materialize-stage1-questions.yml
+
+      - name: Commit clean result on test branch
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/questions.json
-          git commit -m 'Materialize exact public/questions.json'
-          git push
+          git add -A -- public/questions.json app/questions.json/route.ts public/stage1q .stage1-source .stage1-trigger .github/workflows/materialize-stage1-questions.yml
+          git commit -m 'Use single public/questions.json for Stage I'
+          git push origin HEAD:stage1-single-questions-615-clean
