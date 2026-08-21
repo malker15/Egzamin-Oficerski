@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Stage3ExamTimer from "./Stage3ExamTimer";
 import DeviceSessionGuard from "./DeviceSessionGuard";
 import SupportToast from "./SupportToast";
+import TrainingVideoGuide from "./TrainingVideoGuide";
 
 const COPY_REPLACEMENTS: Record<string, string> = {
   "Quiz Agent": "Egzamin Oficerski",
@@ -53,6 +54,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <DeviceSessionGuard />
       <SupportToast enabled={supportToastEnabled} />
+      <TrainingVideoGuide />
       <div
         data-app-stage={stage}
         className={meta ? "mil-stage-shell" : undefined}
