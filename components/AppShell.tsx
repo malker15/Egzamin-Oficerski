@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Stage3ExamTimer from "./Stage3ExamTimer";
 import DeviceSessionGuard from "./DeviceSessionGuard";
+import SupportToast from "./SupportToast";
 
 const COPY_REPLACEMENTS: Record<string, string> = {
   "Quiz Agent": "Egzamin Oficerski",
@@ -38,6 +39,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const stage = pathname === "/" ? "home" : pathname.startsWith("/stage1") ? "stage1" : pathname.startsWith("/stage2") ? "stage2" : pathname.startsWith("/stage3") ? "stage3" : pathname.startsWith("/stage4") ? "stage4" : "other";
   const meta = stage in STAGE_META ? STAGE_META[stage as keyof typeof STAGE_META] : null;
+  const supportToastEnabled = stage === "stage1" || stage === "stage2" || stage === "stage3" || stage === "stage4";
 
   useEffect(() => {
     if (stage !== "stage1") return;
@@ -50,6 +52,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <DeviceSessionGuard />
+      <SupportToast enabled={supportToastEnabled} />
       <div
         data-app-stage={stage}
         className={meta ? "mil-stage-shell" : undefined}
