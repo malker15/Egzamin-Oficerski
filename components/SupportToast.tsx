@@ -14,6 +14,16 @@ export default function SupportToast({ enabled }: { enabled: boolean }) {
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const removeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  function hide() {
+    if (hideTimer.current) {
+      clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+    setVisible(false);
+    if (removeTimer.current) clearTimeout(removeTimer.current);
+    removeTimer.current = setTimeout(() => setRendered(false), 350);
+  }
+
   useEffect(() => {
     if (!enabled) {
       setVisible(false);
@@ -26,12 +36,6 @@ export default function SupportToast({ enabled }: { enabled: boolean }) {
         localStorage.setItem(FIRST_SEEN_KEY, String(Date.now()));
       }
     } catch {}
-
-    function hide() {
-      setVisible(false);
-      if (removeTimer.current) clearTimeout(removeTimer.current);
-      removeTimer.current = setTimeout(() => setRendered(false), 350);
-    }
 
     function maybeShow() {
       if (document.visibilityState !== "visible") return;
@@ -76,10 +80,17 @@ export default function SupportToast({ enabled }: { enabled: boolean }) {
   return (
     <div
       aria-live="polite"
-      className={`pointer-events-none fixed inset-x-3 z-[80] transition-all duration-300 sm:left-auto sm:right-5 sm:max-w-sm ${
+      className={`fixed inset-x-3 z-[80] cursor-pointer transition-all duration-300 sm:left-auto sm:right-5 sm:max-w-sm ${
         visible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
       }`}
       style={{ bottom: "calc(9rem + env(safe-area-inset-bottom))" }}
+      onClick={hide}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") hide();
+      }}
+      aria-label="Zamknij prośbę o wsparcie"
     >
       <div className="rounded-2xl border border-[#59684f] bg-[#11140f]/95 px-4 py-3.5 shadow-2xl shadow-black/40 backdrop-blur-md">
         <div className="flex items-start gap-3">
