@@ -38,15 +38,15 @@ const rifleDrill: VideoItem = {
 
 const honorsDrill: VideoItem = {
   title: "Salutowanie i oddawanie honorów",
-  source: "szer. Kukuła",
+  source: "materiał szkoleniowy",
   embedUrl: "https://www.youtube-nocookie.com/embed/U6VVS8sik5w",
   externalUrl: "https://www.youtube.com/watch?v=U6VVS8sik5w",
   note: "Materiał pomocniczy dotyczący oddawania honorów. Wariant w miejscu i w marszu porównuj z regulaminową treścią w aplikacji.",
 };
 
 const teamDrill: VideoItem = {
-  title: "Wojewódzki konkurs musztry — praca całej drużyny",
-  source: "IMPERIUM Media / przegląd musztry 2026",
+  title: "Praca całej drużyny podczas musztry",
+  source: "pokaz musztry zespołowej",
   embedUrl: "https://www.youtube-nocookie.com/embed/23T5RNThvzE",
   externalUrl: "https://www.youtube.com/watch?v=23T5RNThvzE",
   note: "Materiał zbiorczy: obserwuj ustawienie, synchronizację, tempo, reakcję na komendy i pracę dowódcy. Dokładną sekwencję danego zagadnienia wykonuj według aplikacji.",
@@ -60,29 +60,29 @@ const aar: VideoItem = {
   note: "Materiał pomocniczy o After Action Review. AAR jest wspólnym zakończeniem zadań Pętli.",
 };
 
-const stage3Videos: Record<string, VideoItem[]> = {
-  "Postawa zasadnicza i postawy swobodne": [introDrill],
-  "Zwroty": [introDrill, marchDrill],
-  "Marsz krokiem zwykłym i defiladowym": [marchDrill],
-  "Bieg i zatrzymanie": [marchDrill],
-  "Chwyt karabinkiem „przez pierś”, „przez plecy”, „na pas”": [rifleDrill],
-  "Chwyt karabinkiem „połóż broń” i „za broń”": [rifleDrill],
-  "Oddawanie honorów w miejscu w nakryciu i bez nakrycia głowy": [honorsDrill],
-  "Oddawanie honorów w marszu w nakryciu głowy przez salutowanie, bez nakrycia głowy oraz podczas wyprzedzania": [honorsDrill],
-  "Występowanie z ugrupowania rozwiniętego (szereg, dwuszereg) oraz marszowego (kolumny dwójkowej) w miejscu i w marszu": [teamDrill],
-  "Wykonywanie zbiórek w szeregu, dwuszeregu przy sobie i w nakazanym miejscu": [teamDrill],
-  "Wykonywanie zbiórek w rzędzie i kolumnie dwójkowej w miejscu i w marszu": [teamDrill],
-  "Formowanie kolumny dwójkowej z szeregu i odwrotnie": [teamDrill],
-  "Formowanie kolumny dwójkowej z rzędu i odwrotnie w marszu": [teamDrill],
-  "Odliczanie": [teamDrill],
-  "Równanie i krycie": [teamDrill],
-  "Zmiana frontu ugrupowania rozwiniętego przez zachodzenie": [teamDrill],
-  "Odstępowanie i łączenie": [teamDrill],
-  "Przesunięcie szyku": [teamDrill],
-  "Zaginanie i odginanie skrzydeł": [teamDrill],
-  "Formowanie kolumny czwórkowej z dwuszeregu i odwrotnie oraz występowanie": [teamDrill],
-  "Przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie": [teamDrill],
-  "Zachowanie się żołnierzy w szyku": [teamDrill, honorsDrill],
+const stage3VideosByNumber: Record<number, VideoItem[]> = {
+  1: [introDrill],
+  2: [introDrill, marchDrill],
+  3: [marchDrill],
+  4: [marchDrill],
+  5: [rifleDrill],
+  6: [rifleDrill],
+  7: [honorsDrill],
+  8: [honorsDrill],
+  9: [teamDrill],
+  10: [teamDrill],
+  11: [teamDrill],
+  12: [teamDrill],
+  13: [teamDrill],
+  14: [teamDrill],
+  15: [teamDrill],
+  16: [teamDrill],
+  17: [teamDrill],
+  18: [teamDrill],
+  19: [teamDrill],
+  20: [teamDrill],
+  21: [teamDrill],
+  22: [teamDrill, honorsDrill],
 };
 
 const stage4Videos: Record<string, VideoItem[]> = {
@@ -176,12 +176,26 @@ function VideoCard({ item }: { item: VideoItem }) {
         <div className="text-sm font-black text-white">{item.title}</div>
         <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#78866f]">{item.source}</div>
         <p className="mt-2 text-xs leading-5 text-[#929b8b]">{item.note}</p>
-        <a href={item.externalUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-xs font-bold text-[#c4d0b8] underline underline-offset-4">
+        <a
+          href={item.externalUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 inline-flex text-xs font-bold text-[#c4d0b8] underline underline-offset-4"
+        >
           Otwórz film w nowej karcie ↗
         </a>
       </div>
     </div>
   );
+}
+
+function findStage3Card(marker: HTMLElement): HTMLElement | null {
+  let node: HTMLElement | null = marker.parentElement;
+  while (node && node !== document.body) {
+    if (typeof node.className === "string" && node.className.includes("rounded-[1.75rem]")) return node;
+    node = node.parentElement;
+  }
+  return marker.parentElement;
 }
 
 export default function TrainingVideoGuide() {
@@ -200,54 +214,60 @@ export default function TrainingVideoGuide() {
     }
 
     let frame = 0;
+
     const locate = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        let heading: HTMLElement | undefined;
-        let foundItems: VideoItem[] | undefined;
+        let nextTarget: HTMLElement | null = null;
+        let foundItems: VideoItem[] = [];
         let key = "";
 
         if (pathname.startsWith("/stage3")) {
           const pageText = document.body.innerText;
           const learningView = pageText.includes("Pełna odpowiedź") || pageText.includes("Aktualny blok");
+
           if (learningView) {
-            for (const el of Array.from(document.querySelectorAll<HTMLElement>("h1"))) {
-              const title = el.textContent?.trim() ?? "";
-              if (stage3Videos[title]) {
-                heading = el;
-                foundItems = stage3Videos[title];
-                key = `stage3:${title}`;
-                break;
+            const markers = Array.from(document.querySelectorAll<HTMLElement>("div"));
+            const marker = markers.find((el) => /^ZAGADNIENIE\s+\d+\s*\/\s*22$/i.test((el.textContent ?? "").trim()));
+
+            if (marker) {
+              const match = (marker.textContent ?? "").match(/ZAGADNIENIE\s+(\d+)/i);
+              const number = match ? Number(match[1]) : 0;
+              if (stage3VideosByNumber[number]) {
+                foundItems = stage3VideosByNumber[number];
+                key = `stage3:${number}`;
+                nextTarget = findStage3Card(marker);
               }
             }
           }
         } else {
-          const hasStationControls = Array.from(document.querySelectorAll("button")).some(
-            (button) => button.textContent?.includes("Trening bez podpowiedzi")
+          const hasStationControls = Array.from(document.querySelectorAll("button")).some((button) =>
+            button.textContent?.includes("Trening bez podpowiedzi")
           );
+
           if (hasStationControls) {
             for (const el of Array.from(document.querySelectorAll<HTMLElement>("h2"))) {
               const title = el.textContent?.trim() ?? "";
               if (stage4Videos[title]) {
-                heading = el;
                 foundItems = stage4Videos[title];
                 key = `stage4:${title}`;
+                nextTarget = el.parentElement;
                 break;
               }
             }
           }
         }
 
-        const nextTarget = heading?.parentElement ?? null;
         setTarget((prev) => (prev === nextTarget ? prev : nextTarget));
         setMatchKey((prev) => (prev === key ? prev : key));
-        setItems(foundItems ?? []);
+        setItems(foundItems);
       });
     };
 
     locate();
     const observer = new MutationObserver(locate);
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
@@ -265,18 +285,20 @@ export default function TrainingVideoGuide() {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center justify-between gap-4 text-left"
+        className="flex w-full items-center justify-between gap-4 rounded-xl px-2 py-1 text-left"
       >
         <div>
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-[#9caf8d]">Materiał wideo</div>
-          <div className="mt-1 text-sm font-bold text-white">▶ Zobacz wykonanie</div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-[#90a182]">Materiał wideo</div>
+          <div className="mt-1 text-sm font-black text-white">▶ Zobacz wykonanie</div>
         </div>
-        <span className="rounded-lg border border-[#4a5743] bg-[#0b0e0a] px-2.5 py-1.5 text-xs font-black text-[#b9c7ad]">{open ? "Zwiń" : `${items.length} ${items.length === 1 ? "film" : "filmy"}`}</span>
+        <span className="text-xl text-[#9dac8f]">{open ? "−" : "+"}</span>
       </button>
 
       {open && (
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          {items.map((item) => <VideoCard key={item.embedUrl} item={item} />)}
+          {items.map((item) => (
+            <VideoCard key={item.externalUrl} item={item} />
+          ))}
         </div>
       )}
     </div>,
