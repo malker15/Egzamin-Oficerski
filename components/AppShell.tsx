@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Stage3ExamTimer from "./Stage3ExamTimer";
+import DeviceSessionGuard from "./DeviceSessionGuard";
 
 const COPY_REPLACEMENTS: Record<string, string> = {
   "Quiz Agent": "Egzamin Oficerski",
@@ -47,23 +48,26 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, [stage]);
 
   return (
-    <div
-      data-app-stage={stage}
-      className={meta ? "mil-stage-shell" : undefined}
-      style={meta ? {
-        paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))",
-        scrollPaddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))",
-      } : undefined}
-    >
-      {meta && (
-        <div className="mil-stage-ident" aria-hidden="true">
-          <span className="mil-stage-ident-code">{meta.code}</span>
-          <span className="mil-stage-ident-sep">//</span>
-          <span>{meta.label}</span>
-        </div>
-      )}
-      {children}
-      {stage === "stage3" && <Stage3ExamTimer />}
-    </div>
+    <>
+      <DeviceSessionGuard />
+      <div
+        data-app-stage={stage}
+        className={meta ? "mil-stage-shell" : undefined}
+        style={meta ? {
+          paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))",
+          scrollPaddingBottom: "calc(8.5rem + env(safe-area-inset-bottom))",
+        } : undefined}
+      >
+        {meta && (
+          <div className="mil-stage-ident" aria-hidden="true">
+            <span className="mil-stage-ident-code">{meta.code}</span>
+            <span className="mil-stage-ident-sep">//</span>
+            <span>{meta.label}</span>
+          </div>
+        )}
+        {children}
+        {stage === "stage3" && <Stage3ExamTimer />}
+      </div>
+    </>
   );
 }
