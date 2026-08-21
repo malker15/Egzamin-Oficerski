@@ -1,0 +1,54 @@
+name: Materialize exact Stage I questions.json
+
+on:
+  create:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: startsWith(github.ref, 'refs/heads/stage1-actions-trigger-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: stage1-single-questions-615-clean
+
+      - name: Rebuild and verify exact questions.json
+        shell: bash
+        run: |
+          cat .stage1-source/data_*.txt | tr -d '\r\n' | base64 -d | gzip -dc > /tmp/stage1-source.json
+          python3 - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          expected_core = '0c6cd5a4580947e0c3cb1d859519bf650554b7a216dc49965ea19f6b011dd629'
+          expected_file = 'f87c12237a18858ab44fcd84bb245b13eb3d6611e1eab401e2f3560c99c814eb'
+          source = json.loads(Path('/tmp/stage1-source.json').read_text(encoding='utf-8'))
+          if not isinstance(source, list) or len(source) != 615:
+              raise SystemExit('Expected 615 questions')
+          core_keys = ['type','id','question','choices','correctKey','image']
+          core = [{k:q.get(k) for k in core_keys} for q in source]
+          core_hash = hashlib.sha256(json.dumps(core, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
+          if core_hash != expected_core:
+              raise SystemExit(f'Core mismatch: {core_hash}')
+          result = [{
+              'type': q['type'], 'id': q['id'], 'question': q['question'],
+              'choices': q['choices'], 'correctKey': q['correctKey'], 'image': q.get('image',''),
+              'why_correct_short':'', 'why_correct_long':'', 'trap':''
+          } for q in source]
+          Path('public/questions.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+          final_hash = hashlib.sha256(Path('public/questions.json').read_bytes()).hexdigest()
+          if final_hash != expected_file:
+              raise SystemExit(f'File mismatch: {final_hash}')
+          print('OK', len(result), final_hash)
+          PY
+
+      - name: Commit exact file to test branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/questions.json
+          git commit -m 'Materialize exact public/questions.json'
+          git push origin HEAD:stage1-single-questions-615-clean
