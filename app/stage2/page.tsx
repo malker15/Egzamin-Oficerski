@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabaseClient";
 import OralCoach from "./OralCoach";
 import AdaptiveExaminer from "./AdaptiveExaminer";
 import SemanticCoach from "./SemanticCoach";
+import StudyAnswerPanel from "./StudyAnswerPanel";
 import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";
 import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";
 import { STAGE2_ANSWER_OVERRIDES_11_20 } from "./answerOverrides11to20";
@@ -241,21 +242,29 @@ export default function Stage2Page(){
   if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><a href="/" className="mt-5 inline-block underline">Wróć do startu</a></Card></div></main>;
   if(!data)return <main className="grid min-h-screen place-items-center bg-neutral-950 text-neutral-300">Wczytuję Etap II…</main>;
 
-  const QuestionView=({q,kind,exam=false,setNumber,setPosition}:{q:Theory|Practical;kind:"theory"|"practical";exam?:boolean;setNumber?:number;setPosition?:number})=><div className="space-y-4">
+  const QuestionView=({q,kind,exam=false,setNumber,setPosition}:{q:Theory|Practical;kind:"theory"|"practical";exam?:boolean;setNumber?:number;setPosition?:number})=><div className="space-y-5">
     {setNumber&&<div className="fixed right-4 top-28 z-40 hidden 2xl:block"><SetBadge number={setNumber} position={setPosition}/></div>}
-    <Card>
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex flex-wrap gap-2 text-xs text-neutral-400"><span>{kind==="theory"?"TEORIA":"PRAKTYKA"}</span><span>•</span><span>{q.category}</span></div>
+    <Card className="border-neutral-700 bg-[#151815] p-6 sm:p-7">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex flex-wrap gap-2 text-xs font-bold text-neutral-400"><span>{kind==="theory"?"TEORIA":"PRAKTYKA"}</span><span>•</span><span>{q.category}</span></div>
         {setNumber&&<SetBadge number={setNumber} position={setPosition}/>} 
       </div>
-      <h2 className="text-xl font-bold leading-snug">{q.question}</h2>
-      <p className="mt-4 text-sm text-neutral-400">{kind==="theory"?"Odpowiedz na głos, jak przed komisją.":"Wykonaj zadanie na głos, wcielając się w rolę kierownika/instruktora."}</p>
+      <h2 className="max-w-[75ch] text-xl font-black leading-8 text-white sm:text-2xl">{q.question}</h2>
+      <p className="mt-4 max-w-[72ch] text-sm leading-6 text-neutral-400">{kind==="theory"?"Najpierw odpowiedz z pamięci. Dopiero potem odsłoń odpowiedź i porównaj kolejność punktów.":"Najpierw wykonaj zadanie z pamięci. Potem odsłoń schemat i sprawdź kolejność działań."}</p>
     </Card>
-    {!revealed?<div className="flex flex-wrap gap-2"><Btn onClick={()=>setRevealed(true)}>Sprawdź odpowiedź</Btn>{!exam&&<Btn kind="secondary" onClick={skipCurrent}>{view==="theory"?"Losuj inny zestaw":"Losuj inne"}</Btn>}</div>:<>
-      {kind==="theory"?<Card><h3 className="font-bold">Punkty kontrolne</h3><ul className="mt-3 space-y-2 text-sm">{(q as Theory).keyPoints.map((x,i)=><li key={i} className="rounded-lg bg-neutral-950 p-3"><b>{i+1}.</b> {x}</li>)}</ul></Card>:<Card><h3 className="font-bold">Checklista wykonania</h3><div className="mt-3 space-y-2">{(q as Practical).checklist.map(x=><label key={x.id} className="flex gap-3 rounded-lg bg-neutral-950 p-3 text-sm"><input type="checkbox" checked={!!checked[x.id]} onChange={e=>setChecked(c=>({...c,[x.id]:e.target.checked}))}/><span>{x.text}</span></label>)}</div></Card>}
-      <Btn kind="secondary" onClick={()=>setFull(v=>!v)}>{full?"Ukryj pełną odpowiedź":"Pokaż pełną odpowiedź"}</Btn>
-      {full&&<Card><h3 className="font-bold">Pełna odpowiedź źródłowa</h3><p className="mt-3 whitespace-pre-line text-sm leading-6 text-neutral-300">{q.fullAnswer}</p></Card>}
-      {!exam&&<Card><h3 className="mb-3 font-bold">Jak Ci poszło?</h3><RatingBar onRate={rate}/></Card>}
+    {!revealed?<div className="flex flex-wrap gap-2"><button onClick={()=>setRevealed(true)} className="min-h-12 rounded-xl border border-[#9eae92] bg-[#dfe7d7] px-5 py-3 text-sm font-black text-[#11170f] shadow-sm transition hover:bg-[#edf2e9]">Pokaż odpowiedź</button>{!exam&&<Btn kind="secondary" onClick={skipCurrent}>{view==="theory"?"Losuj inny zestaw":"Losuj inne"}</Btn>}</div>:<>
+      <StudyAnswerPanel
+        kind={kind}
+        keyPoints={kind==="theory"?(q as Theory).keyPoints:[]}
+        openingCue={kind==="practical"?(q as Practical).openingCue:""}
+        checklist={kind==="practical"?(q as Practical).checklist:[]}
+        checked={checked}
+        onToggleCheck={(id,value)=>setChecked(c=>({...c,[id]:value}))}
+        fullAnswer={q.fullAnswer}
+        full={full}
+        onToggleFull={()=>setFull(v=>!v)}
+      />
+      {!exam&&<Card className="border-neutral-700"><h3 className="mb-3 font-bold">Jak Ci poszło?</h3><RatingBar onRate={rate}/></Card>}
     </>}
   </div>;
 
@@ -328,7 +337,7 @@ export default function Stage2Page(){
         const anchor=STAGE2_SET_DEFINITIONS.find(x=>x.number===selectedSet.number)?.questionAnchors[index] ?? "";
         if(!item)return <Card key={key} className="border-amber-900/60"><div className="text-xs font-black uppercase tracking-[.15em] text-amber-300">Pytanie {index+1}</div><h3 className="mt-3 text-lg font-bold">{anchor}</h3><p className="mt-3 text-sm text-amber-200/80">Nie udało się automatycznie połączyć tego pytania z obecną bazą.</p></Card>;
         const theory=item.kind==="theory"?item.q as Theory:null;
-        return <Card key={key} className="flex flex-col"><div className="flex items-center justify-between gap-2"><div className="text-xs font-black uppercase tracking-[.15em] text-[#91a482]">Pytanie {index+1} • {item.kind==="theory"?"teoria":"praktyka"}</div><span className="rounded-full border border-neutral-700 px-2 py-1 text-[10px] text-neutral-400">{item.q.category}</span></div><h3 className="mt-3 text-lg font-bold leading-snug">{item.q.question}</h3>{theory&&theory.keyPoints.length>0&&<div className="mt-4"><div className="text-xs font-bold uppercase tracking-[.12em] text-neutral-500">Punkty kontrolne</div><ul className="mt-2 space-y-1 text-sm text-neutral-300">{theory.keyPoints.map((x,i)=><li key={i}>• {x}</li>)}</ul></div>}<div className="mt-auto pt-5"><Btn kind="secondary" onClick={()=>setExpandedAnswers(x=>({...x,[key]:!x[key]}))}>{expandedAnswers[key]?"Ukryj odpowiedź":"Pokaż odpowiedź"}</Btn></div>{expandedAnswers[key]&&<div className="mt-4 rounded-xl border border-neutral-800 bg-neutral-950 p-4"><div className="text-xs font-black uppercase tracking-[.12em] text-neutral-500">Pełna odpowiedź źródłowa</div><p className="mt-3 whitespace-pre-line text-sm leading-6 text-neutral-300">{item.q.fullAnswer}</p></div>}</Card>;
+        return <Card key={key} className="flex flex-col"><div className="flex items-center justify-between gap-2"><div className="text-xs font-black uppercase tracking-[.15em] text-[#91a482]">Pytanie {index+1} • {item.kind==="theory"?"teoria":"praktyka"}</div><span className="rounded-full border border-neutral-700 px-2 py-1 text-[10px] text-neutral-400">{item.q.category}</span></div><h3 className="mt-3 text-lg font-bold leading-snug">{item.q.question}</h3>{theory&&theory.keyPoints.length>0&&<div className="mt-4"><div className="text-xs font-bold uppercase tracking-[.12em] text-neutral-500">Punkty kontrolne</div><ul className="mt-2 space-y-1 text-sm text-neutral-300">{theory.keyPoints.map((x,i)=><li key={i}>• {x}</li>)}</ul></div>}<div className="mt-auto pt-5"><button onClick={()=>setExpandedAnswers(x=>({...x,[key]:!x[key]}))} className="w-full rounded-xl border border-[#9eae92] bg-[#dfe7d7] px-4 py-3 text-sm font-black text-[#11170f] transition hover:bg-[#edf2e9]">{expandedAnswers[key]?"Ukryj odpowiedź":"Pokaż odpowiedź"}</button></div>{expandedAnswers[key]&&<div className="mt-4 rounded-2xl border-2 border-[#809173] bg-[#eef2e8] p-5 text-[#11170f] shadow-lg shadow-black/20"><div className="text-[10px] font-black uppercase tracking-[.16em] text-[#617159]">ODPOWIEDŹ // DO NAUKI</div><p className="mt-3 max-w-[76ch] whitespace-pre-line text-[16px] font-medium leading-7 text-[#242c20]">{item.q.fullAnswer}</p></div>}</Card>;
       })}</div>
     </div>}
 
