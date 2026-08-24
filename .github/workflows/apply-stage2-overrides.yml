@@ -1,0 +1,56 @@
+name: Apply Stage2 answer overrides
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/stage2/answerOverrides.ts'
+      - '.github/workflows/apply-stage2-overrides.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Stage II loader
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('app/stage2/page.tsx')
+          text = path.read_text()
+
+          import_line = 'import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";\n'
+          override_import = 'import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";\n'
+          if override_import not in text:
+              if import_line not in text:
+                  raise SystemExit('Nie znaleziono importu setDefinitions')
+              text = text.replace(import_line, import_line + override_import, 1)
+
+          old = '''  const loaded=JSON.parse(await new Response(stream).text()) as Data;\n  if(loaded.counts.totalActive!==109 || loaded.counts.theoryActive!==73 || loaded.counts.practicalActive!==36) throw new Error("Baza Etapu II ma nieprawidłową liczbę pytań.");\n  return loaded;'''
+          new = '''  const loaded=JSON.parse(await new Response(stream).text()) as Data;\n  if(loaded.counts.totalActive!==109 || loaded.counts.theoryActive!==73 || loaded.counts.practicalActive!==36) throw new Error("Baza Etapu II ma nieprawidłową liczbę pytań.");\n  loaded.theory=loaded.theory.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{})}));\n  loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{})}));\n  return loaded;'''
+          if 'STAGE2_ANSWER_OVERRIDES[q.id]' not in text:
+              if old not in text:
+                  raise SystemExit('Nie znaleziono bloku loadData do podmiany')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+
+      - name: Remove temporary workflow
+        run: rm .github/workflows/apply-stage2-overrides.yml
+
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/stage2/page.tsx .github/workflows/apply-stage2-overrides.yml
+          git commit -m 'Włącz poprawione odpowiedzi zestawów 1-10'
+          git push
