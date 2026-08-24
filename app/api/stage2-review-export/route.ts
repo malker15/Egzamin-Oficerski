@@ -7,6 +7,7 @@ import { STAGE2_SET_DEFINITIONS } from "../../stage2/setDefinitions";
 type Theory = { id:string; category:string; question:string; keyPoints:string[]; fullAnswer:string; activeForRandomization:boolean };
 type Practical = { id:string; category:string; practicalKind:string; question:string; openingCue:string; steps:string[]; checklist:{id:string;text:string}[]; fullAnswer:string; activeForRandomization:boolean };
 type Data = { theory:Theory[]; practical:Practical[] };
+type PoolItem = { kind:"theory"|"practical"; q:Theory|Practical };
 
 function normalizeText(text:string){
   return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
@@ -23,22 +24,24 @@ function matchScore(anchor:string,candidate:string){
   const bonus=tokens.length>=3&&c.includes(tokens.slice(0,3).join(" "))?20:0;
   return coverage*100+bonus;
 }
-function find(anchor:string,pool:{kind:"theory"|"practical";q:Theory|Practical}[]){
-  let best:null|{kind:"theory"|"practical";q:Theory|Practical}=null,bestScore=0;
+function find(anchor:string,pool:PoolItem[]): (PoolItem & {score:number}) | null {
+  let best:PoolItem|null=null,bestScore=0;
   for(const item of pool){const s=matchScore(anchor,item.q.question);if(s>bestScore){bestScore=s;best=item;}}
-  return bestScore>=55?{...best,score:bestScore}:null;
+  return best&&bestScore>=55?{...best,score:bestScore}:null;
 }
 
 export async function GET(){
   const names=["data_v2.txt","data_v2_02.txt","data_v2_03.txt","data_v2_04.txt"];
   const encoded=names.map(n=>fs.readFileSync(path.join(process.cwd(),"public","stage2",n),"utf8")).join("").replace(/\s+/g,"");
   const data=JSON.parse(zlib.gunzipSync(Buffer.from(encoded,"base64")).toString("utf8")) as Data;
-  const pool=[...data.theory.map(q=>({kind:"theory" as const,q})),...data.practical.map(q=>({kind:"practical" as const,q}))];
+  const pool:PoolItem[]=[...data.theory.map(q=>({kind:"theory" as const,q})),...data.practical.map(q=>({kind:"practical" as const,q}))];
   const result=STAGE2_SET_DEFINITIONS.filter(s=>s.number<=10).map(s=>({
     number:s.number,
     questions:s.questionAnchors.map(anchor=>{
       const match=find(anchor,pool);
-      return match?{anchor,kind:match.kind,score:match.score,id:match.q.id,category:match.q.category,question:match.q.question,keyPoints:"keyPoints" in match.q?match.q.keyPoints:undefined,fullAnswer:match.q.fullAnswer,openingCue:"openingCue" in match.q?match.q.openingCue:undefined,steps:"steps" in match.q?match.q.steps:undefined,checklist:"checklist" in match.q?match.q.checklist:undefined}:{anchor,match:null};
+      if(!match)return {anchor,match:null};
+      const q=match.q;
+      return {anchor,kind:match.kind,score:match.score,id:q.id,category:q.category,question:q.question,keyPoints:"keyPoints" in q?q.keyPoints:undefined,fullAnswer:q.fullAnswer,openingCue:"openingCue" in q?q.openingCue:undefined,steps:"steps" in q?q.steps:undefined,checklist:"checklist" in q?q.checklist:undefined};
     })
   }));
   return NextResponse.json(result);
