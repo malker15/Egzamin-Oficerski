@@ -6,6 +6,7 @@ import OralCoach from "./OralCoach";
 import AdaptiveExaminer from "./AdaptiveExaminer";
 import SemanticCoach from "./SemanticCoach";
 import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";
+import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";
 
 type Rating = 0 | 1 | 2 | 3 | 4;
 type View = "home" | "theory" | "practical" | "mock" | "sets" | "coach" | "examiner" | "semantic";
@@ -100,6 +101,8 @@ async function loadData(): Promise<Data> {
   const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
   const loaded=JSON.parse(await new Response(stream).text()) as Data;
   if(loaded.counts.totalActive!==109 || loaded.counts.theoryActive!==73 || loaded.counts.practicalActive!==36) throw new Error("Baza Etapu II ma nieprawidłową liczbę pytań.");
+  loaded.theory=loaded.theory.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{})}));
+  loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{})}));
   return loaded;
 }
 
