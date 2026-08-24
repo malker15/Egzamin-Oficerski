@@ -1,3 +1,4 @@
+# rerun after workflow exists on main
 name: Improve Stage2 answer ergonomics
 
 on:
