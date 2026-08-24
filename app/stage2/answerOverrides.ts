@@ -1,4 +1,5 @@
 export type Stage2AnswerOverride = {
+  question?: string;
   keyPoints?: string[];
   fullAnswer?: string;
   openingCue?: string;
