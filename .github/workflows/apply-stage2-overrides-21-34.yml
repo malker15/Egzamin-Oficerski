@@ -1,0 +1,65 @@
+name: Apply Stage2 answers 21-34
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/stage2/answerOverrides21to34.ts'
+      - '.github/workflows/apply-stage2-overrides-21-34.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch Stage II loader and override type
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          type_path = Path('app/stage2/answerOverrides.ts')
+          type_text = type_path.read_text()
+          if 'question?: string;' not in type_text:
+              needle = 'export type Stage2AnswerOverride = {\n'
+              if needle not in type_text:
+                  raise SystemExit('Nie znaleziono typu Stage2AnswerOverride')
+              type_text = type_text.replace(needle, needle + '  question?: string;\n', 1)
+              type_path.write_text(type_text)
+
+          page = Path('app/stage2/page.tsx')
+          text = page.read_text()
+          import_line = 'import { STAGE2_ANSWER_OVERRIDES_11_20 } from "./answerOverrides11to20";\n'
+          new_import = 'import { STAGE2_ANSWER_OVERRIDES_21_34 } from "./answerOverrides21to34";\n'
+          if new_import not in text:
+              if import_line not in text:
+                  raise SystemExit('Nie znaleziono importu 11-20')
+              text = text.replace(import_line, import_line + new_import, 1)
+
+          old_theory = 'loaded.theory=loaded.theory.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{})}));'
+          new_theory = 'loaded.theory=loaded.theory.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_21_34[q.id]??{})}));'
+          old_practical = 'loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{})}));'
+          new_practical = 'loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_21_34[q.id]??{})}));'
+          if 'STAGE2_ANSWER_OVERRIDES_21_34[q.id]' not in text:
+              if old_theory not in text or old_practical not in text:
+                  raise SystemExit('Nie znaleziono mapowania odpowiedzi')
+              text = text.replace(old_theory, new_theory, 1).replace(old_practical, new_practical, 1)
+          page.write_text(text)
+          PY
+
+      - name: Remove temporary workflow
+        run: rm .github/workflows/apply-stage2-overrides-21-34.yml
+
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/stage2/page.tsx app/stage2/answerOverrides.ts .github/workflows/apply-stage2-overrides-21-34.yml
+          git commit -m 'Włącz poprawione odpowiedzi zestawów 21-34'
+          git push
