@@ -9,6 +9,7 @@ import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";
 import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";
 import { STAGE2_ANSWER_OVERRIDES_11_20 } from "./answerOverrides11to20";
 import { STAGE2_ANSWER_OVERRIDES_21_34 } from "./answerOverrides21to34";
+import { STAGE2_PRACTICAL_OVERRIDES } from "./practicalOverrides";
 
 type Rating = 0 | 1 | 2 | 3 | 4;
 type View = "home" | "theory" | "practical" | "mock" | "sets" | "coach" | "examiner" | "semantic";
@@ -104,7 +105,7 @@ async function loadData(): Promise<Data> {
   const loaded=JSON.parse(await new Response(stream).text()) as Data;
   if(loaded.counts.totalActive!==109 || loaded.counts.theoryActive!==73 || loaded.counts.practicalActive!==36) throw new Error("Baza Etapu II ma nieprawidłową liczbę pytań.");
   loaded.theory=loaded.theory.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_21_34[q.id]??{})}));
-  loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_21_34[q.id]??{})}));
+  loaded.practical=loaded.practical.map(q=>({...q,...(STAGE2_ANSWER_OVERRIDES[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_11_20[q.id]??{}),...(STAGE2_ANSWER_OVERRIDES_21_34[q.id]??{}),...(STAGE2_PRACTICAL_OVERRIDES[q.id]??{})}));
   return loaded;
 }
 
@@ -140,6 +141,7 @@ export default function Stage2Page(){
   const [activeSetIndex,setActiveSetIndex]=useState(0);
   const [mockSet,setMockSet]=useState<ResolvedSet|null>(null);
   const [mockIndex,setMockIndex]=useState(0);
+  const [mockPractical,setMockPractical]=useState<Practical|null>(null);
   const [selectedSetNumber,setSelectedSetNumber]=useState(1);
   const [expandedAnswers,setExpandedAnswers]=useState<Record<string,boolean>>({});
   const [error,setError]=useState("");
@@ -218,18 +220,20 @@ export default function Stage2Page(){
   }
   function startMock(){
     const chosen=randomCompleteSet();
-    if(!chosen)return;
+    const practical=activePractical[Math.floor(Math.random()*activePractical.length)] ?? null;
+    if(!chosen||!practical)return;
     setMockSet(chosen);
+    setMockPractical(practical);
     setMockIndex(0);
     setView("mock");
     setRevealed(false);setFull(false);setChecked({});
   }
   function mockNext(){
     if(!mockSet)return;
-    if(mockIndex===0){
-      setMockIndex(1);setRevealed(false);setFull(false);setChecked({});
+    if(mockIndex<2){
+      setMockIndex(i=>i+1);setRevealed(false);setFull(false);setChecked({});
     }else{
-      setView("home");setMockSet(null);setMockIndex(0);
+      setView("home");setMockSet(null);setMockPractical(null);setMockIndex(0);
     }
   }
   function openSets(){setSelectedSetNumber(1);setExpandedAnswers({});setView("sets");}
@@ -256,7 +260,7 @@ export default function Stage2Page(){
   </div>;
 
   const selectedSet=resolvedSets.find(s=>s.number===selectedSetNumber) ?? resolvedSets[0];
-  const mockCurrent=mockSet?.questions[mockIndex] ?? null;
+  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);
 
   return <main className="min-h-screen bg-neutral-950 text-neutral-100"><div className="mx-auto max-w-5xl px-4 py-8">
     <header className="mb-6 flex flex-wrap items-center gap-3">
@@ -279,9 +283,9 @@ export default function Stage2Page(){
           <p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p>
         </button>
         <button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200">
-          <div className="text-sm text-neutral-600">1 zestaw = 2 przypisane pytania</div>
+          <div className="text-sm text-neutral-600">2 teoria z zestawu + 1 praktyka</div>
           <div className="mt-2 text-xl font-bold">Symulacja Etapu II</div>
-          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–34. Numer zestawu jest widoczny przez całą symulację.</p>
+          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–34, a po jego dwóch pytaniach jedno losowe zadanie praktyczne.</p>
         </button>
       </div>
 
@@ -330,7 +334,7 @@ export default function Stage2Page(){
 
     {view==="theory"&&current&&activeSet&&<QuestionView q={current} kind={activeSet.questions[activeSetIndex]?.kind ?? "theory"} setNumber={activeSet.number} setPosition={activeSetIndex+1}/>} 
     {view==="practical"&&current&&<QuestionView q={current} kind="practical"/>}
-    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>Pytanie {mockIndex+1} / 2</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockSet.number} setPosition={mockIndex+1}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}</Btn></div>}</div>}
+    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockSet.number} setPosition={mockIndex<2?mockIndex+1:undefined}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}</Btn></div>}</div>}
     {view==="coach"&&<OralCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="examiner"&&<AdaptiveExaminer questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="semantic"&&<SemanticCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
