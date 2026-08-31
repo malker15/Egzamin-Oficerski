@@ -7,6 +7,7 @@ import DeviceSessionGuard from "./DeviceSessionGuard";
 import SupportToast from "./SupportToast";
 import TrainingVideoGuide from "./TrainingVideoGuide";
 import Stage3VideoFloating from "./Stage3VideoFloating";
+import Stage2OtherQuestionsLauncher from "./Stage2OtherQuestionsLauncher";
 
 const COPY_REPLACEMENTS: Record<string, string> = {
   "Quiz Agent": "Egzamin Oficerski",
@@ -57,6 +58,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <SupportToast enabled={supportToastEnabled} />
       <TrainingVideoGuide />
       <Stage3VideoFloating />
+      {stage === "stage2" && <Stage2OtherQuestionsLauncher />}
       <div
         data-app-stage={stage}
         className={meta ? "mil-stage-shell" : undefined}
