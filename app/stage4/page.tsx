@@ -9,6 +9,8 @@ import {
   tacticalStations,
   type TacticalStation,
 } from "./data";
+import { Stage4ShootingExtra, Stage4StudyPanel } from "./Stage4StudyPanel";
+import { hasStage4StudyMaterial } from "./driveStudyMaterials";
 
 type Progress = Record<string, { attempts: number; bestScore: number; lastScore: number; updatedAt: number }>;
 type BinaryMap = Record<number, boolean>;
@@ -190,7 +192,7 @@ export default function Stage4Page() {
           <div>
             <div className="mb-3 flex flex-wrap gap-2">
               <Badge tone="green">ETAP IV • TRENING</Badge>
-              <Badge>Źródło: plan egzaminu 2025</Badge>
+              <Badge>Źródła: plan egzaminu + materiały 2026</Badge>
             </div>
             <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Pętla taktyczna</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-neutral-400 sm:text-base">
@@ -249,12 +251,14 @@ export default function Stage4Page() {
               </div>
             </div>
 
+            <Stage4ShootingExtra />
+
             <Card className="border-dashed bg-neutral-900/45">
               <div className="flex items-start gap-3">
                 <div className="text-lg">ⓘ</div>
                 <div>
                   <h3 className="font-bold">Zasada tego modułu</h3>
-                  <p className="mt-2 text-sm leading-6 text-neutral-400">Nie dopisujemy procedur, których nie ma w planie egzaminu. Tam, gdzie dokument wymaga np. pełnej procedury 5-25 / 5xC, meldunku CFF, szczegółów OPBMR albo MEDEVAC, aplikacja zaznacza brak źródła. Gdy dodamy właściwe materiały szkoleniowe, uzupełnimy dokładne sekwencje bez zgadywania.</p>
+                  <p className="mt-2 text-sm leading-6 text-neutral-400">Procedury 5-25 / 5xC, CFF, OPBMR, ewakuacja rannego, zaopatrzenie i OKD zostały uzupełnione na podstawie materiałów szkoleniowych z udostępnionych folderów. Przy stacji najpierw uczysz się krótkiego schematu, a niżej nadal masz wzorzec dowodzenia i checklistę egzaminacyjną.</p>
                 </div>
               </div>
             </Card>
@@ -297,6 +301,8 @@ export default function Stage4Page() {
               <div className="mt-5 flex flex-wrap gap-2"><Button onClick={startPractice}>Trening bez podpowiedzi</Button><Button secondary onClick={() => document.getElementById("wzorzec")?.scrollIntoView({ behavior: "smooth" })}>Pokaż wzorzec wykonania</Button></div>
             </Card>
 
+            <Stage4StudyPanel stationId={station.id} />
+
             {station.changeOfSituation && <Card className="border-amber-900/40 bg-amber-950/10"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Zmiana sytuacji</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></Card>}
 
             <section id="wzorzec" className="space-y-3 scroll-mt-5">
@@ -309,7 +315,7 @@ export default function Stage4Page() {
               ))}
             </section>
 
-            {station.sourceGap && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Do uzupełnienia z osobnego źródła</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
+            {station.sourceGap && !hasStage4StudyMaterial(station.id) && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Do uzupełnienia z osobnego źródła</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
           </div>
         )}
 
@@ -358,7 +364,7 @@ export default function Stage4Page() {
               <div className="mt-4 flex flex-wrap gap-2"><Button onClick={saveAttempt}>{savedAttempt ? "Wynik zapisany" : "Zapisz próbę"}</Button><Button secondary onClick={startPractice}>Powtórz zadanie</Button><Button secondary onClick={() => setView("station")}>Wróć do wzorca</Button></div>
             </Card>
 
-            {station.sourceGap && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Ważne</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
+            {station.sourceGap && !hasStage4StudyMaterial(station.id) && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Ważne</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
           </div>
         )}
       </div>
