@@ -1,0 +1,59 @@
+name: Add Stage2 other questions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/stage2-other-questions.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch Stage2 page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app/stage2/page.tsx')
+          s=p.read_text(encoding='utf-8')
+          def rep(old,new):
+              global s
+              if old not in s:
+                  raise SystemExit('Missing pattern:\n'+old)
+              s=s.replace(old,new,1)
+
+          rep('import StudyAnswerPanel from "./StudyAnswerPanel";\n', 'import StudyAnswerPanel from "./StudyAnswerPanel";\nimport OtherQuestionsPanel from "./OtherQuestionsPanel";\n')
+          rep('type View = "home" | "theory" | "practical" | "mock" | "sets" | "coach" | "examiner" | "semantic";', 'type View = "home" | "theory" | "practical" | "mock" | "sets" | "other" | "coach" | "examiner" | "semantic";')
+
+          marker='''      {unresolvedSets.length>0&&<Card className="border-amber-900/60 bg-amber-950/20"><h3 className="font-bold text-amber-200">Do sprawdzenia: mapowanie zestawów</h3>'''
+          insert='''      <button onClick={()=>setView("other")} className="w-full rounded-[1.65rem] border border-[#66785a] bg-[#101710] p-6 text-left shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#172015] sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">DODATKOWA BAZA // 27 PYTAŃ</div>
+            <h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Inne możliwe pytania</h2>
+            <p className="mt-2 max-w-[70ch] text-sm leading-6 text-[#9eaa96]">Pytania z dodatkowego materiału, których nie było w głównej bazie. Numery zachowane dokładnie jak w pliku + odpowiedzi w formie do nauki.</p>
+          </div>
+          <span className="rounded-xl border border-[#809173] bg-[#dfe7d7] px-4 py-2 text-sm font-black text-[#11170f]">Otwórz 27 pytań →</span>
+        </div>
+      </button>
+
+      {unresolvedSets.length>0&&<Card className="border-amber-900/60 bg-amber-950/20"><h3 className="font-bold text-amber-200">Do sprawdzenia: mapowanie zestawów</h3>'''
+          rep(marker,insert)
+
+          rep('{view==="coach"&&<OralCoach questions={activeTheory}', '{view==="other"&&<OtherQuestionsPanel onExit={()=>setView("home")}/>} \n    {view==="coach"&&<OralCoach questions={activeTheory}')
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit page changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/stage2/page.tsx
+          git commit -m "Dodaj sekcję innych możliwych pytań Etapu II"
+          git push
