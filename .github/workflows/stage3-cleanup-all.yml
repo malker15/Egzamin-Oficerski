@@ -1,0 +1,19 @@
+name: Stage3 cleanup all
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/stage3-cleanup-all.yml']
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/stage3-zip-data-1.yml .github/workflows/stage3-zip-data-2.yml .github/workflows/stage3-zip-data-3.yml .github/workflows/stage3-zip-data-4.yml .github/workflows/stage3-zip-data-2-reapply.yml .github/workflows/stage3-zip-ui.yml .github/workflows/stage3-zip-ui-fix.yml .github/workflows/stage3-topic03-fix.yml .github/workflows/stage3-topic04-fix.yml .github/workflows/stage3-topic03-fix.yml .github/workflows/stage3-topic04-fix.yml .github/workflows/stage3-zip-ui-fix.yml .github/workflows/stage3-cleanup-all.yml
+          git add -A .github/workflows
+          git commit -m "Usuń tymczasowe workflow zmiany Etapu III"
+          git push
