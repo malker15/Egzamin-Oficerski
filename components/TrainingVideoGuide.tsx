@@ -52,13 +52,6 @@ const teamDrill: VideoItem = {
   note: "Materiał zbiorczy: obserwuj ustawienie, synchronizację, tempo, reakcję na komendy i pracę dowódcy. Dokładną sekwencję danego zagadnienia wykonuj według aplikacji.",
 };
 
-const aar: VideoItem = {
-  title: "Jak prowadzić dobry AAR",
-  source: "U.S. Army / National Training Center",
-  embedUrl: "https://www.dvidshub.net/video/embed/935939",
-  externalUrl: "https://www.dvidshub.net/video/935939/tac-talks-ep14-what-makes-great-aar",
-  note: "Materiał pomocniczy o After Action Review. AAR jest wspólnym zakończeniem zadań Pętli.",
-};
 
 const stage3VideosByNumber: Record<number, VideoItem[]> = {
   1: [introDrill],
@@ -94,7 +87,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/790169/mass-casualty-event-and-react-ied",
       note: "Materiał pomocniczy pokazujący reakcję na IED. Nie zastępuje dokładnej polskiej procedury 5-25 / 5xC wymaganej na egzaminie.",
     },
-    aar,
   ],
   "Dowodzenie podczas dostarczenia zaopatrzenia dla walczącego pododdziału": [
     {
@@ -104,7 +96,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/928160/clb-8-convoy-operations-hms-trosso-resupply",
       note: "Materiał pomocniczy do organizacji konwoju, dostarczenia zaopatrzenia i zabezpieczenia działania.",
     },
-    aar,
   ],
   "Dowodzenie, orientowanie taktyczne i topograficzne, kodowanie terenu, wskazywanie dozorów (OKD)": [
     {
@@ -114,7 +105,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/1003331/smct-orient-map-using-lensatic-compass",
       note: "Dobry podgląd pracy z mapą i kompasem. Kodowanie terenu i wskazywanie dozorów wykonuj zgodnie z materiałem egzaminacyjnym.",
     },
-    aar,
   ],
   "Dowodzenie podczas rozpoznania przeciwnika i wywołania ognia artylerii (CFF)": [
     {
@@ -124,7 +114,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/877371/2cr-call-fire-training-tsc-grafenwoehr",
       note: "Materiał pomocniczy z amerykańskiego treningu CFF. Nie traktuj jego terminologii jako zamiennika meldunku wymaganego przez polski materiał szkoleniowy.",
     },
-    aar,
   ],
   "Dowodzenie podczas rozpoznania terenu skażonego": [
     {
@@ -134,7 +123,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/819830/bayonet-ready-22-cbrn-reconnaissance-platoon",
       note: "Materiał pomocniczy pokazujący organizację rozpoznania CBRN i pracę w rejonie skażonym. Szczegółowe procedury OPBMR pozostają zgodne z Twoim materiałem szkoleniowym.",
     },
-    aar,
   ],
   "Dowodzenie podczas ewakuacji rannego": [
     {
@@ -144,7 +132,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/923203/dustoff-medevac-training",
       note: "Materiał pomocniczy do organizacji MEDEVAC i pracy zespołu. Dokładną treść meldunków i czynności wykonuj według materiału obowiązującego na egzaminie.",
     },
-    aar,
   ],
   "Dowodzenie pododdziałem podczas prowadzenia marszu taktycznego": [
     {
@@ -154,7 +141,6 @@ const stage4Videos: Record<string, VideoItem[]> = {
       externalUrl: "https://www.dvidshub.net/video/1003646/squad-movement-formations-and-squad-movement-techniques",
       note: "Materiał pomocniczy do ugrupowania, przemieszczania i kontroli zespołu w marszu. Nie zastępuje scenariusza i kryteriów Pętli.",
     },
-    aar,
   ],
 };
 

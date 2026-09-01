@@ -10,6 +10,7 @@ import {
   type TacticalStation,
 } from "./data";
 import { Stage4ShootingExtra, Stage4StudyPanel } from "./Stage4StudyPanel";
+import Stage4AARPanel from "./Stage4AARPanel";
 import { hasStage4StudyMaterial } from "./driveStudyMaterials";
 
 type Progress = Record<string, { attempts: number; bestScore: number; lastScore: number; updatedAt: number }>;
@@ -258,7 +259,7 @@ export default function Stage4Page() {
                 <div className="text-lg">ⓘ</div>
                 <div>
                   <h3 className="font-bold">Zasada tego modułu</h3>
-                  <p className="mt-2 text-sm leading-6 text-neutral-400">Procedury 5-25 / 5xC, CFF, OPBMR, ewakuacja rannego, zaopatrzenie i OKD zostały uzupełnione na podstawie materiałów szkoleniowych z udostępnionych folderów. Przy stacji najpierw uczysz się krótkiego schematu, a niżej nadal masz wzorzec dowodzenia i checklistę egzaminacyjną.</p>
+                  <p className="mt-2 text-sm leading-6 text-neutral-400">Procedury 5-25 / 5xC, CFF, OPBMR, ewakuacja rannego, zaopatrzenie i OKD zostały uzupełnione na podstawie materiałów szkoleniowych z udostępnionych folderów. Przy stacji najpierw uczysz się krótkiego schematu z materiałów, a po nim masz prosty AAR do przeprowadzenia po wykonaniu zadania.</p>
                 </div>
               </div>
             </Card>
@@ -298,22 +299,14 @@ export default function Stage4Page() {
                 <div className="rounded-2xl border border-neutral-800 bg-neutral-950/70 p-4"><div className="text-xs font-bold uppercase tracking-wider text-neutral-500">Sytuacja</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.scenario}</p></div>
                 <div className="rounded-2xl border border-neutral-800 bg-neutral-950/70 p-4"><div className="text-xs font-bold uppercase tracking-wider text-neutral-500">Zadanie</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.task}</p></div>
               </div>
-              <div className="mt-5 flex flex-wrap gap-2"><Button onClick={startPractice}>Trening bez podpowiedzi</Button><Button secondary onClick={() => document.getElementById("wzorzec")?.scrollIntoView({ behavior: "smooth" })}>Pokaż wzorzec wykonania</Button></div>
+              <div className="mt-5 flex flex-wrap gap-2"><Button onClick={startPractice}>Trening bez podpowiedzi</Button></div>
             </Card>
 
             <Stage4StudyPanel stationId={station.id} />
 
-            {station.changeOfSituation && <Card className="border-amber-900/40 bg-amber-950/10"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Zmiana sytuacji</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></Card>}
+            <Stage4AARPanel />
 
-            <section id="wzorzec" className="space-y-3 scroll-mt-5">
-              <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">Wzorzec wg planu egzaminu</p><h2 className="mt-1 text-2xl font-bold">Jak powinno wyglądać dobrze wykonane zadanie</h2><p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-500">Pogrupowanie na etapy służy nauce. Treść kryteriów pochodzi z planu egzaminu; nie jest to dodatkowa procedura operacyjna.</p></div>
-              {station.goodExecution.map((phase, index) => (
-                <Card key={phase.title}>
-                  <div className="flex gap-4"><div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-black text-neutral-950">{index + 1}</div><div><h3 className="font-bold">{phase.title}</h3><p className="mt-1 text-sm leading-5 text-neutral-500">{phase.description}</p></div></div>
-                  <ul className="mt-4 grid gap-2 md:grid-cols-2">{phase.items.map((item) => <li key={item} className="rounded-xl border border-neutral-800 bg-neutral-950/70 p-3 text-sm leading-5 text-neutral-300"><span className="mr-2 text-emerald-400">✓</span>{item}</li>)}</ul>
-                </Card>
-              ))}
-            </section>
+            {station.changeOfSituation && <Card className="border-amber-900/40 bg-amber-950/10"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Zmiana sytuacji</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></Card>}
 
             {station.sourceGap && !hasStage4StudyMaterial(station.id) && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Do uzupełnienia z osobnego źródła</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
           </div>
@@ -333,7 +326,7 @@ export default function Stage4Page() {
                 <div className="rounded-2xl bg-neutral-950 p-4"><div className="text-xs font-bold uppercase tracking-wider text-neutral-500">Zadanie</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.task}</p></div>
               </div>
               {station.changeOfSituation && <div className="mt-4 rounded-2xl border border-amber-900/50 bg-amber-950/15 p-4"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Rozjemca może wprowadzić</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></div>}
-              <p className="mt-5 text-sm leading-6 text-neutral-400">Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do wzorca. Kiedy zakończysz działanie i AAR, przejdź do samooceny.</p>
+              <p className="mt-5 text-sm leading-6 text-neutral-400">Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do materiałów pomocniczych. Kiedy zakończysz działanie i AAR, przejdź do samooceny.</p>
               <div className="mt-5"><Button onClick={finishPractice}>Zakończ próbę i oceń</Button></div>
             </Card>
           </div>
@@ -361,7 +354,7 @@ export default function Stage4Page() {
             <Card className="bg-neutral-900/60">
               <h3 className="font-bold">Jak liczymy wynik treningowy</h3>
               <p className="mt-2 text-sm leading-6 text-neutral-400">Egzaminator: {examinerCount}/5 × 0,8 = {(examinerCount * 0.8).toFixed(2)}. Ocena podwładnych w tym trenażerze jest uproszczoną pojedynczą samooceną: {peerCount}/5 = {(peerCount / 5).toFixed(2)}. Razem: {trainingScore.toFixed(2)}. W rzeczywistym egzaminie część 20% jest liczona z kart wszystkich oceniających podwładnych.</p>
-              <div className="mt-4 flex flex-wrap gap-2"><Button onClick={saveAttempt}>{savedAttempt ? "Wynik zapisany" : "Zapisz próbę"}</Button><Button secondary onClick={startPractice}>Powtórz zadanie</Button><Button secondary onClick={() => setView("station")}>Wróć do wzorca</Button></div>
+              <div className="mt-4 flex flex-wrap gap-2"><Button onClick={saveAttempt}>{savedAttempt ? "Wynik zapisany" : "Zapisz próbę"}</Button><Button secondary onClick={startPractice}>Powtórz zadanie</Button><Button secondary onClick={() => setView("station")}>Wróć do stacji</Button></div>
             </Card>
 
             {station.sourceGap && !hasStage4StudyMaterial(station.id) && <Card className="border-dashed border-amber-900/60 bg-neutral-900/45"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Ważne</div><p className="mt-2 text-sm leading-6 text-neutral-400">{station.sourceGap}</p></Card>}
