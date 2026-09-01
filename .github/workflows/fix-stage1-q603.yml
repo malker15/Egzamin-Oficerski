@@ -1,0 +1,42 @@
+name: Fix Stage1 question 603
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-stage1-q603.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix question 603
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('public/questions.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          found = False
+          for q in data:
+              if str(q.get('id')) == '603':
+                  if q.get('question') != 'Zgodnie z dokumentami sojuszniczymi współpraca cywilno-wojskowa?':
+                      raise SystemExit(f'Unexpected question text: {q.get("question")}')
+                  q['correctKey'] = 'A'
+                  found = True
+                  break
+          if not found:
+              raise SystemExit('Question 603 not found')
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/questions.json
+          git commit -m "Popraw odpowiedź pytania 603 Etapu I"
+          git push
