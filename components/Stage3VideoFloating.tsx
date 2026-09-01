@@ -11,7 +11,7 @@ const rifleDrill: VideoItem = { title: "Musztra paradna z bronią — Kompania R
 const honorsDrill: VideoItem = { title: "Salutowanie i oddawanie honorów", source: "materiał szkoleniowy", embedUrl: "https://www.youtube-nocookie.com/embed/U6VVS8sik5w", externalUrl: "https://www.youtube.com/watch?v=U6VVS8sik5w", note: "Materiał pomocniczy dotyczący oddawania honorów w miejscu i w marszu." };
 const teamDrill: VideoItem = { title: "Praca całej drużyny podczas musztry", source: "pokaz musztry zespołowej", embedUrl: "https://www.youtube-nocookie.com/embed/23T5RNThvzE", externalUrl: "https://www.youtube.com/watch?v=23T5RNThvzE", note: "Obserwuj ustawienie, synchronizację, tempo, reakcję na komendy i pracę dowódcy. Dokładną sekwencję wykonuj według aplikacji." };
 
-const videosByTopic: Record<number, VideoItem[]> = { 1:[introDrill], 2:[introDrill,marchDrill], 3:[marchDrill], 4:[marchDrill], 5:[rifleDrill], 6:[rifleDrill], 7:[honorsDrill], 8:[honorsDrill], 9:[teamDrill], 10:[teamDrill], 11:[teamDrill], 12:[teamDrill], 13:[teamDrill], 14:[teamDrill], 15:[teamDrill], 16:[teamDrill], 17:[teamDrill], 18:[teamDrill], 19:[teamDrill], 20:[teamDrill], 21:[teamDrill], 22:[teamDrill,honorsDrill] };
+const videosByTopic: Record<number, VideoItem[]> = { 1:[marchDrill], 2:[rifleDrill], 3:[rifleDrill], 4:[teamDrill], 5:[teamDrill], 6:[teamDrill], 7:[marchDrill], 8:[honorsDrill], 9:[honorsDrill], 10:[teamDrill], 11:[teamDrill], 12:[teamDrill], 13:[teamDrill], 14:[teamDrill], 15:[teamDrill], 16:[teamDrill], 17:[teamDrill], 18:[teamDrill], 19:[teamDrill], 20:[introDrill,marchDrill] };
 
 export default function Stage3VideoFloating() {
   const pathname = usePathname();
@@ -24,7 +24,7 @@ export default function Stage3VideoFloating() {
     const detect = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const match = (document.body.innerText || "").match(/ZAGADNIENIE\s+(\d{1,2})\s*\/\s*22/i);
+        const match = (document.body.innerText || "").match(/ZAGADNIENIE\s+(\d{1,2})\s*\/\s*20/i);
         const number = match ? Number(match[1]) : null;
         setTopicNumber((prev) => prev === number ? prev : number);
       });

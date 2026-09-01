@@ -53,30 +53,7 @@ const teamDrill: VideoItem = {
 };
 
 
-const stage3VideosByNumber: Record<number, VideoItem[]> = {
-  1: [introDrill],
-  2: [introDrill, marchDrill],
-  3: [marchDrill],
-  4: [marchDrill],
-  5: [rifleDrill],
-  6: [rifleDrill],
-  7: [honorsDrill],
-  8: [honorsDrill],
-  9: [teamDrill],
-  10: [teamDrill],
-  11: [teamDrill],
-  12: [teamDrill],
-  13: [teamDrill],
-  14: [teamDrill],
-  15: [teamDrill],
-  16: [teamDrill],
-  17: [teamDrill],
-  18: [teamDrill],
-  19: [teamDrill],
-  20: [teamDrill],
-  21: [teamDrill],
-  22: [teamDrill, honorsDrill],
-};
+const stage3VideosByNumber: Record<number, VideoItem[]> = { 1:[marchDrill], 2:[rifleDrill], 3:[rifleDrill], 4:[teamDrill], 5:[teamDrill], 6:[teamDrill], 7:[marchDrill], 8:[honorsDrill], 9:[honorsDrill], 10:[teamDrill], 11:[teamDrill], 12:[teamDrill], 13:[teamDrill], 14:[teamDrill], 15:[teamDrill], 16:[teamDrill], 17:[teamDrill], 18:[teamDrill], 19:[teamDrill], 20:[introDrill,marchDrill] };
 
 const stage4Videos: Record<string, VideoItem[]> = {
   "Dowodzenie podczas wykonywania procedury 5-25 oraz 5xC": [
@@ -214,7 +191,7 @@ export default function TrainingVideoGuide() {
 
           if (learningView) {
             const markers = Array.from(document.querySelectorAll<HTMLElement>("div"));
-            const marker = markers.find((el) => /^ZAGADNIENIE\s+\d+\s*\/\s*22$/i.test((el.textContent ?? "").trim()));
+            const marker = markers.find((el) => /^ZAGADNIENIE\s+\d+\s*\/\s*20$/i.test((el.textContent ?? "").trim()));
 
             if (marker) {
               const match = (marker.textContent ?? "").match(/ZAGADNIENIE\s+(\d+)/i);

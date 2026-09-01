@@ -411,7 +411,7 @@ export default function Stage3Page() {
               <div className="mil-corner mil-corner-br" />
               <div className="relative z-10">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#4b5843] bg-[#0c0f0b]/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#a9b49d]">
-                  ETAP III <span className="text-[#596452]">•</span> MUSZTRA <span className="text-[#596452]">•</span> 22 ZAGADNIENIA
+                  ETAP III <span className="text-[#596452]">•</span> MUSZTRA <span className="text-[#596452]">•</span> 20 ZAGADNIEŃ
                 </div>
                 <h1 className="max-w-3xl text-3xl font-black tracking-tight text-white sm:text-5xl">Naucz się prowadzić zagadnienie od pierwszej komendy do zakończenia.</h1>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#a4ac9d] sm:text-base">
@@ -463,7 +463,7 @@ export default function Stage3Page() {
                 onClick={() => { setBrowseMode("open"); setView("browse"); }}
                 className="group rounded-[1.6rem] border border-[#3a4534] bg-[#11150f] p-6 text-left transition hover:-translate-y-0.5 hover:border-[#5d6d53] hover:bg-[#151a12] disabled:opacity-50"
               >
-                <div className="font-mono text-xs font-bold tracking-[0.2em] text-[#77866c]">BAZA // 22</div>
+                <div className="font-mono text-xs font-bold tracking-[0.2em] text-[#77866c]">BAZA // 20</div>
                 <h2 className="mt-3 text-xl font-black text-white">Wszystkie zagadnienia</h2>
                 <p className="mt-2 text-sm leading-6 text-[#929b8b]">Otwórz dowolny temat i zobacz pełną odpowiedź rozbitą na czytelne bloki schematu.</p>
                 <div className="mt-5 text-sm font-bold text-[#b9c5ad]">Otwórz bazę →</div>
@@ -485,7 +485,7 @@ export default function Stage3Page() {
           <section>
             <div className="mb-6">
               <div className="text-xs font-black uppercase tracking-[0.2em] text-[#79886f]">{browseMode === "train" ? "NAUKA KROK PO KROKU" : "BAZA ZAGADNIEŃ"}</div>
-              <h1 className="mt-2 text-3xl font-black text-white">{browseMode === "train" ? "Wybierz zagadnienie do treningu" : "22 zagadnienia z musztry"}</h1>
+              <h1 className="mt-2 text-3xl font-black text-white">{browseMode === "train" ? "Wybierz zagadnienie do treningu" : "20 zagadnień z musztry"}</h1>
               <p className="mt-2 text-sm leading-6 text-[#90998a]">{browseMode === "train" ? "Po wyborze zaczniesz od pierwszego bloku schematu." : "Kliknij temat, aby zobaczyć jego pełną treść i uruchomić naukę blokami."}</p>
             </div>
 
@@ -519,7 +519,7 @@ export default function Stage3Page() {
         {view === "topic" && selected && (
           <section>
             <div className="mb-6 rounded-[1.75rem] border border-[#394334] bg-[#11140f] p-6 sm:p-8">
-              <div className="font-mono text-xs font-bold tracking-[0.2em] text-[#7f8e74]">ZAGADNIENIE {String(selected.number).padStart(2, "0")} / 22</div>
+              <div className="font-mono text-xs font-bold tracking-[0.2em] text-[#7f8e74]">ZAGADNIENIE {String(selected.number).padStart(2, "0")} / 20</div>
               <h1 className="mt-3 max-w-4xl text-2xl font-black leading-tight text-white sm:text-4xl">{selected.title}</h1>
               <div className="mt-6 flex flex-wrap gap-3">
                 <button onClick={() => startTraining(selected)} className="rounded-xl bg-[#c4cdb8] px-4 py-2.5 text-sm font-black text-[#151914] hover:bg-white">Nauka krok po kroku</button>
@@ -553,7 +553,7 @@ export default function Stage3Page() {
               <div className="mb-5 rounded-[1.75rem] border border-[#394334] bg-[#11140f] p-5 sm:p-7">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <div className="font-mono text-xs font-bold tracking-[0.18em] text-[#7f8e74]">ZAGADNIENIE {String(selected.number).padStart(2, "0")} / 22</div>
+                    <div className="font-mono text-xs font-bold tracking-[0.18em] text-[#7f8e74]">ZAGADNIENIE {String(selected.number).padStart(2, "0")} / 20</div>
                     <h1 className="mt-2 max-w-4xl text-xl font-black leading-tight text-white sm:text-3xl">{selected.title}</h1>
                   </div>
                   <div className="rounded-xl border border-[#44503e] bg-[#0b0e0a] px-4 py-2 font-mono text-sm font-black text-[#aebca1]">{step + 1} / {blocks.length}</div>
@@ -631,7 +631,7 @@ export default function Stage3Page() {
             {randomTopic && (
               <>
                 <div className="rounded-[2rem] border border-[#66775a] bg-[#151b13] p-7 text-center shadow-2xl shadow-black/30 sm:p-10">
-                  <div className="font-mono text-xs font-bold tracking-[0.22em] text-[#819276]">ZAGADNIENIE {String(randomTopic.number).padStart(2, "0")} / 22</div>
+                  <div className="font-mono text-xs font-bold tracking-[0.22em] text-[#819276]">ZAGADNIENIE {String(randomTopic.number).padStart(2, "0")} / 20</div>
                   <h2 className="mx-auto mt-4 max-w-4xl text-2xl font-black leading-tight text-white sm:text-4xl">{randomTopic.title}</h2>
 
                   <div className="mx-auto mt-7 max-w-xs rounded-2xl border border-[#3f4a39] bg-[#0b0e0a] p-4">
