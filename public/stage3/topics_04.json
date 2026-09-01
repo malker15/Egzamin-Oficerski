@@ -1,1 +1,264 @@
-PLACEHOLDER
+[
+  {
+    "id": "M10",
+    "number": 10,
+    "title": "Odliczanie",
+    "opening": [
+      "„Baczność”",
+      "Treść zagadnienia: Odliczanie",
+      "„Spocznij”",
+      "Ma to na celu uczyć Was, prawidłowego odliczania, co przyda Wam się w dalszej służbie wojskowej."
+    ],
+    "safety": {
+      "forbid": [
+        "samowolnego oddalania się z miejsca ćwiczenia bez wiedzy instruktora",
+        "wykonywania czynności innych, niż nakazane przez instruktora lub kierownika zajęć"
+      ],
+      "require": [
+        "utrzymywać dyscyplinę podczas zajęć",
+        "wszystkie czynności nakazane przez instruktora wykonywać na komendę.",
+        "niezwłocznie meldować o doznanych urazach oraz złym samopoczuciu."
+      ]
+    },
+    "commands": "„kolejno – ODLICZ”, „do dwóch (pięciu) – ODLICZ”, „Funkcjami – OZNAJMIJ”",
+    "demo": [
+      "Przechodzę do pokazu z żołnierzami wcześniej przeszkolonymi",
+      "(bierzemy pierwszych np. czterech żołnierzy i na nich będziemy przeprowadzać pokaz wzorowy i ustawiamy naprzeciwko szkolonych)",
+      "„kolejno – ODLICZ”, „do dwóch (pięciu) – ODLICZ”,"
+    ],
+    "explanation": [
+      "Przechodzę do pokazu z objaśnieniem z żołnierzami wcześniej przeszkolonymi",
+      "Na hasło „ODLICZ” żołnierze pierwszego szeregu jednocześnie zwracają głowy w prawo z wyjątkiem prawoskrzydłowego. Żołnierz prawoskrzydłowy pierwszego szeregu zwraca głowę w lewo i zaczyna odliczanie. Pozostali żołnierze pierwszego szeregu, odwracając energicznie głowy z prawej na lewą stronę, podają kolejno liczby, po czym zwracają głowy na wprost i przyjmują postawę swobodną. Natomiast żołnierze drugiego szeregu zwracają uwagę na podaną przez ich poprzedników liczbę, która także ich dotyczy i wraz z nimi przyjmują postawę swobodną. Jeżeli drugi szereg jest niepełny, to lewoskrzydłowy drugiego szeregu- po odliczeniu – zwraca głowę w kierunku dowódcy i melduje głośno: „Niepełny”."
+    ],
+    "practice": [
+      "Przechodzimy do ćwiczeń na tempa",
+      "(musimy przeformować wszystkich w jeden rząd bo część stoi jako grupa pokazowa)",
+      "„całość - BACZNOŚĆ” „w tył rozejść się” „SPOCZNIJ”",
+      "- tempo RAZ – zwrot głowy w lewo",
+      "- tempo DWA – powrót głowy do postawy zasadniczej",
+      "- tempo TRZY – przyjęcie postawy swobodnej",
+      "„Wykonywanie czynności po haśle odlicz - ĆWICZ”, „RAZ”, „DWA”, „TRZY”",
+      "(Ćwiczą aż będą wykonywać bez większego problemu)",
+      "REAGUJĘ NA BŁĘDY",
+      "(kolejny etap)",
+      "Na hasło „ODLICZ” - wykonać zwrot głowy w prawo – z wyjątkiem prawoskrzydłowego.",
+      "(Ćwiczą aż będą wykonywać bez większego problemu)",
+      "Teraz wykonujemy ćwiczenia bez temp, tylko odliczacie w momencie kiedy przechodzę obok każdego z Was.",
+      "„BACZNOŚĆ”",
+      "„kolejno – ODLICZ” lub „do dwóch (pięciu) – ODLICZ”,",
+      "(Ćwiczą aż będą wykonywać bez większego problemu)",
+      "(w momencie odliczania przechodzę obok ćwiczących i reaguję na błędy)",
+      "(ostatni etap)",
+      "Po komendzie odliczacie po kolei bez mojej ingerencji",
+      "„BACZNOŚĆ”",
+      "„kolejno – ODLICZ” lub „do dwóch (pięciu) – ODLICZ”,",
+      "(po każdym odliczeniu przemieszczam prawoskrzydłowego na lewe skrzydło „żołnierz na lewe skrzydło – BIEGIEM MARSZ”",
+      "(Ćwiczą do pełnego opanowania)"
+    ],
+    "react": [
+      "żołnierz przy odliczaniu ma być postawa zasadnicza",
+      "żołnierz nie „jeden” tylko „raz”",
+      "żołnierz ruszamy tylko głową, a nie całym ciałem",
+      "żołnierz postawa swobodna dopiero po wyprostowaniu głowy- po odliczeniu – nie wcześniej"
+    ],
+    "stop": "PRZERWIJ ĆWICZENIE (30 sek. przed końcem czasu, sygnał od egzaminującego)",
+    "closing": [
+      "„Baczność”",
+      "Zbiórka w miejscu rozpoczęcia zajęć",
+      "„Spocznij”",
+      "Treścią dzisiejszego zagadnienia było odliczanie, zagadnienie miało na celu nauczyć Was prawidłowego wykonywania odliczania, co przydatne dla Was będzie w dalszym toku służby, a szczególnie podczas wystąpień indywidualnych i zbiorowych.",
+      "Najlepiej ćwiczący żołnierz …..",
+      "Najczęściej popełniane błędy:",
+      "- brak postawy zasadniczej przy odliczaniu",
+      "- poruszanie całym ciałem a nie tylko głową",
+      "- przyjęcie postawy swobodnej przed wyprostowaniem głowy.",
+      "W celu poprawy błędów proponuję ćwiczenia przed lustrem na placu apelowym.",
+      "Do następnych zajęć proszę zapoznać się z rozdziałem Musztra zespołowa w Regulaminie musztry.",
+      "Czy komuś coś się stało?",
+      "Czy wszyscy wszystko mają?",
+      "Czy nic nikt nie zgubił?",
+      "„Baczność”",
+      "Koniec zagadnienia",
+      "„Spocznij”"
+    ]
+  },
+  {
+    "id": "M11",
+    "number": 11,
+    "title": "Odstępowanie i łączenie",
+    "opening": [
+      "„Baczność”",
+      "Treść zagadnienia: Odstępowanie i łączenie",
+      "„Spocznij”",
+      "Ma to na celu uczyć Was, prawidłowego odstępowania i łączenia, co przyda Wam się w dalszej służbie wojskowej."
+    ],
+    "safety": {
+      "forbid": [
+        "samowolnego oddalania się z miejsca ćwiczenia bez wiedzy instruktora",
+        "wykonywania czynności innych, niż nakazane przez instruktora lub kierownika zajęć"
+      ],
+      "require": [
+        "utrzymywać dyscyplinę podczas zajęć",
+        "wszystkie czynności nakazane przez instruktora wykonywać na komendę.",
+        "niezwłocznie meldować o doznanych urazach oraz złym samopoczuciu."
+      ]
+    },
+    "commands": "„ODSTĄP” i „ŁĄCZ” „od prawoskrzydłowego, pięć kroków - ODSTĄP”, „do prawoskrzydłowego – ŁĄCZ”",
+    "demo": [
+      "Przechodzę do pokazu z żołnierzami wcześniej przeszkolonymi",
+      "(bierzemy pierwszych np. czterech żołnierzy i na nich będziemy przeprowadzać pokaz wzorowy i ustawiamy naprzeciwko szkolonych)",
+      "„Baczność”, „od prawoskrzydłowego, pięć kroków - ODSTĄP”, „Baczność”, „do prawoskrzydłowego – ŁĄCZ”"
+    ],
+    "explanation": [
+      "Przechodzę do pokazu z objaśnieniem z żołnierzami wcześniej przeszkolonymi",
+      "„Baczność”, „od prawoskrzydłowego, pięć kroków - ODSTĄP”,",
+      "Na komendę „BACZNOŚĆ” przyjmujemy postawę zasadniczą. Na hasło komendy „ODSTĄP”, robimy w lewo (w prawo) zwrot w postawie zasadniczej, następnie maszerujemy w nakazanym kierunku. W celu wyliczenia liczby kroków od zatrzymania się żołnierza za naszymi plecami, patrzymy przez lewe ramię skręcając tylko głowę. Po zatrzymaniu, wykonujemy w prawo (w lewo) zwrot w postawie zasadniczej, po czym przyjmujemy postawę swobodną, dostosowując się do żołnierza skrzydłowego który przyjął ją natychmiast po haśle „ODSTĄP”",
+      "„Baczność”, „do prawoskrzydłowego – ŁĄCZ”",
+      "Na komendę „BACZNOŚĆ” przyjmujemy postawę zasadniczą. Na hasło komendy „ŁĄCZ”, robimy w prawo (w lewo) zwrot w postawie zasadniczej, następnie maszerujemy w kierunku prawoskrzydłowego. Po zatrzymaniu, wykonujemy w lewo (w prawo) zwrot w postawie zasadniczej, po czym przyjmujemy postawę swobodną, dostosowując się do żołnierza skrzydłowego który przyjął ją natychmiast po haśle „ŁĄCZ”"
+    ],
+    "practice": [
+      "Przechodzimy do ćwiczeń na tempa po haśle komendy „ODSTĄP”:",
+      "„BACZNOŚĆ”, „od prawoskrzydłowego, pięć kroków - ODSTĄP”",
+      "tempo raz – wykonanie zwrotu w lewo (w prawo)",
+      "tempo dwa – jednoczesne i kontynuowanie marszu aż do zatrzymania się żołnierza w odpowiednim miejscu, czyli pięć kroków przed żołnierzem który zatrzymał się za waszymi plecami",
+      "tempo trzy – wykonanie zwrotu w prawo (w lewo) przed wszystkich żołnierzy jednocześnie i przyjęcie postawy swobodnej.",
+      "(Ćwiczą aż będą wykonywać bez większego problemu)",
+      "Zaczniemy od ćwiczeń na tempa, po haśle komendy „ŁĄCZ”:",
+      "„BACZNOŚĆ”, „do prawoskrzydłowego – ŁĄCZ”",
+      "tempo raz – wykonanie zwrotu w prawo (w lewo)",
+      "tempo dwa – jednoczesne i kontynuowanie marszu aż do zatrzymania się na regulaminową odległość przed żołnierzem poprzedzającym",
+      "tempo trzy – wykonanie zwrotu w lewo (w prawo) przed wszystkich żołnierzy jednocześnie i przyjęcie postawy swobodnej.",
+      "(Ćwiczą aż będą wykonywać bez większego problemu)",
+      "Teraz przejdziemy do wykonywania odstępowania i łączenia bez temp na komendę",
+      "„od prawoskrzydłowego, pięć kroków - ODSTĄP”, „do prawoskrzydłowego – ŁĄCZ”",
+      "(Ćwiczą do pełnego opanowania)"
+    ],
+    "react": [
+      "żołnierz zwrot wykonujecie wszyscy razem w jednym tempie",
+      "żołnierz przy odstępowaniu skręcasz tylko głowę a nie cały tułów",
+      "żołnierz dopóki nie będzie zwrotu przyjmujesz cały czas postawę zasadniczą",
+      "żołnierz – skrzydłowy nie wykonuje zwrotu tylko stoi nieruchomo"
+    ],
+    "stop": "PRZERWIJ ĆWICZENIE (30 sek. przed końcem czasu, sygnał od egzaminującego)",
+    "closing": [
+      "„Baczność”",
+      "Zbiórka w miejscu rozpoczęcia zajęć",
+      "„Spocznij”",
+      "Treścią dzisiejszego zagadnienia było odstępowanie i łączenie, zagadnienie miało na celu uczyć Was prawidłowego wykonywania odstępowania i łączenia, co przydatne będzie dla Was w dalszym toku służby podczas wystąpień indywidualnych i zbiorowych.",
+      "Najlepiej ćwiczący żołnierz …..",
+      "Najczęściej popełniane błędy:",
+      "- niejednoczesny zwrot",
+      "- wykonywanie zwrotów przez skrzydłowych",
+      "- skręcanie głowy i tułowia zamiast samej głowy podczas odstępowania",
+      "W celu poprawy błędów proponuję ćwiczenia przed lustrem na placu apelowym oraz proszę zapoznać się z literaturą.",
+      "Do następnych zajęć proszę zapoznać się z rozdziałem Musztra zespołowa w Regulaminie musztry.",
+      "Czy komuś coś się stało?",
+      "Czy wszyscy wszystko mają?",
+      "Czy nic nikt nie zgubił?",
+      "„Baczność”",
+      "Koniec zagadnienia",
+      "„Spocznij”"
+    ]
+  },
+  {
+    "id": "M12",
+    "number": 12,
+    "title": "przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie",
+    "opening": [
+      "„Baczność”",
+      "Treść zagadnienia: przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie",
+      "„Spocznij”",
+      "Ma to na celu uczyć Was, jak prawidłowo zachowywać się podczas przeformowania pododdziału i jak występować, co przyda się w dalszej służbie wojskowej."
+    ],
+    "safety": {
+      "forbid": [
+        "samowolnego oddalania się z miejsca ćwiczenia bez wiedzy instruktora",
+        "wykonywania czynności innych, niż nakazane przez instruktora lub kierownika zajęć"
+      ],
+      "require": [
+        "utrzymywać dyscyplinę podczas zajęć",
+        "wszystkie czynności nakazane przez instruktora wykonywać na komendę.",
+        "niezwłocznie meldować o doznanych urazach oraz złym samopoczuciu."
+      ]
+    },
+    "commands": "„w prawo - ZWROT”; „w lewo - ZWROT”; „WYSTĄP”, „WSTĄP” lub; „do szyku – WSTĄP”; Przejście z trójszeregu do kolumny trójkowej wykonuje się na komendę „w prawo -ZWROT”; Przejście z kolumny trójkowej do trójszeregu wykonuje się na komendę „w lewo -ZWROT”; Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki); Żołnierz wywołany z trzeciego szeregu lub z kolumny w miejscu na komendę „WYSTĄP” przechodzi za plecami żołnierzy swojego szeregu na prawą stronę kolumny. Następnie – maszerując wzdłuż skrzydła trójszeregu lub wzdłuż kolumny – występuje trzy kroki przed front szyku. Z czoła kolumny i drugiego szeregu występują jak z dwuszeregu.; Na komendę „WSTĄP” wywołany robi w tył zwrot, wraca na swoje miejsce w taki sam sposób jak podczas występowania i przyjmuje postawę, jak pododdział. Natomiast żołnierz, który zajmował jego miejsce, wraca do drugiego szeregu, robiąc dwa kroki w tył (bez zwrotu i wymachu rąk).",
+    "demo": [],
+    "explanation": [
+      "„w prawo - ZWROT”",
+      "„w lewo - ZWROT”",
+      "„WYSTĄP”, „WSTĄP” lub",
+      "„do szyku – WSTĄP”",
+      "Przechodzę do omówienia zagadnienia",
+      "trójszereg kolumna trójkowa",
+      "Przejście z trójszeregu do kolumny trójkowej wykonuje się na komendę „w prawo -ZWROT”",
+      "kolumna trójkowa trójszereg",
+      "Przejście z kolumny trójkowej do trójszeregu wykonuje się na komendę „w lewo -ZWROT”",
+      "występowanie",
+      "Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki)",
+      "Żołnierz wywołany z drugiego szeregu (również skrzydłowy) występuje pięć kroków z czego pierwsze dwa kroki – krokiem zwykłym, trzy następne – krokiem defiladowym w następujący sposób: robi wykrok lewą nogą, lewą ręką dotyka lewego ramienia swojego poprzednika, po czym cofa lewą nogę do prawej. Na ten znak żołnierz pierwszego szeregu robi prawą nogą krok w prawo w skos do przodu. Po przejściu wywołanego wraca na swoje miejsce, dając lewą nogą krok w lewo w skos do tyłu. Postępuje podobnie, gdy wywołany wraca na swoje miejsce, uważając przy tym aby krok w prawo w skos zrobić równocześnie z wykonaniem zwrotu w tył przez powracającego żołnierza.",
+      "Żołnierz wywołany z trzeciego szeregu lub z kolumny w miejscu na komendę „WYSTĄP” przechodzi za plecami żołnierzy swojego szeregu na prawą stronę kolumny. Następnie – maszerując wzdłuż skrzydła trójszeregu lub wzdłuż kolumny – występuje trzy kroki przed front szyku. Z czoła kolumny i drugiego szeregu występują jak z dwuszeregu.",
+      "Na komendę „WSTĄP” wywołany robi w tył zwrot, wraca na swoje miejsce w taki sam sposób jak podczas występowania i przyjmuje postawę, jak pododdział. Natomiast żołnierz, który zajmował jego miejsce, wraca do drugiego szeregu, robiąc dwa kroki w tył (bez zwrotu i wymachu rąk)."
+    ],
+    "practice": [
+      "Przechodzę do ćwiczeń",
+      "„BACZNOŚĆ”",
+      "„w trójszeregu frontem do mnie - ZBIÓRKA”",
+      "„SPOCZNIJ”",
+      "(tu należy przypomnieć o tym jak się robi w prawo zwrot i w lewo zwrot)",
+      "„BACZNOŚĆ”",
+      "„w prawo - ZWROT”",
+      "„w lewo - ZWROT”",
+      "„SPOCZNIJ”",
+      "(poprawiamy błędy przy każdej okazji)",
+      "„BACZNOŚĆ”",
+      "„w prawo - ZWROT”",
+      "„w lewo - ZWROT”",
+      "„SPOCZNIJ”"
+    ],
+    "react": [
+      "żołnierz nie garb się",
+      "żołnierz obracasz się równo z całym plutonem",
+      "żołnierz zbyt za wcześnie zaczynasz obrót",
+      "żołnierz postawa zasadnicza",
+      "„szer. KOWALSKI”",
+      "Odpowiada - JESTEM",
+      "„WYSTĄP”",
+      "Wystąpił 3 kroki",
+      "„do szyku – WSTĄP”",
+      "„szer. KOWALSKI”",
+      "Odpowiada - JESTEM",
+      "„WYSTĄP”",
+      "Wystąpił z drugiego szeregu 2 + 3 kroki",
+      "„do szyku – WSTĄP”",
+      "„szer. MAJEWSKI”",
+      "Odpowiada - JESTEM",
+      "„WYSTĄP”",
+      "Wystąpił przechodząc tyłem swojego szeregu i prawym bokiem kolumny potem 3 kroki",
+      "„do szyku – WSTĄP”",
+      "REAGOWAĆ:",
+      "żołnierz przy występowaniu 3 kroki defiladowe",
+      "żołnierz przy występowaniu z drugiego szeregu najpierw 2 kroki zwykłe a potem 3 defiladowe",
+      "żołnierz podczas występowania cały czas postawa zasadnicza",
+      "żołnierz nie garb się"
+    ],
+    "stop": "PRZERWIJ ĆWICZENIE (30 sek. przed końcem czasu, sygnał od egzaminującego)",
+    "closing": [
+      "„Baczność”",
+      "Zbiórka w miejscu rozpoczęcia zajęć",
+      "„Spocznij”",
+      "Treścią dzisiejszego zagadnienia było przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie zagadnienie miało na celu nauczyć Was prawidłowego zachowania w szyku i występowania, co przydatne będzie dla Was w dalszym toku służby podczas wystąpień indywidualnych i zbiorowych.",
+      "Najlepiej ćwiczący żołnierz …..",
+      "Najczęściej popełniane błędy:",
+      "- brak dokładnego krycia",
+      "- niejednoczesne dostawianie nogi do końcowej fazie zmiany ugrupowania",
+      "W celu poprawy błędów proponuję ćwiczenia przed lustrem na placu apelowym.",
+      "Do następnych zajęć proszę zapoznać się z rozdziałem Musztra zespołowa w Regulaminie musztry.",
+      "Czy komuś coś się stało?",
+      "Czy wszyscy wszystko mają?",
+      "Czy nic nikt nie zgubił?",
+      "„Baczność”",
+      "Koniec zagadnienia",
+      "„Spocznij”"
+    ]
+  }
+]
