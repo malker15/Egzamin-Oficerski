@@ -23,15 +23,11 @@
     "commands": "„w czwórki, w prawo - ZWROT”; „w dwuszereg, w lewo - FRONT”; „WYSTĄP”, „WSTĄP” lub; „do szyku – WSTĄP”; Na komendę „w czwórki, w prawo - ZWROT” żołnierze na których podczas odliczania wypadła liczba jeden, robią „w prawo zwrot”, oznaczeni zaś liczbą dwa wykonują na obcasie buta prawej nogi i czubku lewego buta część zwrotu w prawo. Po czym lewą nogą robią energiczny wykrok w lewo w skos i – dostawiając prawą nogę do lewej – stają na lewo od swych sąsiadów.; Na komendę „w dwuszereg, w lewo - FRONT” żołnierze, którzy podczas formowania kolumny czwórkowej robili zwrot w miejscu (oznaczeni liczbą jeden), wykonują na obcasie buta lewej nogi i czubku prawego buta część zwrotu w lewo. Po czym prawą nogą robią energiczny wykrok w prawo w skos i - dostawiając lewą nogę do prawej – stają po prawo od swoich sąsiadów. Pozostali robią zwrot w lewo.; Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki); Żołnierz wywołany z trzeciego szeregu lub z kolumny w miejscu na komendę „WYSTĄP” przechodzi za plecami żołnierzy swojego szeregu na prawą stronę kolumny. Następnie – maszerując wzdłuż skrzydła trójszeregu lub wzdłuż kolumny – występuje trzy kroki przed front szyku. Z czoła kolumny i drugiego szeregu występują jak z dwuszeregu.; Na komendę „WSTĄP” wywołany robi w tył zwrot, wraca na swoje miejsce w taki sam sposób jak podczas występowania i przyjmuje postawę, jak pododdział. Natomiast żołnierz, który zajmował jego miejsce, wraca do drugiego szeregu, robiąc dwa kroki w tył (bez zwrotu i wymachu rąk).",
     "demo": [],
     "explanation": [
-      "„w czwórki, w prawo - ZWROT”",
-      "„w dwuszereg, w lewo - FRONT”",
-      "„WYSTĄP”, „WSTĄP” lub",
-      "„do szyku – WSTĄP”",
       "Przechodzę do omówienia zagadnienia",
       "(Pamiętajcie by podczas formowania dwuszeregu – drugi szereg zachował prawidłowy odstęp od pierwszego. Dzięki temu podczas przeformowania w kolumnę czwórkową – czwórki w prawo – zwrot – żołnierze oznaczeni jako „dwójki” będą mieli miejsce na wstąpienie między swoich kolegów oznaczonych jako „jedynki”)",
-      "dwuszereg kolumna czwórkowa",
+      "dwuszereg  kolumna czwórkowa",
       "Na komendę „w czwórki, w prawo - ZWROT” żołnierze na których podczas odliczania wypadła liczba jeden, robią „w prawo zwrot”, oznaczeni zaś liczbą dwa wykonują na obcasie buta prawej nogi i czubku lewego buta część zwrotu w prawo. Po czym lewą nogą robią energiczny wykrok w lewo w skos i – dostawiając prawą nogę do lewej – stają na lewo od swych sąsiadów.",
-      "kolumna czwórkowa dwuszereg",
+      "kolumna czwórkowa  dwuszereg",
       "Na komendę „w dwuszereg, w lewo - FRONT” żołnierze, którzy podczas formowania kolumny czwórkowej robili zwrot w miejscu (oznaczeni liczbą jeden), wykonują na obcasie buta lewej nogi i czubku prawego buta część zwrotu w lewo. Po czym prawą nogą robią energiczny wykrok w prawo w skos i - dostawiając lewą nogę do prawej – stają po prawo od swoich sąsiadów. Pozostali robią zwrot w lewo.",
       "występowanie",
       "Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki)",
@@ -136,9 +132,9 @@
     ],
     "explanation": [
       "Przechodzę do pokazu z objaśnieniem z żołnierzami wcześniej przeszkolonymi",
-      "kolumna dwójkowa rząd",
+      "kolumna dwójkowa  rząd",
       "Na komendę „w rząd – W TYŁ” żołnierze z lewego rzędu przesuwają się w takt marszu za swych prawych sąsiadów, zachowując regulaminowe odległości",
-      "rząd kolumna dwójkowa",
+      "rząd  kolumna dwójkowa",
       "Na komendę „w dwójki - W PRZÓD” żołnierze na których podczas odliczania wypadła liczba „dwa” – przesuwają się w przód na lewo od swych poprzedników."
     ],
     "practice": [
@@ -212,9 +208,9 @@
     ],
     "explanation": [
       "Przechodzę do pokazu z objaśnieniem z żołnierzami wcześniej przeszkolonymi",
-      "szereg kolumna dwójkowa",
+      "szereg  kolumna dwójkowa",
       "Na komendę „w dwójki w prawo - ZWROT” żołnierze na których podczas odliczania padła liczba jeden, robią zwrot w prawo w miejscu, a oznaczeni liczbą dwa wykonują na obcasie buta prawej nogi i czubku lewego buta część zwrotu w prawo, po czym lewą nogą robi energiczny wykrok w lewo w skos i – dostawiając prawą nogę do lewej – stają na lewo od swych sąsiadów.",
-      "kolumna dwójkowa szereg",
+      "kolumna dwójkowa  szereg",
       "Na komendę „w dwójki - W PRZÓD” żołnierze na których podczas odliczania wypadła liczba „dwa” – przesuwają się w przód na lewo od swych poprzedników.",
       "Jedynym wyjątkiem jest żołnierz na lewym skrzydle szeregu, jeżeli wypadła na niego liczba jeden. Na komendę „w dwójki, w prawo – ZWROT” postępuje tak jak by był dwójką, czyli wykonuje część zwrotu w prawo i robi wykrok w lewo w skos tak aby znaleźć się na lewym skrzydle kolumny, a na komendę „w szereg, w lewo – FRONT”, wykonuje część zwrotu w lewo i robi wykrok w prawo tak aby znaleźć się obok żołnierza oznaczonego liczbą dwa."
     ],

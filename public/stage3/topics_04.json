@@ -112,7 +112,7 @@
     "explanation": [
       "Przechodzę do pokazu z objaśnieniem z żołnierzami wcześniej przeszkolonymi",
       "„Baczność”, „od prawoskrzydłowego, pięć kroków - ODSTĄP”,",
-      "Na komendę „BACZNOŚĆ” przyjmujemy postawę zasadniczą. Na hasło komendy „ODSTĄP”, robimy w lewo (w prawo) zwrot w postawie zasadniczej, następnie maszerujemy w nakazanym kierunku. W celu wyliczenia liczby kroków od zatrzymania się żołnierza za naszymi plecami, patrzymy przez lewe ramię skręcając tylko głowę. Po zatrzymaniu, wykonujemy w prawo (w lewo) zwrot w postawie zasadniczej, po czym przyjmujemy postawę swobodną, dostosowując się do żołnierza skrzydłowego który przyjął ją natychmiast po haśle „ODSTĄP”",
+      "Na komendę „BACZNOŚĆ” przyjmujemy postawę zasadniczą. Na hasło komendy „ODSTĄP”, robimy w lewo (w prawo) zwrot w postawie zasadniczej, następnie maszerujemy w nakazanym kierunku. W celu wyliczenia liczby kroków od zatrzymania się żołnierza za naszymi plecami, patrzymy przez lewe ramię skręcając tylko głowę.  Po zatrzymaniu, wykonujemy w prawo (w lewo) zwrot w postawie zasadniczej, po czym przyjmujemy postawę swobodną, dostosowując się do żołnierza skrzydłowego który przyjął ją natychmiast po haśle „ODSTĄP”",
       "„Baczność”, „do prawoskrzydłowego – ŁĄCZ”",
       "Na komendę „BACZNOŚĆ” przyjmujemy postawę zasadniczą. Na hasło komendy „ŁĄCZ”, robimy w prawo (w lewo) zwrot w postawie zasadniczej, następnie maszerujemy w kierunku prawoskrzydłowego. Po zatrzymaniu, wykonujemy w lewo (w prawo) zwrot w postawie zasadniczej, po czym przyjmujemy postawę swobodną, dostosowując się do żołnierza skrzydłowego który przyjął ją natychmiast po haśle „ŁĄCZ”"
     ],
@@ -184,14 +184,10 @@
     "commands": "„w prawo - ZWROT”; „w lewo - ZWROT”; „WYSTĄP”, „WSTĄP” lub; „do szyku – WSTĄP”; Przejście z trójszeregu do kolumny trójkowej wykonuje się na komendę „w prawo -ZWROT”; Przejście z kolumny trójkowej do trójszeregu wykonuje się na komendę „w lewo -ZWROT”; Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki); Żołnierz wywołany z trzeciego szeregu lub z kolumny w miejscu na komendę „WYSTĄP” przechodzi za plecami żołnierzy swojego szeregu na prawą stronę kolumny. Następnie – maszerując wzdłuż skrzydła trójszeregu lub wzdłuż kolumny – występuje trzy kroki przed front szyku. Z czoła kolumny i drugiego szeregu występują jak z dwuszeregu.; Na komendę „WSTĄP” wywołany robi w tył zwrot, wraca na swoje miejsce w taki sam sposób jak podczas występowania i przyjmuje postawę, jak pododdział. Natomiast żołnierz, który zajmował jego miejsce, wraca do drugiego szeregu, robiąc dwa kroki w tył (bez zwrotu i wymachu rąk).",
     "demo": [],
     "explanation": [
-      "„w prawo - ZWROT”",
-      "„w lewo - ZWROT”",
-      "„WYSTĄP”, „WSTĄP” lub",
-      "„do szyku – WSTĄP”",
       "Przechodzę do omówienia zagadnienia",
-      "trójszereg kolumna trójkowa",
+      "trójszereg  kolumna trójkowa",
       "Przejście z trójszeregu do kolumny trójkowej wykonuje się na komendę „w prawo -ZWROT”",
-      "kolumna trójkowa trójszereg",
+      "kolumna trójkowa  trójszereg",
       "Przejście z kolumny trójkowej do trójszeregu wykonuje się na komendę „w lewo -ZWROT”",
       "występowanie",
       "Żołnierz wywołany z pierwszego szeregu przyjmuje postawę zasadniczą i odpowiada głośno „Jestem”. Na komendę „WYSTĄP” występuje trzy kroki i staje w postawie zasadniczej. Na jego miejsce wstępuje natychmiast stojący za nim żołnierz z drugiego szeregu (stawiając dwa kroki)",
