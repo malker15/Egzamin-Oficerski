@@ -1,0 +1,67 @@
+name: Stage3 ZIP UI
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/stage3-zip-ui.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('app/stage3/page.tsx')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('22 ZAGADNIENIA','20 ZAGADNIEŃ')
+          s=s.replace('BAZA // 22','BAZA // 20')
+          s=s.replace('22 zagadnienia z musztry','20 zagadnień z musztry')
+          s=s.replace(' / 22',' / 20')
+          p.write_text(s,encoding='utf-8')
+
+          f=Path('components/Stage3VideoFloating.tsx')
+          t=f.read_text(encoding='utf-8')
+          t=re.sub(r'const videosByTopic: Record<number, VideoItem\[]> = \{.*?\};',
+          'const videosByTopic: Record<number, VideoItem[]> = { 1:[marchDrill], 2:[rifleDrill], 3:[rifleDrill], 4:[teamDrill], 5:[teamDrill], 6:[teamDrill], 7:[marchDrill], 8:[honorsDrill], 9:[honorsDrill], 10:[teamDrill], 11:[teamDrill], 12:[teamDrill], 13:[teamDrill], 14:[teamDrill], 15:[teamDrill], 16:[teamDrill], 17:[teamDrill], 18:[teamDrill], 19:[teamDrill], 20:[introDrill,marchDrill] };', t, count=1, flags=re.S)
+          t=t.replace(r'\s*22/i', r'\s*20/i')
+          f.write_text(t,encoding='utf-8')
+
+          g=Path('components/TrainingVideoGuide.tsx')
+          u=g.read_text(encoding='utf-8')
+          u=u.replace(r'\s*22$/i', r'\s*20$/i')
+          new_map='''const stage3VideosByNumber: Record<number, VideoItem[]> = {
+  1: [marchDrill],
+  2: [rifleDrill],
+  3: [rifleDrill],
+  4: [teamDrill],
+  5: [teamDrill],
+  6: [teamDrill],
+  7: [marchDrill],
+  8: [honorsDrill],
+  9: [honorsDrill],
+  10: [teamDrill],
+  11: [teamDrill],
+  12: [teamDrill],
+  13: [teamDrill],
+  14: [teamDrill],
+  15: [teamDrill],
+  16: [teamDrill],
+  17: [teamDrill],
+  18: [teamDrill],
+  19: [teamDrill],
+  20: [introDrill, marchDrill],
+};'''
+          u,n=re.subn(r'const stage3VideosByNumber: Record<number, VideoItem\[]> = \{.*?\n\};',new_map,u,count=1,flags=re.S)
+          if n != 1:
+              raise SystemExit('Nie znaleziono mapy stage3VideosByNumber')
+          g.write_text(u,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/stage3/page.tsx components/Stage3VideoFloating.tsx components/TrainingVideoGuide.tsx
+          git commit -m "Dostosuj Etap III do 20 scenariuszy z ZIP"
+          git push
