@@ -62,13 +62,16 @@ type QStats = {
   wrongCount: number;
   lastCorrectAt: number | null;
   lastWrongAt: number | null;
+  streak: number;
+  lastSeenAt: number | null;
 };
 
 type StatsMap = Record<string, QStats>;
 
-const LS_KEY_STATE = "quiz_agent_state_v12";
+const LS_KEY_STATE = "quiz_agent_state_v13";
 const LS_KEY_THEME = "quiz_theme_v1";
-const LS_KEY_STATS = "quiz_agent_stats_v1";
+const LS_KEY_STATS = "quiz_agent_stats_v2";
+const LS_KEY_STATS_LEGACY = "quiz_agent_stats_v1";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -190,67 +193,140 @@ function toKey(id: Question["id"]) {
 }
 
 function defaultStats(): QStats {
-  return { correctCount: 0, wrongCount: 0, lastCorrectAt: null, lastWrongAt: null };
-}
-
-/**
- * ✅ NOWE: Tasowanie odpowiedzi w MCQ (A/B/C/D) + przeliczenie correctKey
- * Działa w NAUCE i EGZAMINIE, bo robimy to na etapie wczytania bazy pytań.
- */
-function shuffleMcqChoices(q: Question): Question {
-  if (q.type !== "mcq") return q;
-
-  const correctText = q.choices.find((c) => c.key === q.correctKey)?.text ?? "";
-  const shuffledChoices = shuffle(q.choices);
-
-  const newCorrectKey = shuffledChoices.find((c) => c.text === correctText)?.key;
-  if (!newCorrectKey) return q; // awaryjnie (nie powinno się zdarzyć)
-
   return {
-    ...q,
-    choices: shuffledChoices,
-    correctKey: newCorrectKey,
+    correctCount: 0,
+    wrongCount: 0,
+    lastCorrectAt: null,
+    lastWrongAt: null,
+    streak: 0,
+    lastSeenAt: null,
   };
 }
 
-/** Study: 50% sesji = powtórki (z historii błędów) */
-function buildSessionIdsWithStats(questions: Question[], sessionSize: number, stats: StatsMap, repeatRatio = 0.5) {
-  const allIds = questions.map((q) => q.id);
-  const size = Math.min(sessionSize, allIds.length);
-  const repeatCount = Math.min(size, Math.max(0, Math.round(size * repeatRatio)));
-
-  const repeatCandidates = [...questions]
-    .filter((q) => {
-      const s = stats[toKey(q.id)];
-      return s && s.wrongCount > 0;
-    })
-    .sort((a, b) => {
-      const sa = stats[toKey(a.id)]!;
-      const sb = stats[toKey(b.id)]!;
-      if (sb.wrongCount !== sa.wrongCount) return sb.wrongCount - sa.wrongCount;
-      const ta = sa.lastWrongAt ?? 0;
-      const tb = sb.lastWrongAt ?? 0;
-      return tb - ta;
-    })
-    .map((q) => q.id);
-
-  const pickedRepeats = repeatCandidates.slice(0, repeatCount);
-  const remaining = allIds.filter((id) => !pickedRepeats.includes(id));
-  const rest = sampleUnique(remaining, size - pickedRepeats.length);
-  return shuffle([...pickedRepeats, ...rest]);
+function normalizeStatsEntry(raw: any): QStats {
+  const correctCount = Number.isFinite(raw?.correctCount) ? Math.max(0, Math.floor(raw.correctCount)) : 0;
+  const wrongCount = Number.isFinite(raw?.wrongCount) ? Math.max(0, Math.floor(raw.wrongCount)) : 0;
+  const lastCorrectAt = typeof raw?.lastCorrectAt === "number" ? raw.lastCorrectAt : null;
+  const lastWrongAt = typeof raw?.lastWrongAt === "number" ? raw.lastWrongAt : null;
+  const legacyMastered = correctCount >= 3 && wrongCount === 0;
+  const streak = Number.isFinite(raw?.streak)
+    ? Math.max(0, Math.min(3, Math.floor(raw.streak)))
+    : legacyMastered
+      ? 3
+      : 0;
+  const fallbackSeen = Math.max(lastCorrectAt ?? 0, lastWrongAt ?? 0) || null;
+  const lastSeenAt = typeof raw?.lastSeenAt === "number" ? raw.lastSeenAt : fallbackSeen;
+  return { correctCount, wrongCount, lastCorrectAt, lastWrongAt, streak, lastSeenAt };
 }
 
-/** Exam: czyste losowanie N pytań */
+function isSeen(s?: QStats) {
+  if (!s) return false;
+  return s.correctCount + s.wrongCount > 0;
+}
+
+function isMastered(s?: QStats) {
+  if (!s) return false;
+  return s.streak >= 3;
+}
+
+function shuffleMcqChoices(q: Question): Question {
+  if (q.type !== "mcq") return q;
+  const correctText = q.choices.find((c) => c.key === q.correctKey)?.text ?? "";
+  const shuffledChoices = shuffle(q.choices);
+  const newCorrectKey = shuffledChoices.find((c) => c.text === correctText)?.key;
+  if (!newCorrectKey) return q;
+  return { ...q, choices: shuffledChoices, correctKey: newCorrectKey };
+}
+
+type StudyBucket = "unseen" | "learning" | "mastered" | "fill";
+
+function recencyFactor(s?: QStats) {
+  if (!s?.lastSeenAt) return 1;
+  const age = Date.now() - s.lastSeenAt;
+  if (age < 15 * 60 * 1000) return 0.2;
+  if (age < 60 * 60 * 1000) return 0.45;
+  if (age < 6 * 60 * 60 * 1000) return 0.75;
+  return 1;
+}
+
+function studyQuestionWeight(q: Question, s: QStats | undefined, bucket: StudyBucket) {
+  let weight = q.type === "mcq" && q.choices.length === 3 ? 1.6 : 1;
+  weight *= recencyFactor(s);
+  if (bucket === "learning") {
+    const streak = s?.streak ?? 0;
+    const wrongBoost = Math.min(0.8, (s?.wrongCount ?? 0) * 0.1);
+    weight *= 1 + wrongBoost + (3 - streak) * 0.2;
+  }
+  if (bucket === "fill" && isMastered(s)) weight *= 0.25;
+  return Math.max(0.05, weight);
+}
+
+function weightedSampleQuestions(pool: Question[], n: number, stats: StatsMap, bucket: StudyBucket) {
+  const available = [...pool];
+  const picked: Question[] = [];
+  while (picked.length < n && available.length > 0) {
+    const weights = available.map((q) => studyQuestionWeight(q, stats[toKey(q.id)], bucket));
+    const total = weights.reduce((sum, w) => sum + w, 0);
+    let ticket = Math.random() * total;
+    let idx = 0;
+    for (; idx < available.length - 1; idx++) {
+      ticket -= weights[idx];
+      if (ticket <= 0) break;
+    }
+    picked.push(available[idx]);
+    available.splice(idx, 1);
+  }
+  return picked;
+}
+
+/** Nauka: ok. 50% nowe, 40% w nauce, 10% kontrolnie opanowane. */
+function buildSessionIdsWithStats(questions: Question[], sessionSize: number, stats: StatsMap) {
+  const size = Math.min(sessionSize, questions.length);
+  const unseen = questions.filter((q) => !isSeen(stats[toKey(q.id)]));
+  const learning = questions.filter((q) => {
+    const s = stats[toKey(q.id)];
+    return isSeen(s) && !isMastered(s);
+  });
+  const mastered = questions.filter((q) => isMastered(stats[toKey(q.id)]));
+  const unseenTarget = Math.round(size * 0.5);
+  const learningTarget = Math.round(size * 0.4);
+  const masteredTarget = Math.max(0, size - unseenTarget - learningTarget);
+  const selected: Question[] = [];
+  const selectedIds = new Set<string>();
+  const add = (items: Question[]) => {
+    for (const q of items) {
+      const key = toKey(q.id);
+      if (selectedIds.has(key)) continue;
+      selected.push(q);
+      selectedIds.add(key);
+    }
+  };
+  add(weightedSampleQuestions(unseen, unseenTarget, stats, "unseen"));
+  add(weightedSampleQuestions(learning, learningTarget, stats, "learning"));
+  add(weightedSampleQuestions(mastered, masteredTarget, stats, "mastered"));
+  const remaining = questions.filter((q) => !selectedIds.has(toKey(q.id)));
+  add(weightedSampleQuestions(remaining, size - selected.length, stats, "fill"));
+  return shuffle(selected.map((q) => q.id));
+}
+
+/** Egzamin pozostaje czystym losowaniem N pytań. */
 function buildExamSessionIds(questions: Question[], sessionSize: number) {
   const allIds = questions.map((q) => q.id);
   const size = Math.min(sessionSize, allIds.length);
   return sampleUnique(allIds, size);
 }
 
-/** Prosta definicja "opanowane": >=3 poprawne i 0 błędów */
-function isMastered(s?: QStats) {
-  if (!s) return false;
-  return s.correctCount >= 3 && s.wrongCount === 0;
+function scheduleStudyRetry(prev: AppState, next: AppState, qid: Question["id"]) {
+  if (prev.phase !== "main") return next;
+  const attemptsForQuestion = next.attempts.filter((a) => toKey(a.qid) === toKey(qid)).length;
+  if (attemptsForQuestion >= 3) return next;
+  const alreadyPending = next.sessionIds.slice(prev.index + 1).some((id) => toKey(id) === toKey(qid));
+  if (alreadyPending) return next;
+  const gap = 6 + Math.floor(Math.random() * 5);
+  const sessionIds = [...next.sessionIds];
+  const insertAt = Math.min(sessionIds.length, prev.index + gap + 1);
+  sessionIds.splice(insertAt, 0, qid);
+  return { ...next, sessionIds };
 }
 
 function Card({ theme, children }: { theme: Theme; children: React.ReactNode }) {
@@ -375,13 +451,17 @@ export default function Page() {
     localStorage.setItem(LS_KEY_THEME, theme);
   }, [theme]);
 
-  // stats load/save
+  // stats load/save + migracja v1 -> v2
   useEffect(() => {
-    const saved = localStorage.getItem(LS_KEY_STATS);
+    const saved = localStorage.getItem(LS_KEY_STATS) ?? localStorage.getItem(LS_KEY_STATS_LEGACY);
     if (!saved) return;
     try {
-      const parsed = JSON.parse(saved) as StatsMap;
-      if (parsed && typeof parsed === "object") setStats(parsed);
+      const parsed = JSON.parse(saved) as Record<string, any>;
+      if (parsed && typeof parsed === "object") {
+        const normalized: StatsMap = {};
+        for (const [key, value] of Object.entries(parsed)) normalized[key] = normalizeStatsEntry(value);
+        setStats(normalized);
+      }
     } catch {}
   }, []);
   useEffect(() => {
@@ -477,6 +557,12 @@ export default function Page() {
   const activeIds = state.phase === "review" ? state.reviewIds : state.sessionIds;
   const activeId = activeIds[state.index];
   const current = useMemo(() => findQuestion(state.questions, activeId), [state.questions, activeId]);
+  const currentStats = current ? normalizeStatsEntry(stats[toKey(current.id)]) : defaultStats();
+  const currentStudyStatus = !isSeen(currentStats)
+    ? "NOWE"
+    : isMastered(currentStats)
+      ? "✓ OPANOWANE"
+      : `W NAUCE • ${currentStats.streak}/3`;
 
   const totalMain = state.sessionIds.length;
   const totalReview = state.reviewIds.length;
@@ -497,21 +583,18 @@ export default function Page() {
 
   const progressSummary = useMemo(() => {
     const total = state.questions.length;
-
     let mastered = 0;
-    let needsWork = 0;
+    let learning = 0;
     let seen = 0;
-
     for (const q of state.questions) {
-      const s = stats[toKey(q.id)];
-      const hasAny = !!s && (s.correctCount > 0 || s.wrongCount > 0);
+      const s = normalizeStatsEntry(stats[toKey(q.id)]);
+      const hasAny = isSeen(s);
       if (hasAny) seen++;
       if (isMastered(s)) mastered++;
-      if ((s?.wrongCount ?? 0) > 0) needsWork++;
+      else if (hasAny) learning++;
     }
-
     const unseen = Math.max(0, total - seen);
-    return { total, mastered, needsWork, seen, unseen };
+    return { total, mastered, learning, seen, unseen };
   }, [state.questions, stats]);
 
   const worst20 = useMemo(() => {
@@ -526,7 +609,7 @@ export default function Page() {
           lastWrongAt: s.lastWrongAt,
         };
       })
-      .filter((x) => x.wrongCount > 0)
+      .filter((x) => x.wrongCount > 0 && !isMastered(stats[toKey(x.id)]))
       .sort((a, b) => {
         if (b.wrongCount !== a.wrongCount) return b.wrongCount - a.wrongCount;
         return (b.lastWrongAt ?? 0) - (a.lastWrongAt ?? 0);
@@ -547,12 +630,14 @@ export default function Page() {
     const k = toKey(qid);
     const now = Date.now();
     setStats((prev) => {
-      const cur = prev[k] ?? defaultStats();
+      const cur = normalizeStatsEntry(prev[k]);
       const next: QStats = {
         correctCount: cur.correctCount + (isCorrect ? 1 : 0),
         wrongCount: cur.wrongCount + (isCorrect ? 0 : 1),
         lastCorrectAt: isCorrect ? now : cur.lastCorrectAt,
         lastWrongAt: isCorrect ? cur.lastWrongAt : now,
+        streak: isCorrect ? Math.min(3, cur.streak + 1) : 0,
+        lastSeenAt: now,
       };
       return { ...prev, [k]: next };
     });
@@ -561,7 +646,7 @@ export default function Page() {
   function startStudy() {
     setScoreSaved(false);
     setSaveError("");
-    const ids = buildSessionIdsWithStats(state.questions, sessionSize, stats, 0.5);
+    const ids = buildSessionIdsWithStats(state.questions, sessionSize, stats);
     setState({
       mode: "study",
       questions: state.questions,
@@ -654,14 +739,10 @@ export default function Page() {
       };
 
       setState((prev) => {
-        const next = { ...prev, attempts: [...prev.attempts, attempt] };
-
-        // study: błędne lecą do powtórki
-        if (!isExam && !isCorrect && prev.phase === "main") {
-          if (!next.reviewIds.includes(current.id)) next.reviewIds = [...next.reviewIds, current.id];
-        }
-        return next;
-      });
+      let next: AppState = { ...prev, attempts: [...prev.attempts, attempt] };
+      if (!isExam && !isCorrect && prev.phase === "main") next = scheduleStudyRetry(prev, next, current.id);
+      return next;
+    });
 
       // stats tylko w study
       if (!isExam) bumpStats(current.id, isCorrect);
@@ -689,12 +770,10 @@ export default function Page() {
       };
 
       setState((prev) => {
-        const next = { ...prev, attempts: [...prev.attempts, attempt] };
-        if (!isExam && !isCorrect && prev.phase === "main") {
-          if (!next.reviewIds.includes(current.id)) next.reviewIds = [...next.reviewIds, current.id];
-        }
-        return next;
-      });
+      let next: AppState = { ...prev, attempts: [...prev.attempts, attempt] };
+      if (!isExam && !isCorrect && prev.phase === "main") next = scheduleStudyRetry(prev, next, current.id);
+      return next;
+    });
 
       if (!isExam) bumpStats(current.id, isCorrect);
 
@@ -753,6 +832,7 @@ export default function Page() {
 
   function clearStatsOnly() {
     localStorage.removeItem(LS_KEY_STATS);
+    localStorage.removeItem(LS_KEY_STATS_LEGACY);
     setStats({});
     setError("");
   }
@@ -988,7 +1068,7 @@ export default function Page() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-baseline gap-2">
               <h1 className="text-2xl font-bold tracking-tight">Quiz Agent</h1>
-              <Pill theme={theme}>v12</Pill>
+              <Pill theme={theme}>v13</Pill>
               <Pill theme={theme}>{state.mode === "exam" ? "Tryb EGZAMIN" : "Tryb NAUKA"}</Pill>
               <Pill theme={theme}>Odpowiedzi: losowe</Pill>
             </div>
@@ -1040,12 +1120,16 @@ export default function Page() {
             </Pill>
 
             <Pill theme={theme}>
-              Opanowane: <span className="ml-1 font-semibold">{progressSummary.mastered}</span>
-            </Pill>
+    Nowe: <span className="ml-1 font-semibold">{progressSummary.unseen}</span>
+  </Pill>
 
-            <Pill theme={theme}>
-              Do poprawy: <span className="ml-1 font-semibold">{progressSummary.needsWork}</span>
-            </Pill>
+  <Pill theme={theme}>
+    W nauce: <span className="ml-1 font-semibold">{progressSummary.learning}</span>
+  </Pill>
+
+  <Pill theme={theme}>
+    Opanowane: <span className="ml-1 font-semibold">{progressSummary.mastered}</span>
+  </Pill>
 
             <div className="ml-auto flex flex-wrap items-center gap-4">
               <label className="flex items-center gap-2">
@@ -1070,7 +1154,7 @@ export default function Page() {
             <Card theme={theme}>
               <h2 className="text-lg font-bold">Start</h2>
               <p className={cx("mt-2 text-sm", theme === "dark" ? "text-neutral-300" : "text-neutral-600")}>
-                Nauka: feedback po każdej odpowiedzi. Egzamin: brak feedbacku do końca + zapis do rankingu.
+                Nauka: 3 poprawne z rzędu = opanowane. Błąd zeruje serię i pytanie wraca po 6–10 innych pytaniach (maks. 3 podejścia w sesji). Opanowane pojawiają się tylko kontrolnie (~10%), a pytania z 3 odpowiedziami mają 1,6× większą szansę losowania. Egzamin pozostaje czystym losowaniem bez feedbacku do końca.
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -1186,9 +1270,12 @@ export default function Page() {
           <div className="space-y-4">
             <Card theme={theme}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm font-semibold">{progressLabel}</div>
-                <Pill theme={theme}>{progress}%</Pill>
-              </div>
+      <div className="text-sm font-semibold">{progressLabel}</div>
+      <div className="flex flex-wrap items-center gap-2">
+        {state.mode === "study" && <Pill theme={theme}>{currentStudyStatus}</Pill>}
+        <Pill theme={theme}>{progress}%</Pill>
+      </div>
+    </div>
 
               <div className={cx("mt-3 h-2 w-full overflow-hidden rounded-full", theme === "dark" ? "bg-neutral-800" : "bg-neutral-100")}>
                 <div className={cx("h-full", theme === "dark" ? "bg-neutral-100" : "bg-neutral-900")} style={{ width: `${progress}%` }} />
