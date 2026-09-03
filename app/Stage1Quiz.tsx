@@ -70,8 +70,8 @@ type StatsMap = Record<string, QStats>;
 
 const LS_KEY_STATE = "quiz_agent_state_v13";
 const LS_KEY_THEME = "quiz_theme_v1";
-const LS_KEY_STATS = "quiz_agent_stats_v2";
-const LS_KEY_STATS_LEGACY = "quiz_agent_stats_v1";
+const LS_KEY_STATS = "quiz_agent_stats_v3";
+const LS_KEY_STATS_LEGACY = "quiz_agent_stats_v2";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -453,7 +453,9 @@ export default function Page() {
 
   // stats load/save + migracja v1 -> v2
   useEffect(() => {
-    const saved = localStorage.getItem(LS_KEY_STATS) ?? localStorage.getItem(LS_KEY_STATS_LEGACY);
+    localStorage.removeItem("quiz_agent_stats_v1");
+    localStorage.removeItem("quiz_agent_stats_v2");
+    const saved = localStorage.getItem(LS_KEY_STATS);
     if (!saved) return;
     try {
       const parsed = JSON.parse(saved) as Record<string, any>;
@@ -1068,7 +1070,7 @@ export default function Page() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-baseline gap-2">
               <h1 className="text-2xl font-bold tracking-tight">Quiz Agent</h1>
-              <Pill theme={theme}>v13</Pill>
+              <Pill theme={theme}>v13.1</Pill>
               <Pill theme={theme}>{state.mode === "exam" ? "Tryb EGZAMIN" : "Tryb NAUKA"}</Pill>
               <Pill theme={theme}>Odpowiedzi: losowe</Pill>
             </div>
