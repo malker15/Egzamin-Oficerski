@@ -1,0 +1,79 @@
+name: Patch Stage I learning v13d
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/patch-stage1-learning-v13d.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Prepare robust patch script
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, textwrap
+
+          src = Path('.github/workflows/patch-stage1-learning-v13c.yml').read_text(encoding='utf-8')
+          m = re.search(r"          python - <<'PYCODE'\n(.*?)\n          PYCODE", src, re.S)
+          if not m:
+              raise SystemExit('Could not extract v13c patch script')
+          script = textwrap.dedent(m.group(1))
+
+          # Replace brittle summary-pills statement with whitespace-tolerant regex logic.
+          s = script.index("replace_once('''            <Pill theme={theme}>")
+          e = script.index("'summary pills')", s) + len("'summary pills')")
+          robust_summary = r'''summary_ui_pattern = re.compile(r'''\s*<Pill theme=\{theme\}>\n\s*Opanowane: <span className="ml-1 font-semibold">\{progressSummary\.mastered\}</span>\n\s*</Pill>\n\s*<Pill theme=\{theme\}>\n\s*Do poprawy: <span className="ml-1 font-semibold">\{progressSummary\.needsWork\}</span>\n\s*</Pill>''')
+          summary_ui_repl = '''\n            <Pill theme={theme}>\n              Nowe: <span className="ml-1 font-semibold">{progressSummary.unseen}</span>\n            </Pill>\n\n            <Pill theme={theme}>\n              W nauce: <span className="ml-1 font-semibold">{progressSummary.learning}</span>\n            </Pill>\n\n            <Pill theme={theme}>\n              Opanowane: <span className="ml-1 font-semibold">{progressSummary.mastered}</span>\n            </Pill>'''
+          text, count = summary_ui_pattern.subn(summary_ui_repl, text, count=1)
+          if count != 1:
+              raise SystemExit(f'summary UI: expected 1 replacement, got {count}')'''
+          script = script[:s] + robust_summary + script[e:]
+
+          # Replace brittle progress-header JSX matcher too, before it can become the next whitespace issue.
+          marker = "replace_once('''              <div className=\"flex flex-wrap items-center justify-between gap-3\">"
+          s = script.index(marker)
+          e = script.index("'quiz status')", s) + len("'quiz status')")
+          robust_status = r'''status_ui_pattern = re.compile(r'''\s*<div className="flex flex-wrap items-center justify-between gap-3">\n\s*<div className="text-sm font-semibold">\{progressLabel\}</div>\n\s*<Pill theme=\{theme\}>\{progress\}%</Pill>\n\s*</div>''')
+          status_ui_repl = '''\n              <div className="flex flex-wrap items-center justify-between gap-3">\n                <div className="text-sm font-semibold">{progressLabel}</div>\n                <div className="flex flex-wrap items-center gap-2">\n                  {state.mode === "study" && <Pill theme={theme}>{currentStudyStatus}</Pill>}\n                  <Pill theme={theme}>{progress}%</Pill>\n                </div>\n              </div>'''
+          text, count = status_ui_pattern.subn(status_ui_repl, text, count=1)
+          if count != 1:
+              raise SystemExit(f'quiz status UI: expected 1 replacement, got {count}')'''
+          script = script[:s] + robust_status + script[e:]
+
+          Path('/tmp/patch_stage1_v13.py').write_text(script, encoding='utf-8')
+          PY
+          python /tmp/patch_stage1_v13.py
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: dummy-anon-key
+        run: npm run build
+
+      - name: Commit Stage I v13
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/Stage1Quiz.tsx
+          git diff --cached --check
+          git commit -m "Improve Stage I learning algorithm v13"
+          git push
