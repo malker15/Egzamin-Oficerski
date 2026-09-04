@@ -19,89 +19,36 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           p = Path('app/Stage1Quiz.tsx')
           s = p.read_text(encoding='utf-8')
           old = s
-
-          s = s.replace(
-              '  const [sessionSize, setSessionSize] = useState<number>(50);',
-              '  const [sessionSizeInput, setSessionSizeInput] = useState<string>("50");',
-              1,
-          )
-
-          marker = '''  function resetQuestionUi() {
-    setChosen(null);
-    setImageAnswer("");
-    setSubmitted(false);
-    setError("");
-  }
-'''
-          replacement = marker + '''
-  function getSessionSize() {
-    const parsed = Number.parseInt(sessionSizeInput, 10);
-    if (!Number.isFinite(parsed)) return 50;
-    return Math.max(1, Math.min(999, parsed));
-  }
-'''
+          s = s.replace('  const [sessionSize, setSessionSize] = useState<number>(50);', '  const [sessionSizeInput, setSessionSizeInput] = useState<string>("50");', 1)
+          marker = '  function resetQuestionUi() {\n    setChosen(null);\n    setImageAnswer("");\n    setSubmitted(false);\n    setError("");\n  }\n'
+          helper = '\n  function getSessionSize() {\n    const parsed = Number.parseInt(sessionSizeInput, 10);\n    if (!Number.isFinite(parsed)) return 50;\n    return Math.max(1, Math.min(999, parsed));\n  }\n'
           if marker not in s:
               raise SystemExit('resetQuestionUi marker not found')
-          s = s.replace(marker, replacement, 1)
-
-          s = s.replace(
-              '    const ids = buildSessionIdsWithStats(state.questions, sessionSize, stats);',
-              '    const ids = buildSessionIdsWithStats(state.questions, getSessionSize(), stats);',
-              1,
-          )
-          s = s.replace(
-              '    const ids = buildExamSessionIds(state.questions, sessionSize);',
-              '    const ids = buildExamSessionIds(state.questions, getSessionSize());',
-              1,
-          )
-
-          old_input = '''                  value={sessionSize}
-                  onChange={(e) => setSessionSize(Number(e.target.value || 50))}
-                  className="w-24"
-'''
-          new_input = '''                  value={sessionSizeInput}
-                  inputMode="numeric"
-                  onFocus={(e) => e.currentTarget.select()}
-                  onChange={(e) => setSessionSizeInput(e.target.value)}
-                  onBlur={() => setSessionSizeInput(String(getSessionSize()))}
-                  className="w-24"
-'''
+          s = s.replace(marker, marker + helper, 1)
+          s = s.replace('    const ids = buildSessionIdsWithStats(state.questions, sessionSize, stats);', '    const ids = buildSessionIdsWithStats(state.questions, getSessionSize(), stats);', 1)
+          s = s.replace('    const ids = buildExamSessionIds(state.questions, sessionSize);', '    const ids = buildExamSessionIds(state.questions, getSessionSize());', 1)
+          old_input = '                  value={sessionSize}\n                  onChange={(e) => setSessionSize(Number(e.target.value || 50))}\n                  className="w-24"\n'
+          new_input = '                  value={sessionSizeInput}\n                  inputMode="numeric"\n                  onFocus={(e) => e.currentTarget.select()}\n                  onChange={(e) => setSessionSizeInput(e.target.value)}\n                  onBlur={() => setSessionSizeInput(String(getSessionSize()))}\n                  className="w-24"\n'
           if old_input not in s:
               raise SystemExit('session input marker not found')
           s = s.replace(old_input, new_input, 1)
-
           s = s.replace('<Pill theme={theme}>v13.1</Pill>', '<Pill theme={theme}>v13.2</Pill>', 1)
-
-          required = [
-              'const [sessionSizeInput, setSessionSizeInput] = useState<string>("50")',
-              'function getSessionSize()',
-              'buildSessionIdsWithStats(state.questions, getSessionSize(), stats)',
-              'buildExamSessionIds(state.questions, getSessionSize())',
-              'value={sessionSizeInput}',
-              'onChange={(e) => setSessionSizeInput(e.target.value)}',
-              'onBlur={() => setSessionSizeInput(String(getSessionSize()))}',
-              '<Pill theme={theme}>v13.2</Pill>',
-          ]
+          required = ['const [sessionSizeInput, setSessionSizeInput] = useState<string>("50")', 'function getSessionSize()', 'buildSessionIdsWithStats(state.questions, getSessionSize(), stats)', 'buildExamSessionIds(state.questions, getSessionSize())', 'value={sessionSizeInput}', 'onChange={(e) => setSessionSizeInput(e.target.value)}', 'onBlur={() => setSessionSizeInput(String(getSessionSize()))}', '<Pill theme={theme}>v13.2</Pill>']
           for item in required:
               if item not in s:
                   raise SystemExit(f'missing expected change: {item}')
-
           if s == old:
               raise SystemExit('no changes applied')
-
           p.write_text(s, encoding='utf-8')
           PY
-
-      - name: Verify only Stage1Quiz changed
+      - name: Verify diff
         shell: bash
         run: |
-          git diff --exit-code -- . ':!app/Stage1Quiz.tsx'
           git diff --check app/Stage1Quiz.tsx
-
+          test "$(git diff --name-only | tr '\n' ' ')" = "app/Stage1Quiz.tsx "
       - name: Commit fix
         shell: bash
         run: |
