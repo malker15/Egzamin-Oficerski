@@ -421,7 +421,7 @@ export default function Page() {
     attempts: [],
   });
 
-  const [sessionSize, setSessionSize] = useState<number>(50);
+  const [sessionSizeInput, setSessionSizeInput] = useState<string>("50");
 
   const [chosen, setChosen] = useState<ChoiceKey | null>(null);
   const [imageAnswer, setImageAnswer] = useState<string>("");
@@ -628,6 +628,12 @@ export default function Page() {
     setError("");
   }
 
+  function getSessionSize() {
+    const parsed = Number.parseInt(sessionSizeInput, 10);
+    if (!Number.isFinite(parsed)) return 50;
+    return Math.max(1, Math.min(999, parsed));
+  }
+
   function bumpStats(qid: Question["id"], isCorrect: boolean) {
     const k = toKey(qid);
     const now = Date.now();
@@ -648,7 +654,7 @@ export default function Page() {
   function startStudy() {
     setScoreSaved(false);
     setSaveError("");
-    const ids = buildSessionIdsWithStats(state.questions, sessionSize, stats);
+    const ids = buildSessionIdsWithStats(state.questions, getSessionSize(), stats);
     setState({
       mode: "study",
       questions: state.questions,
@@ -664,7 +670,7 @@ export default function Page() {
   function startExam() {
     setScoreSaved(false);
     setSaveError("");
-    const ids = buildExamSessionIds(state.questions, sessionSize);
+    const ids = buildExamSessionIds(state.questions, getSessionSize());
     setState({
       mode: "exam",
       questions: state.questions,
@@ -1070,7 +1076,7 @@ export default function Page() {
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-baseline gap-2">
               <h1 className="text-2xl font-bold tracking-tight">Quiz Agent</h1>
-              <Pill theme={theme}>v13.1</Pill>
+              <Pill theme={theme}>v13.2</Pill>
               <Pill theme={theme}>{state.mode === "exam" ? "Tryb EGZAMIN" : "Tryb NAUKA"}</Pill>
               <Pill theme={theme}>Odpowiedzi: losowe</Pill>
             </div>
@@ -1141,8 +1147,11 @@ export default function Page() {
                   type="number"
                   min={1}
                   max={999}
-                  value={sessionSize}
-                  onChange={(e) => setSessionSize(Number(e.target.value || 50))}
+                  value={sessionSizeInput}
+                  inputMode="numeric"
+                  onFocus={(e) => e.currentTarget.select()}
+                  onChange={(e) => setSessionSizeInput(e.target.value)}
+                  onBlur={() => setSessionSizeInput(String(getSessionSize()))}
                   className="w-24"
                 />
               </label>
