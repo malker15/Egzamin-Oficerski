@@ -100,6 +100,9 @@ export default function Stage4Page() {
   const [savedAttempt, setSavedAttempt] = useState(false);
 
   const station = useMemo<TacticalStation>(() => tacticalStations.find((x) => x.id === selectedId) ?? tacticalStations[0], [selectedId]);
+  const isCff = station.id === "cff";
+  const activeExaminerCriteria = isCff ? examinerCriteria.filter((item) => !item.toUpperCase().includes("AAR")) : examinerCriteria;
+  const activePeerCriteria = isCff ? peerCriteria.filter((item) => !item.toUpperCase().includes("AAR")) : peerCriteria;
 
   useEffect(() => {
     (async () => {
@@ -127,14 +130,21 @@ export default function Stage4Page() {
     return () => window.clearInterval(timer);
   }, [running]);
 
-  const examinerCount = examinerCriteria.reduce((sum, _, i) => sum + (examiner[i] ? 1 : 0), 0);
-  const peerCount = peerCriteria.reduce((sum, _, i) => sum + (peer[i] ? 1 : 0), 0);
-  const trainingScore = Number((examinerCount * 0.8 + peerCount / 5).toFixed(2));
+  const examinerCount = activeExaminerCriteria.reduce((sum, _, i) => sum + (examiner[i] ? 1 : 0), 0);
+  const peerCount = activePeerCriteria.reduce((sum, _, i) => sum + (peer[i] ? 1 : 0), 0);
+  const examinerPart = activeExaminerCriteria.length ? (examinerCount / activeExaminerCriteria.length) * 4 : 0;
+  const peerPart = activePeerCriteria.length ? peerCount / activePeerCriteria.length : 0;
+  const trainingScore = Number((examinerPart + peerPart).toFixed(2));
   const trainingGrade = grade(trainingScore);
 
   const allExecutionItems = useMemo(
-    () => station.goodExecution.flatMap((phase, pIndex) => phase.items.map((text, i) => ({ key: `${pIndex}-${i}`, text, phase: phase.title }))),
-    [station]
+    () =>
+      station.goodExecution.flatMap((phase, pIndex) =>
+        phase.items
+          .filter((text) => !isCff || !text.toUpperCase().includes("AAR"))
+          .map((text, i) => ({ key: `${pIndex}-${i}`, text, phase: phase.title }))
+      ),
+    [station, isCff]
   );
   const executionDone = allExecutionItems.filter((x) => executionChecks[x.key]).length;
 
@@ -304,7 +314,7 @@ export default function Stage4Page() {
 
             <Stage4StudyPanel stationId={station.id} />
 
-            <Stage4AARPanel />
+            {!isCff && <Stage4AARPanel />}
 
             {station.changeOfSituation && <Card className="border-amber-900/40 bg-amber-950/10"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Zmiana sytuacji</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></Card>}
 
@@ -326,7 +336,7 @@ export default function Stage4Page() {
                 <div className="rounded-2xl bg-neutral-950 p-4"><div className="text-xs font-bold uppercase tracking-wider text-neutral-500">Zadanie</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.task}</p></div>
               </div>
               {station.changeOfSituation && <div className="mt-4 rounded-2xl border border-amber-900/50 bg-amber-950/15 p-4"><div className="text-xs font-bold uppercase tracking-wider text-amber-400">Rozjemca może wprowadzić</div><p className="mt-2 text-sm leading-6 text-neutral-300">{station.changeOfSituation}</p></div>}
-              <p className="mt-5 text-sm leading-6 text-neutral-400">Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do materiałów pomocniczych. Kiedy zakończysz działanie i AAR, przejdź do samooceny.</p>
+              <p className="mt-5 text-sm leading-6 text-neutral-400">{isCff ? "Wykonaj pełny meldunek CFF bez podpowiedzi. Po zakończeniu meldunku przejdź do samooceny." : "Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do materiałów pomocniczych. Kiedy zakończysz działanie i AAR, przejdź do samooceny."}</p>
               <div className="mt-5"><Button onClick={finishPractice}>Zakończ próbę i oceń</Button></div>
             </Card>
           </div>
@@ -347,13 +357,13 @@ export default function Stage4Page() {
             </Card>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <CriteriaList title="2. Karta egzaminatora — 80%" items={examinerCriteria} values={examiner} onChange={setExaminer} />
-              <CriteriaList title="3. Ocena podwładnych — 20%" items={peerCriteria} values={peer} onChange={setPeer} />
+              <CriteriaList title="2. Karta egzaminatora — 80%" items={activeExaminerCriteria} values={examiner} onChange={setExaminer} />
+              <CriteriaList title="3. Ocena podwładnych — 20%" items={activePeerCriteria} values={peer} onChange={setPeer} />
             </div>
 
             <Card className="bg-neutral-900/60">
               <h3 className="font-bold">Jak liczymy wynik treningowy</h3>
-              <p className="mt-2 text-sm leading-6 text-neutral-400">Egzaminator: {examinerCount}/5 × 0,8 = {(examinerCount * 0.8).toFixed(2)}. Ocena podwładnych w tym trenażerze jest uproszczoną pojedynczą samooceną: {peerCount}/5 = {(peerCount / 5).toFixed(2)}. Razem: {trainingScore.toFixed(2)}. W rzeczywistym egzaminie część 20% jest liczona z kart wszystkich oceniających podwładnych.</p>
+              <p className="mt-2 text-sm leading-6 text-neutral-400">Egzaminator: {examinerCount}/{activeExaminerCriteria.length} → {examinerPart.toFixed(2)} / 4. Ocena podwładnych: {peerCount}/{activePeerCriteria.length} → {peerPart.toFixed(2)} / 1. Razem: {trainingScore.toFixed(2)} / 5.{isCff ? " W CFF kryterium AAR jest wyłączone w tym trenażerze." : ""}</p>
               <div className="mt-4 flex flex-wrap gap-2"><Button onClick={saveAttempt}>{savedAttempt ? "Wynik zapisany" : "Zapisz próbę"}</Button><Button secondary onClick={startPractice}>Powtórz zadanie</Button><Button secondary onClick={() => setView("station")}>Wróć do stacji</Button></div>
             </Card>
 
