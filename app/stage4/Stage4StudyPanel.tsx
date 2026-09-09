@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CffGridTrainer from "./CffGridTrainer";
 import { extraShootingMaterial, stage4StudyMaterials, type Stage4StudyMaterial } from "./driveStudyMaterials";
 
 function StudyCard({ material }: { material: Stage4StudyMaterial }) {
@@ -78,6 +79,7 @@ function StudyCard({ material }: { material: Stage4StudyMaterial }) {
 }
 
 export function Stage4StudyPanel({ stationId }: { stationId: string }) {
+  if (stationId === "cff") return <CffGridTrainer />;
   const material = stage4StudyMaterials[stationId];
   if (!material) return null;
   return <StudyCard material={material} />;
