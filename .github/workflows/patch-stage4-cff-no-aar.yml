@@ -1,0 +1,87 @@
+name: Patch Stage IV CFF no AAR
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove AAR from CFF station only
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app/stage4/page.tsx')
+          s = p.read_text(encoding='utf-8')
+          old = s
+
+          anchor = '  const station = useMemo<TacticalStation>(() => tacticalStations.find((x) => x.id === selectedId) ?? tacticalStations[0], [selectedId]);\n'
+          insert = anchor + '''  const isCff = station.id === "cff";\n  const activeExaminerCriteria = isCff ? examinerCriteria.filter((item) => !item.toUpperCase().includes("AAR")) : examinerCriteria;\n  const activePeerCriteria = isCff ? peerCriteria.filter((item) => !item.toUpperCase().includes("AAR")) : peerCriteria;\n'''
+          if anchor not in s:
+              raise SystemExit('station anchor not found')
+          s = s.replace(anchor, insert, 1)
+
+          old_score = '''  const examinerCount = examinerCriteria.reduce((sum, _, i) => sum + (examiner[i] ? 1 : 0), 0);\n  const peerCount = peerCriteria.reduce((sum, _, i) => sum + (peer[i] ? 1 : 0), 0);\n  const trainingScore = Number((examinerCount * 0.8 + peerCount / 5).toFixed(2));\n'''
+          new_score = '''  const examinerCount = activeExaminerCriteria.reduce((sum, _, i) => sum + (examiner[i] ? 1 : 0), 0);\n  const peerCount = activePeerCriteria.reduce((sum, _, i) => sum + (peer[i] ? 1 : 0), 0);\n  const examinerPart = activeExaminerCriteria.length ? (examinerCount / activeExaminerCriteria.length) * 4 : 0;\n  const peerPart = activePeerCriteria.length ? peerCount / activePeerCriteria.length : 0;\n  const trainingScore = Number((examinerPart + peerPart).toFixed(2));\n'''
+          if old_score not in s:
+              raise SystemExit('score block not found')
+          s = s.replace(old_score, new_score, 1)
+
+          old_exec = '''  const allExecutionItems = useMemo(\n    () => station.goodExecution.flatMap((phase, pIndex) => phase.items.map((text, i) => ({ key: `${pIndex}-${i}`, text, phase: phase.title }))),\n    [station]\n  );\n'''
+          new_exec = '''  const allExecutionItems = useMemo(\n    () =>\n      station.goodExecution.flatMap((phase, pIndex) =>\n        phase.items\n          .filter((text) => !isCff || !text.toUpperCase().includes("AAR"))\n          .map((text, i) => ({ key: `${pIndex}-${i}`, text, phase: phase.title }))\n      ),\n    [station, isCff]\n  );\n'''
+          if old_exec not in s:
+              raise SystemExit('execution block not found')
+          s = s.replace(old_exec, new_exec, 1)
+
+          if '            <Stage4AARPanel />' not in s:
+              raise SystemExit('AAR panel marker not found')
+          s = s.replace('            <Stage4AARPanel />', '            {!isCff && <Stage4AARPanel />}', 1)
+
+          old_prompt = '              <p className="mt-5 text-sm leading-6 text-neutral-400">Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do materiałów pomocniczych. Kiedy zakończysz działanie i AAR, przejdź do samooceny.</p>'
+          new_prompt = '              <p className="mt-5 text-sm leading-6 text-neutral-400">{isCff ? "Wykonaj pełny meldunek CFF bez podpowiedzi. Po zakończeniu meldunku przejdź do samooceny." : "Mów na głos i zachowuj się tak, jakbyś faktycznie prowadził zespół. Nie zaglądaj do materiałów pomocniczych. Kiedy zakończysz działanie i AAR, przejdź do samooceny."}</p>'
+          if old_prompt not in s:
+              raise SystemExit('practice prompt not found')
+          s = s.replace(old_prompt, new_prompt, 1)
+
+          s = s.replace('items={examinerCriteria} values={examiner}', 'items={activeExaminerCriteria} values={examiner}', 1)
+          s = s.replace('items={peerCriteria} values={peer}', 'items={activePeerCriteria} values={peer}', 1)
+
+          old_formula = '              <p className="mt-2 text-sm leading-6 text-neutral-400">Egzaminator: {examinerCount}/5 × 0,8 = {(examinerCount * 0.8).toFixed(2)}. Ocena podwładnych w tym trenażerze jest uproszczoną pojedynczą samooceną: {peerCount}/5 = {(peerCount / 5).toFixed(2)}. Razem: {trainingScore.toFixed(2)}. W rzeczywistym egzaminie część 20% jest liczona z kart wszystkich oceniających podwładnych.</p>'
+          new_formula = '              <p className="mt-2 text-sm leading-6 text-neutral-400">Egzaminator: {examinerCount}/{activeExaminerCriteria.length} → {examinerPart.toFixed(2)} / 4. Ocena podwładnych: {peerCount}/{activePeerCriteria.length} → {peerPart.toFixed(2)} / 1. Razem: {trainingScore.toFixed(2)} / 5.{isCff ? " W CFF kryterium AAR jest wyłączone w tym trenażerze." : ""}</p>'
+          if old_formula not in s:
+              raise SystemExit('formula text not found')
+          s = s.replace(old_formula, new_formula, 1)
+
+          required = [
+            'const isCff = station.id === "cff"',
+            '{!isCff && <Stage4AARPanel />}',
+            'items={activeExaminerCriteria}',
+            'items={activePeerCriteria}',
+            'W CFF kryterium AAR jest wyłączone',
+          ]
+          for item in required:
+              if item not in s:
+                  raise SystemExit(f'missing: {item}')
+          if s == old:
+              raise SystemExit('no changes')
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Verify diff
+        run: |
+          git diff --check app/stage4/page.tsx
+          git diff --exit-code -- . ':!app/stage4/page.tsx'
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/stage4/page.tsx
+          git commit -m "Remove AAR from CFF training"
+          git push origin main
