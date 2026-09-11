@@ -1,0 +1,81 @@
+name: Materialize exact Stage I questions.json
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'stage1-single-questions-615-clean'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: stage1-single-questions-615-clean
+
+      - name: Rebuild and verify exact questions.json
+        shell: bash
+        run: |
+          cat .stage1-source/data_*.txt | tr -d '\r\n' | base64 -d | gzip -dc > /tmp/stage1-source.json
+          python3 - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+
+          expected_core = '0c6cd5a4580947e0c3cb1d859519bf650554b7a216dc49965ea19f6b011dd629'
+          expected_file = 'f87c12237a18858ab44fcd84bb245b13eb3d6611e1eab401e2f3560c99c814eb'
+
+          source = json.loads(Path('/tmp/stage1-source.json').read_text(encoding='utf-8'))
+          if not isinstance(source, list) or len(source) != 615:
+              raise SystemExit(f'Expected 615 questions, got {len(source) if isinstance(source, list) else "not a list"}')
+
+          core_keys = ['type', 'id', 'question', 'choices', 'correctKey', 'image']
+          core = [{k: q.get(k) for k in core_keys} for q in source]
+          core_bytes = json.dumps(core, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+          core_hash = hashlib.sha256(core_bytes).hexdigest()
+          if core_hash != expected_core:
+              raise SystemExit(f'Core dataset mismatch: {core_hash}')
+
+          result = []
+          for q in source:
+              result.append({
+                  'type': q['type'],
+                  'id': q['id'],
+                  'question': q['question'],
+                  'choices': q['choices'],
+                  'correctKey': q['correctKey'],
+                  'image': q.get('image', ''),
+                  'why_correct_short': '',
+                  'why_correct_long': '',
+                  'trap': '',
+              })
+
+          text = json.dumps(result, ensure_ascii=False, indent=2)
+          out = Path('public/questions.json')
+          out.write_text(text, encoding='utf-8')
+          file_hash = hashlib.sha256(out.read_bytes()).hexdigest()
+          if file_hash != expected_file:
+              raise SystemExit(f'Final file mismatch: {file_hash}')
+          print(f'OK: {len(result)} questions, sha256={file_hash}')
+          PY
+
+      - name: Remove obsolete Stage I loaders and temporary files
+        shell: bash
+        run: |
+          rm -f app/questions.json/route.ts
+          rm -rf public/stage1q
+          rm -rf .stage1-source
+          rm -f .stage1-trigger
+          rm -f .github/workflows/materialize-stage1-questions.yml
+
+      - name: Commit clean result on test branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- public/questions.json app/questions.json/route.ts public/stage1q .stage1-source .stage1-trigger .github/workflows/materialize-stage1-questions.yml
+          git commit -m 'Use single public/questions.json for Stage I'
+          git push origin HEAD:stage1-single-questions-615-clean
