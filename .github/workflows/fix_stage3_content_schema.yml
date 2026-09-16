@@ -1,0 +1,288 @@
+name: Normalize Stage III topic descriptions
+
+on:
+  push:
+    paths:
+      - ".github/workflows/fix_stage3_content_schema.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Normalize Stage III content
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          base=Path('public/stage3')
+          files=sorted(base.glob('topics_*.json'))
+          topics={}
+          owners={}
+          payloads={}
+          for f in files:
+            data=json.loads(f.read_text(encoding='utf-8'))
+            payloads[f]=data
+            for t in data:
+              topics[t['id']]=t
+              owners[t['id']]=f
+
+          assert len(topics)==20, len(topics)
+
+          def closing(t, summary, errors):
+            t['closing']=[
+              '„Baczność”',
+              'Zbiórka w miejscu rozpoczęcia zajęć',
+              '„Spocznij”',
+              summary,
+              'Najlepiej ćwiczący żołnierz …..',
+              'Najczęściej popełniane błędy:',
+              *[f'- {e}' for e in errors],
+              'W celu poprawy błędów proponuję dalsze ćwiczenie elementów sprawiających trudność oraz zapoznanie się z Regulaminem musztry.',
+              'Do następnych zajęć proszę zapoznać się z rozdziałem Musztra zespołowa w Regulaminie musztry.',
+              'Czy komuś coś się stało?',
+              'Czy wszyscy wszystko mają?',
+              'Czy nikt niczego nie zgubił?',
+              '„Baczność”',
+              'Koniec zagadnienia',
+              '„Spocznij”'
+            ]
+
+          # M01 — w źródle ćwiczenie było, ale w aplikacji pole practice było puste.
+          t=topics['M01']
+          t['practice']=[
+            'Przechodzę do ćwiczeń.',
+            'Ustawiam ćwiczących w kolumnie dwójkowej i najpierw ćwiczę każdą dwójkę oddzielnie.',
+            '„Pierwsza dwójka na wprost – MARSZ” → „biegiem – MARSZ” → „zwykły – KROK” → „pierwsza dwójka – STÓJ”.',
+            'Powtarzam ćwiczenie z kolejnymi dwójkami, na bieżąco poprawiając błędy.',
+            'Następnie ćwiczymy całością: „pluton na wprost – MARSZ” → „biegiem – MARSZ” → „zwykły – KROK” → „pluton – STÓJ”.'
+          ]
+
+          # M02 — korekta nazwy/ortografii bez zmiany merytoryki.
+          t=topics['M02']
+          t['title']='Chwyty karabinkiem „połóż – BROŃ”, „za – BROŃ”'
+          t['opening'][1]='Treść zagadnienia: Chwyty karabinkiem „połóż – BROŃ”, „za – BROŃ”'
+          t['commands']='„połóż – BROŃ”; „za – BROŃ”'
+
+          # M03 — druga połowa ćwiczenia była błędnie wrzucona do REAGOWAĆ.
+          t=topics['M03']
+          t['practice']=[
+            'Przechodzimy do ćwiczeń na tempa.',
+            '„Na pas” → „przez pierś”.',
+            'Tempo raz – prawą dłoń przesuwacie po pasie broni w górę, zdejmujecie karabinek z ramienia i lewą ręką chwytacie za przednią część nakładki; broń pionowo przed środkiem ciała, magazynek w lewo, wylot lufy na wysokości brody.',
+            'Tempo dwa – prawą ręką odchylacie pas w prawo, chwytacie go od dołu i wsuwacie prawy łokieć pod pas.',
+            'Tempo trzy – unosicie ręce, zarzucacie pas przez głowę na kark, prawą ręką chwytacie szyjkę kolby, lewą opuszczacie.',
+            '„Przez pierś” → „na pas”.',
+            'Tempo raz – lewą ręką chwytacie broń od dołu za łoże i nakładkę, odsuwacie ją od siebie, prawą rękę wysuwacie spod pasa i chwytacie szyjkę kolby.',
+            'Tempo dwa – podnosicie karabinek i przerzucacie pas przez głowę; prawą ręką chwytacie górną część pasa, broń pionowo przed sobą.',
+            'Tempo trzy – przyciągacie pas do siebie i zarzucacie karabinek na prawe ramię w położenie „na pas”.',
+            '„Na pas” → „przez plecy”.',
+            'Tempo raz – lewą ręką chwytacie pas poniżej prawego barku, prawą ręką chwytacie karabinek za trzewik kolby.',
+            'Tempo dwa – prawą ręką unosicie karabinek, a lewą zarzucacie pas przez głowę na lewe ramię; następnie opuszczacie ręce.',
+            '„Przez plecy” → „na pas”.',
+            'Tempo raz – lewą ręką chwytacie pas poniżej lewego barku, prawą ręką chwytacie trzewik kolby.',
+            'Tempo dwa – unosicie karabinek, lewą ręką przerzucacie pas przez głowę na prawe ramię, prawą chwytacie pas na wysokości górnej kieszeni.',
+            'Po opanowaniu temp ćwiczymy bez temp: „Przez pierś – BROŃ”, „Na pas – BROŃ”, „Przez plecy – BROŃ”, „Na pas – BROŃ”.'
+          ]
+          t['react']=[
+            'żołnierz nie przechylaj tułowia',
+            'żołnierz za nisko podnosisz broń podczas przerzucania pasa przez głowę',
+            'żołnierz popraw układ palców – kciuk od wewnątrz, pozostałe palce zwarte na zewnątrz',
+            'żołnierz ustaw broń prawidłowo – wylot lufy na wysokości brody',
+            'żołnierz chwyć pas od razu w prawidłowym miejscu, bez późniejszego poprawiania dłoni'
+          ]
+
+          # M04 — commands zawierało cały opis, brakowało pokazu, a ćwiczenie było wymieszane z reakcjami.
+          t=topics['M04']
+          t['commands']='„w czwórki, w prawo – ZWROT”; „w dwuszereg, w lewo – FRONT”; „WYSTĄP”; „WSTĄP” / „do szyku – WSTĄP”'
+          t['demo']=[
+            'Przechodzę do pokazu wzorowego z żołnierzami wcześniej przeszkolonymi.',
+            'Bez objaśniania pokazuję przejście z dwuszeregu do kolumny czwórkowej i z powrotem, a następnie występowanie i wstępowanie do szyku.'
+          ]
+          t['practice']=[
+            'Przechodzę do ćwiczeń.',
+            '„BACZNOŚĆ” → „w dwuszeregu frontem do mnie – ZBIÓRKA” → „do dwóch – ODLICZ”.',
+            'Ćwiczymy przeformowanie: „w czwórki, w prawo – ZWROT” → „w dwuszereg, w lewo – FRONT”. Powtarzamy do uzyskania jednoczesnego wykonania.',
+            'Następnie ćwiczymy występowanie z pierwszego szeregu: wywołanie nazwiska → „JESTEM” → „WYSTĄP” → trzy kroki → „do szyku – WSTĄP”.',
+            'Ćwiczymy występowanie z drugiego szeregu: pierwsze dwa kroki zwykłe, następne trzy defiladowe, a następnie powrót na „WSTĄP”.',
+            'Na bieżąco koryguję krycie, długość wykroku, jednoczesność ruchu i liczbę kroków podczas występowania.'
+          ]
+          t['react']=[
+            'żołnierz kryj dokładnie',
+            'żołnierz jednocześnie z innymi dostawiaj nogę',
+            'żołnierz zbyt długi wykrok',
+            'żołnierz przy występowaniu wykonaj trzy kroki defiladowe',
+            'żołnierz z drugiego szeregu: najpierw dwa kroki zwykłe, potem trzy defiladowe',
+            'żołnierz utrzymuj prawidłową postawę i nie garb się'
+          ]
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było formowanie kolumny czwórkowej z dwuszeregu i odwrotnie oraz występowanie. Celem było nauczenie prawidłowego przeformowania szyku oraz występowania i wstępowania.',
+            ['brak dokładnego krycia','niejednoczesne wykonanie przeformowania','nieprawidłowa liczba lub rodzaj kroków podczas występowania']
+          )
+
+          # M06 — w objaśnieniu odwrotnego przeformowania była wklejona komenda z innego tematu.
+          t=topics['M06']
+          for i,x in enumerate(t['explanation']):
+            if '„w dwójki - W PRZÓD”' in x:
+              t['explanation'][i]='Na komendę „w szereg, w lewo – FRONT” żołnierze wracają do ustawienia w szeregu, wykonując ruch odwrotny do formowania kolumny dwójkowej i kończą jednocześnie w postawie zasadniczej.'
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było formowanie kolumny dwójkowej z szeregu i odwrotnie. Celem było nauczenie prawidłowego i jednoczesnego przeformowania szyku.',
+            ['brak dokładnego krycia','niejednoczesne dostawianie nogi','zbyt długi wykrok']
+          )
+
+          # M07 — część końcowa była skopiowana ze zwrotów w miejscu.
+          t=topics['M07']
+          closing(t,
+            'Treścią dzisiejszego zagadnienia był marsz krokiem zwykłym i defiladowym. Celem było nauczenie prawidłowej długości i tempa kroku, pracy rąk oraz przechodzenia między rodzajami kroku.',
+            ['zbyt niskie unoszenie stopy w kroku defiladowym','zginanie nogi wysuniętej w kroku defiladowym','nieprawidłowa praca rąk lub pochylanie tułowia']
+          )
+
+          # M08/M09 — źródło nie podaje osobnej komendy wykonawczej; poprzednio były tam komendy organizacyjne albo znak zapytania.
+          t=topics['M08']
+          t['commands']='W materiale źródłowym nie podano odrębnej komendy wykonawczej do oddawania honorów w marszu; czynność wykonuje się zgodnie z sytuacją i zasadami oddawania honorów.'
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było oddawanie honorów w marszu z nakryciem głowy i bez niego, również podczas wyprzedzania. Celem było nauczenie właściwego momentu rozpoczęcia i zakończenia oddawania honorów oraz prawidłowej postawy.',
+            ['zbyt wczesne układanie palców do salutowania','zginanie prawej dłoni w nadgarstku','przechylanie lub zginanie głowy podczas salutowania']
+          )
+          t=topics['M09']
+          t['commands']='W materiale źródłowym nie podano odrębnej komendy wykonawczej do oddawania honorów w miejscu; czynność wykonuje się zgodnie z sytuacją i zasadami oddawania honorów.'
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było oddawanie honorów w miejscu z nakryciem głowy i bez niego. Celem było nauczenie prawidłowego salutowania, frontowania i skłonu głowy.',
+            ['zbyt wczesne układanie palców do salutowania','zginanie prawej dłoni w nadgarstku','przechylanie głowy podczas salutowania']
+          )
+
+          # M12 — główny problem zgłoszony przez użytkownika: uporządkowanie całego przebiegu.
+          t=topics['M12']
+          t['title']='Przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie'
+          t['commands']='„w prawo – ZWROT”; „w lewo – ZWROT”; „WYSTĄP”; „WSTĄP” / „do szyku – WSTĄP”'
+          t['demo']=[
+            'Przechodzę do pokazu wzorowego z żołnierzami wcześniej przeszkolonymi.',
+            'Bez objaśniania pokazuję przejście trójszereg → kolumna trójkowa → trójszereg, a następnie występowanie z pierwszego, drugiego i trzeciego szeregu.'
+          ]
+          t['explanation']=[
+            'Przechodzę do pokazu z objaśnieniem.',
+            'Trójszereg → kolumna trójkowa: przejście wykonuje się na komendę „w prawo – ZWROT”. Cały pododdział wykonuje zwrot jednocześnie i zachowuje krycie oraz odstępy.',
+            'Kolumna trójkowa → trójszereg: przejście wykonuje się na komendę „w lewo – ZWROT”. Cały pododdział wraca jednocześnie do ustawienia w trójszeregu.',
+            'Występowanie z pierwszego szeregu: po wywołaniu żołnierz przyjmuje postawę zasadniczą, odpowiada „JESTEM”, a na „WYSTĄP” wykonuje trzy kroki i staje w postawie zasadniczej.',
+            'Występowanie z drugiego szeregu: żołnierz wykonuje pięć kroków — dwa pierwsze zwykłe i trzy następne defiladowe; poprzednik umożliwia mu wyjście z szyku zgodnie z opisem.',
+            'Występowanie z trzeciego szeregu: żołnierz przechodzi za plecami swojego szeregu na prawą stronę szyku, następnie wzdłuż skrzydła wychodzi przed front i wykonuje trzy kroki.',
+            'Na „WSTĄP” żołnierz robi w tył zwrot i wraca na swoje miejsce tą samą drogą, zachowując postawę i prawidłową liczbę kroków.'
+          ]
+          t['practice']=[
+            'Przechodzę do ćwiczeń.',
+            '„BACZNOŚĆ” → „w trójszeregu frontem do mnie – ZBIÓRKA” → „SPOCZNIJ”.',
+            'Najpierw ćwiczymy samo przeformowanie: „BACZNOŚĆ” → „w prawo – ZWROT” → „w lewo – ZWROT” → „SPOCZNIJ”. Powtarzamy do jednoczesnego wykonania.',
+            'Następnie ćwiczymy występowanie z pierwszego szeregu: nazwisko → „JESTEM” → „WYSTĄP” → trzy kroki → „do szyku – WSTĄP”.',
+            'Potem ćwiczymy występowanie z drugiego szeregu: nazwisko → „JESTEM” → „WYSTĄP” → dwa kroki zwykłe + trzy defiladowe → „do szyku – WSTĄP”.',
+            'Na końcu ćwiczymy występowanie z trzeciego szeregu: nazwisko → „JESTEM” → „WYSTĄP” → przejście za plecami szeregu i prawą stroną szyku → trzy kroki przed front → „do szyku – WSTĄP”.'
+          ]
+          t['react']=[
+            'żołnierz wykonuj zwrot równo z całym pododdziałem',
+            'żołnierz nie rozpoczynaj zwrotu przed hasłem komendy',
+            'żołnierz utrzymuj postawę zasadniczą i nie garb się',
+            'żołnierz z pierwszego szeregu: trzy kroki defiladowe',
+            'żołnierz z drugiego szeregu: dwa kroki zwykłe, następnie trzy defiladowe',
+            'żołnierz z trzeciego szeregu: wyjdź za plecy szeregu, następnie prawą stroną szyku i dopiero przed front'
+          ]
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było przechodzenie z trójszeregu w kolumnę trójkową i odwrotnie oraz występowanie. Celem było nauczenie jednoczesnego przeformowania szyku oraz prawidłowego występowania z każdego szeregu.',
+            ['niejednoczesne wykonanie zwrotu','rozpoczynanie ruchu przed hasłem komendy','nieprawidłowa droga lub liczba kroków podczas występowania']
+          )
+
+          # M14 — podsumowanie było skopiowane z formowania kolumny.
+          t=topics['M14']
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było równanie i krycie. Celem było nauczenie prawidłowego ustawienia linii, odstępów oraz krycia żołnierza poprzedzającego.',
+            ['niedokładne krycie','zbyt mały lub zbyt duży odstęp','skręcanie całego tułowia zamiast samej głowy podczas równania']
+          )
+
+          # M15 — opis i komendy były wymieszane; pokaz wzorowy był pusty.
+          t=topics['M15']
+          t['commands']='„WYSTĄP”; „WSTĄP” / „do szyku – WSTĄP”; wywołanie żołnierza „do mnie” podczas marszu'
+          t['demo']=[
+            'Przechodzę do pokazu wzorowego z żołnierzami wcześniej przeszkolonymi.',
+            'Bez objaśniania pokazuję występowanie i wstępowanie z pierwszego i drugiego szeregu oraz występowanie z kolumny w marszu.'
+          ]
+          if not t['explanation'] or not t['explanation'][0].lower().startswith('przechodzę'):
+            t['explanation'].insert(0,'Przechodzę do pokazu z objaśnieniem.')
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było występowanie z ugrupowania rozwiniętego i marszowego. Celem było nauczenie prawidłowego wyjścia z szyku, podejścia do przełożonego i powrotu do szyku.',
+            ['nieprawidłowa liczba lub rodzaj kroków podczas występowania','utrata postawy zasadniczej','nieprawidłowa droga wyjścia z szyku lub powrotu']
+          )
+
+          # M16 — podsumowanie błędnie mówiło o zwrotach w miejscu.
+          t=topics['M16']
+          t['practice']=[x.replace('SPOCSZNIJ','SPOCZNIJ') for x in t['practice']]
+          closing(t,
+            'Treścią dzisiejszego zagadnienia było zaginanie i odginanie skrzydeł. Celem było nauczenie zachowania równania podczas ruchu po łuku oraz jednoczesnego zatrzymania na właściwej linii.',
+            ['zbyt szybkie tempo żołnierza stanowiącego oś zachodzenia','łamanie szyku','brak równania podczas zaginania lub odginania']
+          )
+
+          # M18 — doprecyzowanie tytułu i niepełnego zdania źródłowego.
+          t=topics['M18']
+          t['title']='Zbiórki w szeregu i dwuszeregu przy dowódcy i w wyznaczonym miejscu'
+          t['opening'][1]='Treść zagadnienia: Zbiórki w szeregu i dwuszeregu przy dowódcy i w wyznaczonym miejscu.'
+          t['explanation']=[x.replace('pamiętając o tym że jeżeli nie może być więcej żołnierzy w drugim szeregu.','pamiętając, że w drugim szeregu nie może być więcej żołnierzy niż w pierwszym.') for x in t['explanation']]
+          closing(t,
+            'Treścią dzisiejszego zagadnienia były zbiórki w szeregu i dwuszeregu przy dowódcy oraz w wyznaczonym miejscu. Celem było nauczenie szybkiego zajmowania właściwego miejsca, równania i krycia.',
+            ['brak postawy zasadniczej po zajęciu miejsca','niedokładne krycie','brak równania w szeregu lub dwuszeregu']
+          )
+
+          # M19 — początek i koniec były skopiowane z „zaginania i odginania skrzydeł”.
+          t=topics['M19']
+          t['opening'][1]='Podaję treść zagadnienia: Zmiana frontu ugrupowania rozwiniętego przez zachodzenie'
+          t['commands']='„Drużyna (pluton, kompania) w prawo (w lewo) zachodź – MARSZ”; „Drużyna – STÓJ”'
+          closing(t,
+            'Treścią dzisiejszego zagadnienia była zmiana frontu ugrupowania rozwiniętego przez zachodzenie. Celem było nauczenie zachowania równania podczas zachodzenia oraz właściwego tempa skrzydła nieruchomego i zewnętrznego.',
+            ['zbyt szybkie tempo skrzydła stanowiącego oś zachodzenia','łamanie szyku','brak równania podczas zachodzenia']
+          )
+
+          # M20 — językowa korekta tempa „w tył zwrot”.
+          t=topics['M20']
+          t['practice']=[x.replace('Tempo raz – wykonujemy zwrot w tył przez na lewej nodze przez lewe ramię o 180˚','Tempo raz – wykonujemy zwrot w tył przez lewe ramię o 180°') for x in t['practice']]
+
+          # Kontrola schematu wszystkich 20 tematów.
+          required=['opening','safety','commands','demo','explanation','practice','react','stop','closing']
+          for tid,t in topics.items():
+            for key in required:
+              assert key in t, (tid,key)
+            assert t['commands'] and t['commands']!='?', (tid,'commands')
+            assert t['demo'], (tid,'demo')
+            assert t['explanation'], (tid,'explanation')
+            assert t['practice'], (tid,'practice')
+            assert t['react'], (tid,'react')
+            assert len(t['closing'])>=10, (tid,'closing')
+
+          for f,data in payloads.items():
+            f.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          print('Audited and normalized',len(topics),'Stage III topics')
+          PY
+
+      - name: Validate JSON and TypeScript
+        run: |
+          python - <<'PY'
+          import json,glob
+          total=0
+          for f in glob.glob('public/stage3/topics_*.json'):
+            total+=len(json.load(open(f,encoding='utf-8')))
+          assert total==20,total
+          print('JSON OK:',total,'topics')
+          PY
+          npm ci
+          npx tsc --noEmit
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/stage3/topics_*.json
+          git commit -m "Normalize and fix all Stage III topic descriptions"
+          git push
