@@ -6,7 +6,8 @@ import OralCoach from "./OralCoach";
 import AdaptiveExaminer from "./AdaptiveExaminer";
 import SemanticCoach from "./SemanticCoach";
 import StudyAnswerPanel from "./StudyAnswerPanel";
-import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";
+import { STAGE2_SET_DEFINITIONS, type Stage2SetQuestionSpec } from "./setDefinitions";
+import { STAGE2_PDF_ANSWER_OVERRIDES } from "./pdfSetAnswerOverrides";
 import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";
 import { STAGE2_ANSWER_OVERRIDES_11_20 } from "./answerOverrides11to20";
 import { STAGE2_ANSWER_OVERRIDES_21_34 } from "./answerOverrides21to34";
@@ -67,7 +68,7 @@ function matchScore(anchor:string, candidate:string){
   return coverage*100 + phraseBonus;
 }
 
-function resolveSetQuestion(anchor:string, data:Data):ResolvedSetQuestion {
+function resolveSetQuestion(spec:Stage2SetQuestionSpec, data:Data):ResolvedSetQuestion {
   const pool:{kind:"theory"|"practical";q:Theory|Practical}[]=[
     ...data.theory.map(q=>({kind:"theory" as const,q})),
     ...data.practical.map(q=>({kind:"practical" as const,q})),
@@ -75,18 +76,21 @@ function resolveSetQuestion(anchor:string, data:Data):ResolvedSetQuestion {
   let best:typeof pool[number]|null=null;
   let bestScore=0;
   for(const item of pool){
-    const score=matchScore(anchor,item.q.question);
+    const score=matchScore(spec.anchor,item.q.question);
     if(score>bestScore){bestScore=score;best=item;}
   }
-  return bestScore>=55 ? best : null;
+  if(bestScore<55||!best) return null;
+  const override=spec.answerKey ? STAGE2_PDF_ANSWER_OVERRIDES[spec.answerKey] : undefined;
+  const q={...best.q,...(override??{}),id:`PDF_${normalizeText(spec.text)}`,question:spec.text,activeForRandomization:true} as Theory|Practical;
+  return {kind:best.kind,q};
 }
 
 function buildResolvedSets(data:Data):ResolvedSet[]{
   return STAGE2_SET_DEFINITIONS.map(def=>({
     number:def.number,
     questions:[
-      resolveSetQuestion(def.questionAnchors[0],data),
-      resolveSetQuestion(def.questionAnchors[1],data),
+      resolveSetQuestion(def.questions[0],data),
+      resolveSetQuestion(def.questions[1],data),
     ],
   }));
 }
@@ -142,7 +146,6 @@ export default function Stage2Page(){
   const [activeSetIndex,setActiveSetIndex]=useState(0);
   const [mockSet,setMockSet]=useState<ResolvedSet|null>(null);
   const [mockIndex,setMockIndex]=useState(0);
-  const [mockPractical,setMockPractical]=useState<Practical|null>(null);
   const [selectedSetNumber,setSelectedSetNumber]=useState(1);
   const [expandedAnswers,setExpandedAnswers]=useState<Record<string,boolean>>({});
   const [error,setError]=useState("");
@@ -154,10 +157,14 @@ export default function Stage2Page(){
   })()},[]);
   useEffect(()=>{try{const s=localStorage.getItem(LS);if(s)setProgress(JSON.parse(s))}catch{}finally{setProgressLoaded(true)}},[]);
   useEffect(()=>{if(progressLoaded)localStorage.setItem(LS,JSON.stringify(progress))},[progress,progressLoaded]);
-
-  const activeTheory=useMemo(()=>data?.theory.filter(q=>q.activeForRandomization)??[],[data]);
-  const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);
   const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
+  const officialQuestions=useMemo(()=>{
+    const byId=new Map<string,{kind:"theory"|"practical";q:Theory|Practical}>();
+    for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item);
+    return [...byId.values()];
+  },[resolvedSets]);
+  const activeTheory=useMemo(()=>officialQuestions.filter(item=>item.kind==="theory").map(item=>item.q as Theory),[officialQuestions]);
+  const activePractical=useMemo(()=>officialQuestions.filter(item=>item.kind==="practical").map(item=>item.q as Practical),[officialQuestions]);
   const completeSets=useMemo(()=>resolvedSets.filter(s=>s.questions.every(Boolean)),[resolvedSets]);
   const unresolvedSets=useMemo(()=>resolvedSets.filter(s=>!s.questions.every(Boolean)),[resolvedSets]);
   const summary=useMemo(()=>{
@@ -220,23 +227,21 @@ export default function Stage2Page(){
     setProgress(p=>({...p,[id]:{rating:r,seen:(p[id]?.seen??0)+1,updatedAt:Date.now()}}));
   }
   function startMock(){
-    const chosen=randomCompleteSet();
-    const practical=activePractical[Math.floor(Math.random()*activePractical.length)] ?? null;
-    if(!chosen||!practical)return;
-    setMockSet(chosen);
-    setMockPractical(practical);
-    setMockIndex(0);
-    setView("mock");
-    setRevealed(false);setFull(false);setChecked({});
+  const chosen=randomCompleteSet();
+  if(!chosen)return;
+  setMockSet(chosen);
+  setMockIndex(0);
+  setView("mock");
+  setRevealed(false);setFull(false);setChecked({});
+}
+function mockNext(){
+  if(!mockSet)return;
+  if(mockIndex===0){
+    setMockIndex(1);setRevealed(false);setFull(false);setChecked({});
+  }else{
+    setView("home");setMockSet(null);setMockIndex(0);
   }
-  function mockNext(){
-    if(!mockSet)return;
-    if(mockIndex<2){
-      setMockIndex(i=>i+1);setRevealed(false);setFull(false);setChecked({});
-    }else{
-      setView("home");setMockSet(null);setMockPractical(null);setMockIndex(0);
-    }
-  }
+}
   function openSets(){setSelectedSetNumber(1);setExpandedAnswers({});setView("sets");}
 
   if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><a href="/" className="mt-5 inline-block underline">Wróć do startu</a></Card></div></main>;
@@ -269,7 +274,7 @@ export default function Stage2Page(){
   </div>;
 
   const selectedSet=resolvedSets.find(s=>s.number===selectedSetNumber) ?? resolvedSets[0];
-  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);
+  const mockCurrent=mockSet?.questions[mockIndex] ?? null;
 
   return <main className="min-h-screen bg-neutral-950 text-neutral-100"><div className="mx-auto max-w-5xl px-4 py-8">
     <header className="mb-6 flex flex-wrap items-center gap-3">
@@ -283,25 +288,25 @@ export default function Stage2Page(){
       <div className="grid gap-4 md:grid-cols-3">
         <button onClick={()=>startTheorySet()} className="rounded-2xl border border-[#56664c] bg-[#121911] p-6 text-left hover:border-[#809174]">
           <div className="text-sm text-[#91a482]">{completeSets.length} zestawy egzaminacyjne</div>
-          <div className="mt-2 text-xl font-bold">Nauka teorii — zestawy</div>
-          <p className="mt-2 text-sm text-neutral-400">Losujesz dokładnie zestaw nr 1–34 → pytanie 1 → pytanie 2 → samoocena.</p>
+          <div className="mt-2 text-xl font-bold">Nauka — zestawy 1–40</div>
+          <p className="mt-2 text-sm text-neutral-400">Losujesz dokładnie zestaw nr 1–40 → pytanie 1 → pytanie 2 → samoocena.</p>
         </button>
         <button onClick={startPractical} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500">
-          <div className="text-sm text-neutral-400">{data.counts.practicalActive} aktywne</div>
+          <div className="text-sm text-neutral-400">{activePractical.length} z zestawów</div>
           <div className="mt-2 text-xl font-bold">Nauka praktyki</div>
           <p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p>
         </button>
         <button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200">
-          <div className="text-sm text-neutral-600">2 teoria z zestawu + 1 praktyka</div>
+          <div className="text-sm text-neutral-600">2 pytania z jednego zestawu</div>
           <div className="mt-2 text-xl font-bold">Symulacja Etapu II</div>
-          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–34, a po jego dwóch pytaniach jedno losowe zadanie praktyczne.</p>
+          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–40 i odpowiadasz kolejno na jego dwa pytania.</p>
         </button>
       </div>
 
       <button onClick={openSets} className="w-full rounded-[1.65rem] border border-[#657658] bg-[#172015] p-6 text-left transition hover:bg-[#1c2718] sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">BAZA // ZESTAWY 1–34</div><h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Podgląd wszystkich zestawów egzaminacyjnych</h2><p className="mt-2 text-sm leading-6 text-[#9eaa96]">Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami z obecnej bazy Etapu II.</p></div>
-          <span className="rounded-xl border border-[#718365] bg-[#202a1c] px-4 py-2 text-sm font-black text-[#c9d5bd]">Otwórz 34 zestawy →</span>
+          <div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">BAZA // ZESTAWY 1–40</div><h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Podgląd wszystkich zestawów egzaminacyjnych</h2><p className="mt-2 text-sm leading-6 text-[#9eaa96]">Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.</p></div>
+          <span className="rounded-xl border border-[#718365] bg-[#202a1c] px-4 py-2 text-sm font-black text-[#c9d5bd]">Otwórz 40 zestawów →</span>
         </div>
       </button>
 
@@ -329,12 +334,12 @@ export default function Stage2Page(){
     </div>}
 
     {view==="sets"&&selectedSet&&<div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">PODGLĄD // 34 ZESTAWY</div><h2 className="mt-2 text-2xl font-black">Zestawy egzaminacyjne Etapu II</h2><p className="mt-1 text-sm text-neutral-400">Wybierz numer zestawu. Pytania i odpowiedzi są pobierane z istniejącej bazy.</p></div><Btn onClick={()=>selectedSet.questions.every(Boolean)&&startTheorySet(selectedSet)} disabled={!selectedSet.questions.every(Boolean)}>Ćwicz zestaw nr {selectedSet.number}</Btn></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">PODGLĄD // 40 ZESTAWÓW</div><h2 className="mt-2 text-2xl font-black">Zestawy egzaminacyjne Etapu II</h2><p className="mt-1 text-sm text-neutral-400">Wybierz numer zestawu. Pytania pochodzą z arkusza „Zestawy pytań 1–40”; odpowiedzi zostały dopasowane i zweryfikowane.</p></div><Btn onClick={()=>selectedSet.questions.every(Boolean)&&startTheorySet(selectedSet)} disabled={!selectedSet.questions.every(Boolean)}>Ćwicz zestaw nr {selectedSet.number}</Btn></div>
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-9 lg:grid-cols-17">{resolvedSets.map(s=><button key={s.number} onClick={()=>{setSelectedSetNumber(s.number);setExpandedAnswers({})}} className={cls("rounded-xl border px-2 py-3 text-sm font-black transition",selectedSetNumber===s.number?"border-[#91a482] bg-[#d9e2d2] text-[#10150f]":"border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-600",!s.questions.every(Boolean)&&"border-amber-900/60")}>{s.number}</button>)}</div>
       <Card className="border-[#56664c] bg-[#121911]"><div className="flex items-center justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#91a482]">ZESTAW EGZAMINACYJNY</div><h3 className="mt-1 text-3xl font-black">Zestaw nr {selectedSet.number}</h3></div><SetBadge number={selectedSet.number}/></div></Card>
       <div className="grid gap-4 lg:grid-cols-2">{selectedSet.questions.map((item,index)=>{
         const key=`${selectedSet.number}-${index}`;
-        const anchor=STAGE2_SET_DEFINITIONS.find(x=>x.number===selectedSet.number)?.questionAnchors[index] ?? "";
+        const anchor=STAGE2_SET_DEFINITIONS.find(x=>x.number===selectedSet.number)?.questions[index]?.text ?? "";
         if(!item)return <Card key={key} className="border-amber-900/60"><div className="text-xs font-black uppercase tracking-[.15em] text-amber-300">Pytanie {index+1}</div><h3 className="mt-3 text-lg font-bold">{anchor}</h3><p className="mt-3 text-sm text-amber-200/80">Nie udało się automatycznie połączyć tego pytania z obecną bazą.</p></Card>;
         const theory=item.kind==="theory"?item.q as Theory:null;
         return <Card key={key} className="flex flex-col"><div className="flex items-center justify-between gap-2"><div className="text-xs font-black uppercase tracking-[.15em] text-[#91a482]">Pytanie {index+1} • {item.kind==="theory"?"teoria":"praktyka"}</div><span className="rounded-full border border-neutral-700 px-2 py-1 text-[10px] text-neutral-400">{item.q.category}</span></div><h3 className="mt-3 text-lg font-bold leading-snug">{item.q.question}</h3>{theory&&theory.keyPoints.length>0&&<div className="mt-4"><div className="text-xs font-bold uppercase tracking-[.12em] text-neutral-500">Punkty kontrolne</div><ul className="mt-2 space-y-1 text-sm text-neutral-300">{theory.keyPoints.map((x,i)=><li key={i}>• {x}</li>)}</ul></div>}<div className="mt-auto pt-5"><button onClick={()=>setExpandedAnswers(x=>({...x,[key]:!x[key]}))} className="w-full rounded-xl border border-[#9eae92] bg-[#dfe7d7] px-4 py-3 text-sm font-black text-[#11170f] transition hover:bg-[#edf2e9]">{expandedAnswers[key]?"Ukryj odpowiedź":"Pokaż odpowiedź"}</button></div>{expandedAnswers[key]&&<div className="mt-4 rounded-2xl border-2 border-[#809173] bg-[#eef2e8] p-5 text-[#11170f] shadow-lg shadow-black/20"><div className="text-[10px] font-black uppercase tracking-[.16em] text-[#617159]">ODPOWIEDŹ // DO NAUKI</div><p className="mt-3 max-w-[76ch] whitespace-pre-line text-[16px] font-medium leading-7 text-[#242c20]">{item.q.fullAnswer}</p></div>}</Card>;
@@ -343,7 +348,7 @@ export default function Stage2Page(){
 
     {view==="theory"&&current&&activeSet&&<QuestionView q={current} kind={activeSet.questions[activeSetIndex]?.kind ?? "theory"} setNumber={activeSet.number} setPosition={activeSetIndex+1}/>} 
     {view==="practical"&&current&&<QuestionView q={current} kind="practical"/>}
-    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockSet.number} setPosition={mockIndex<2?mockIndex+1:undefined}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}</Btn></div>}</div>}
+    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{`Pytanie ${mockIndex+1} / 2`}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockSet.number} setPosition={mockIndex+1}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}</Btn></div>}</div>}
     {view==="coach"&&<OralCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="examiner"&&<AdaptiveExaminer questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="semantic"&&<SemanticCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
