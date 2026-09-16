@@ -127,6 +127,9 @@ jobs:
             'BAZA // ZESTAWY 1–34': 'BAZA // ZESTAWY 1–40',
             'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami z obecnej bazy Etapu II.': 'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.',
             'Otwórz 34 zestawy →': 'Otwórz 40 zestawów →',
+            'PODGLĄD // 34 ZESTAWY': 'PODGLĄD // 40 ZESTAWÓW',
+            'Pytania i odpowiedzi są pobierane z istniejącej bazy.': 'Pytania pochodzą z arkusza „Zestawy pytań 1–40”; odpowiedzi zostały dopasowane i zweryfikowane.',
+            '?.questionAnchors[index]': '?.questions[index]?.text',
             '<span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span>': '<span>{`Pytanie ${mockIndex+1} / 2`}</span>',
             'setPosition={mockIndex<2?mockIndex+1:undefined}': 'setPosition={mockIndex+1}',
             '{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}': '{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}',
@@ -140,6 +143,7 @@ jobs:
           assert 'data?.theory.filter(q=>q.activeForRandomization)' not in s
           assert 'data?.practical.filter(q=>q.activeForRandomization)' not in s
           assert 'mockPractical' not in s
+          assert 'questionAnchors' not in s
           assert '1–34' not in s
 
           p.write_text(s, encoding="utf-8")
