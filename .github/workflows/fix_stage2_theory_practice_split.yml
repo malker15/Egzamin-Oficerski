@@ -25,10 +25,9 @@ jobs:
           p=Path("app/stage2/page.tsx")
           s=p.read_text(encoding="utf-8")
 
-          s=s.replace(
-            'type ResolvedSetQuestion = { kind:"theory"|"practical"; q:Theory|Practical } | null;',
-            'type ResolvedSetQuestion = { kind:"theory"; q:Theory } | null;'
-          )
+          old_type='type ResolvedSetQuestion = { kind:"theory"|"practical"; q:Theory|Practical } | null;'
+          assert old_type in s
+          s=s.replace(old_type,'type ResolvedSetQuestion = { kind:"theory"; q:Theory } | null;',1)
 
           pattern=re.compile(r'function resolveSetQuestion\(spec:Stage2SetQuestionSpec, data:Data\):ResolvedSetQuestion \{.*?\n\}\n\nfunction buildResolvedSets',re.S)
           replacement='''function resolveSetQuestion(spec:Stage2SetQuestionSpec, data:Data):ResolvedSetQuestion {
@@ -59,28 +58,27 @@ jobs:
           s,n=pattern.subn(replacement,s,count=1)
           assert n==1, f"resolver replacement={n}"
 
-          old='''  const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
-          const officialQuestions=useMemo(()=>{
-            const byId=new Map<string,{kind:"theory"|"practical";q:Theory|Practical}>();
-            for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item);
-            return [...byId.values()];
-          },[resolvedSets]);
-          const activeTheory=useMemo(()=>officialQuestions.filter(item=>item.kind==="theory").map(item=>item.q as Theory),[officialQuestions]);
-          const activePractical=useMemo(()=>officialQuestions.filter(item=>item.kind==="practical").map(item=>item.q as Practical),[officialQuestions]);'''
-          new='''  const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
-          const activeTheory=useMemo(()=>{
-            const byId=new Map<string,Theory>();
-            for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item.q);
-            return [...byId.values()];
-          },[resolvedSets]);
-          const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);'''
-          assert old in s, "official pool block not found"
-          s=s.replace(old,new,1)
+          pattern=re.compile(
+            r'\s*const resolvedSets=useMemo\(\(\)=>data\?buildResolvedSets\(data\):\[\],\[data\]\);\s*'
+            r'const officialQuestions=useMemo\(\(\)=>\{.*?\},\[resolvedSets\]\);\s*'
+            r'const activeTheory=useMemo\(\(\)=>officialQuestions\.filter\(item=>item\.kind==="theory"\)\.map\(item=>item\.q as Theory\),\[officialQuestions\]\);\s*'
+            r'const activePractical=useMemo\(\(\)=>officialQuestions\.filter\(item=>item\.kind==="practical"\)\.map\(item=>item\.q as Practical\),\[officialQuestions\]\);',
+            re.S,
+          )
+          replacement='''
+            const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
+            const activeTheory=useMemo(()=>{
+              const byId=new Map<string,Theory>();
+              for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item.q);
+              return [...byId.values()];
+            },[resolvedSets]);
+            const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);'''
+          s,n=pattern.subn(replacement,s,count=1)
+          assert n==1, f"official pool replacement={n}"
 
           old='  const [mockIndex,setMockIndex]=useState(0);'
-          new='  const [mockIndex,setMockIndex]=useState(0);\n  const [mockPractical,setMockPractical]=useState<Practical|null>(null);'
           assert old in s
-          s=s.replace(old,new,1)
+          s=s.replace(old,old+'\n  const [mockPractical,setMockPractical]=useState<Practical|null>(null);',1)
 
           pattern=re.compile(r'  function startMock\(\)\{.*?\n\}\nfunction mockNext\(\)\{.*?\n\}',re.S)
           replacement='''  function startMock(){
@@ -105,9 +103,8 @@ jobs:
           assert n==1, f"mock functions={n}"
 
           old='  const mockCurrent=mockSet?.questions[mockIndex] ?? null;'
-          new='  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);'
           assert old in s
-          s=s.replace(old,new,1)
+          s=s.replace(old,'  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);',1)
 
           replacements={
             '{activePractical.length} z zestawów':'{activePractical.length} aktywne',
@@ -121,11 +118,11 @@ jobs:
             assert a in s, a
             s=s.replace(a,b,1)
 
-          # Zestawy z PDF są zawsze teorią; praktyka pozostaje osobną starą bazą.
           assert 'const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);' in s
           assert 'return {kind:"theory",q};' in s
           assert 'setMockPractical(practical);' in s
           assert 'Praktyka 1 / 1' in s
+          assert 'officialQuestions' not in s
 
           p.write_text(s,encoding="utf-8")
           print("Stage II split fixed")
