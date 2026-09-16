@@ -19,7 +19,7 @@ type Progress = Record<string, { rating: Rating; seen: number; updatedAt: number
 type Theory = { id:string; category:string; question:string; keyPoints:string[]; fullAnswer:string; activeForRandomization:boolean };
 type Practical = { id:string; category:string; practicalKind:string; question:string; openingCue:string; steps:string[]; checklist:{id:string;text:string}[]; fullAnswer:string; activeForRandomization:boolean };
 type Data = { title:string; counts:{theoryActive:number;practicalActive:number;totalActive:number}; theory:Theory[]; practical:Practical[] };
-type ResolvedSetQuestion = { kind:"theory"|"practical"; q:Theory|Practical } | null;
+type ResolvedSetQuestion = { kind:"theory"; q:Theory } | null;
 type ResolvedSet = { number:number; questions:[ResolvedSetQuestion, ResolvedSetQuestion] };
 
 const LS = "officer_stage2_progress_v2";
@@ -69,20 +69,27 @@ function matchScore(anchor:string, candidate:string){
 }
 
 function resolveSetQuestion(spec:Stage2SetQuestionSpec, data:Data):ResolvedSetQuestion {
-  const pool:{kind:"theory"|"practical";q:Theory|Practical}[]=[
-    ...data.theory.map(q=>({kind:"theory" as const,q})),
-    ...data.practical.map(q=>({kind:"practical" as const,q})),
-  ];
-  let best:typeof pool[number]|null=null;
+  const pool:(Theory|Practical)[]=[...data.theory,...data.practical];
+  let best:Theory|Practical|null=null;
   let bestScore=0;
   for(const item of pool){
-    const score=matchScore(spec.anchor,item.q.question);
+    const score=matchScore(spec.anchor,item.question);
     if(score>bestScore){bestScore=score;best=item;}
   }
   if(bestScore<55||!best) return null;
   const override=spec.answerKey ? STAGE2_PDF_ANSWER_OVERRIDES[spec.answerKey] : undefined;
-  const q={...best.q,...(override??{}),id:`PDF_${normalizeText(spec.text)}`,question:spec.text,activeForRandomization:true} as Theory|Practical;
-  return {kind:best.kind,q};
+  const baseKeyPoints = "keyPoints" in best
+    ? best.keyPoints
+    : [best.openingCue,...best.steps,...best.checklist.map(x=>x.text)].filter(Boolean);
+  const q:Theory={
+    id:`PDF_${normalizeText(spec.text)}`,
+    category:override?.category ?? best.category,
+    question:spec.text,
+    keyPoints:override?.keyPoints ?? baseKeyPoints,
+    fullAnswer:override?.fullAnswer ?? best.fullAnswer,
+    activeForRandomization:true,
+  };
+  return {kind:"theory",q};
 }
 
 function buildResolvedSets(data:Data):ResolvedSet[]{
@@ -146,6 +153,7 @@ export default function Stage2Page(){
   const [activeSetIndex,setActiveSetIndex]=useState(0);
   const [mockSet,setMockSet]=useState<ResolvedSet|null>(null);
   const [mockIndex,setMockIndex]=useState(0);
+  const [mockPractical,setMockPractical]=useState<Practical|null>(null);
   const [selectedSetNumber,setSelectedSetNumber]=useState(1);
   const [expandedAnswers,setExpandedAnswers]=useState<Record<string,boolean>>({});
   const [error,setError]=useState("");
@@ -158,13 +166,12 @@ export default function Stage2Page(){
   useEffect(()=>{try{const s=localStorage.getItem(LS);if(s)setProgress(JSON.parse(s))}catch{}finally{setProgressLoaded(true)}},[]);
   useEffect(()=>{if(progressLoaded)localStorage.setItem(LS,JSON.stringify(progress))},[progress,progressLoaded]);
   const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
-  const officialQuestions=useMemo(()=>{
-    const byId=new Map<string,{kind:"theory"|"practical";q:Theory|Practical}>();
-    for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item);
+  const activeTheory=useMemo(()=>{
+    const byId=new Map<string,Theory>();
+    for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item.q);
     return [...byId.values()];
   },[resolvedSets]);
-  const activeTheory=useMemo(()=>officialQuestions.filter(item=>item.kind==="theory").map(item=>item.q as Theory),[officialQuestions]);
-  const activePractical=useMemo(()=>officialQuestions.filter(item=>item.kind==="practical").map(item=>item.q as Practical),[officialQuestions]);
+  const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);
   const completeSets=useMemo(()=>resolvedSets.filter(s=>s.questions.every(Boolean)),[resolvedSets]);
   const unresolvedSets=useMemo(()=>resolvedSets.filter(s=>!s.questions.every(Boolean)),[resolvedSets]);
   const summary=useMemo(()=>{
@@ -228,18 +235,20 @@ export default function Stage2Page(){
   }
   function startMock(){
   const chosen=randomCompleteSet();
-  if(!chosen)return;
+  const practical=pickWeighted(activePractical,progress);
+  if(!chosen||!practical)return;
   setMockSet(chosen);
+  setMockPractical(practical);
   setMockIndex(0);
   setView("mock");
   setRevealed(false);setFull(false);setChecked({});
 }
 function mockNext(){
   if(!mockSet)return;
-  if(mockIndex===0){
-    setMockIndex(1);setRevealed(false);setFull(false);setChecked({});
+  if(mockIndex<2){
+    setMockIndex(mockIndex+1);setRevealed(false);setFull(false);setChecked({});
   }else{
-    setView("home");setMockSet(null);setMockIndex(0);
+    setView("home");setMockSet(null);setMockPractical(null);setMockIndex(0);
   }
 }
   function openSets(){setSelectedSetNumber(1);setExpandedAnswers({});setView("sets");}
@@ -274,7 +283,7 @@ function mockNext(){
   </div>;
 
   const selectedSet=resolvedSets.find(s=>s.number===selectedSetNumber) ?? resolvedSets[0];
-  const mockCurrent=mockSet?.questions[mockIndex] ?? null;
+  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);
 
   return <main className="min-h-screen bg-neutral-950 text-neutral-100"><div className="mx-auto max-w-5xl px-4 py-8">
     <header className="mb-6 flex flex-wrap items-center gap-3">
@@ -292,14 +301,14 @@ function mockNext(){
           <p className="mt-2 text-sm text-neutral-400">Losujesz dokładnie zestaw nr 1–40 → pytanie 1 → pytanie 2 → samoocena.</p>
         </button>
         <button onClick={startPractical} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500">
-          <div className="text-sm text-neutral-400">{activePractical.length} z zestawów</div>
+          <div className="text-sm text-neutral-400">{activePractical.length} aktywne</div>
           <div className="mt-2 text-xl font-bold">Nauka praktyki</div>
           <p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p>
         </button>
         <button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200">
-          <div className="text-sm text-neutral-600">2 pytania z jednego zestawu</div>
+          <div className="text-sm text-neutral-600">2 teoria z zestawu + 1 praktyka</div>
           <div className="mt-2 text-xl font-bold">Symulacja Etapu II</div>
-          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–40 i odpowiadasz kolejno na jego dwa pytania.</p>
+          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–40, odpowiadasz na jego dwa pytania teoretyczne, a następnie na jedno losowe zadanie praktyczne.</p>
         </button>
       </div>
 
@@ -348,7 +357,7 @@ function mockNext(){
 
     {view==="theory"&&current&&activeSet&&<QuestionView q={current} kind={activeSet.questions[activeSetIndex]?.kind ?? "theory"} setNumber={activeSet.number} setPosition={activeSetIndex+1}/>} 
     {view==="practical"&&current&&<QuestionView q={current} kind="practical"/>}
-    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{`Pytanie ${mockIndex+1} / 2`}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockSet.number} setPosition={mockIndex+1}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}</Btn></div>}</div>}
+    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockIndex<2?mockSet.number:undefined} setPosition={mockIndex<2?mockIndex+1:undefined}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}</Btn></div>}</div>}
     {view==="coach"&&<OralCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="examiner"&&<AdaptiveExaminer questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="semantic"&&<SemanticCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
