@@ -31,7 +31,13 @@
       "Na hasło komendy „zwykły - KROK”, zwalniacie bieg stawiając w tym tempie jeszcze trzy kroki i przechodzicie do marszu.",
       "Na komendę „pododdział – STÓJ” wykonujecie regulaminowe zatrzymanie. Na zapowiedź „pododdział” maszerujecie krokiem defiladowym, a po haśle „STÓJ” dajecie jeszcze jeden krok, przystawiając energicznie do drugiej nogi, tę nogę na którą padło hasło."
     ],
-    "practice": [],
+    "practice": [
+      "Przechodzę do ćwiczeń.",
+      "Ustawiam ćwiczących w kolumnie dwójkowej i najpierw ćwiczę każdą dwójkę oddzielnie.",
+      "„Pierwsza dwójka na wprost – MARSZ” → „biegiem – MARSZ” → „zwykły – KROK” → „pierwsza dwójka – STÓJ”.",
+      "Powtarzam ćwiczenie z kolejnymi dwójkami, na bieżąco poprawiając błędy.",
+      "Następnie ćwiczymy całością: „pluton na wprost – MARSZ” → „biegiem – MARSZ” → „zwykły – KROK” → „pluton – STÓJ”."
+    ],
     "react": [
       "żołnierz za wcześnie zginasz łokcie",
       "żołnierz za późno zginasz łokcie",
@@ -63,10 +69,10 @@
   {
     "id": "M02",
     "number": 2,
-    "title": "Chwyty karabinkiem „połóż - BROŃ”, „za - BRON”,",
+    "title": "Chwyty karabinkiem „połóż – BROŃ”, „za – BROŃ”",
     "opening": [
       "„Baczność”",
-      "Treść zagadnienia: Chwyty karabinkiem „połóż - BROŃ”, „za - BRON”,",
+      "Treść zagadnienia: Chwyty karabinkiem „połóż – BROŃ”, „za – BROŃ”",
       "„Spocznij”",
       "Ma to na celu uczyć Was, jak prawidłowo wykonywać chwyty karabinkiem, co przyda się w dalszej służbie wojskowej."
     ],
@@ -81,7 +87,7 @@
         "niezwłocznie meldować o doznanych urazach oraz złym samopoczuciu."
       ]
     },
-    "commands": "„połóż - BROŃ!”, „za - BROŃ!”,",
+    "commands": "„połóż – BROŃ”; „za – BROŃ”",
     "demo": [
       "Przechodzę do pokazu chwytów karabinkiem, komendy podaję dla siebie."
     ],
@@ -176,39 +182,29 @@
       "Na komendę „Na pas – BROŃ” lewą ręką chwytacie pas nieco poniżej lewego barku, prawą zaś chwytacie karabinek za kolbę. Po czym prawą ręką podnosicie broń, natomiast lewą ręką przerzucacie pas przez głowę na prawe ramię. Prawą ręką chwytacie za pas na wysokości górnej kieszeni munduru. Lewą rękę szybko opuszcza."
     ],
     "practice": [
-      "Przechodzimy do ćwiczeń na tempa",
-      "„na pas” „przez pierś”",
-      "Tempo raz – prawą dłoń przesuwacie po pasie broni nieco w górę (na wysokość barku), zdejmujecie karabinek z ramienia i chwyciwszy lewą ręką za przednią część nakładki trzymacie karabinek pionowo przed środkiem ciała. Magazynek jest skierowany w lewo, wylot lufy znajduje się na wysokości brody. Prawą ręką, skierowaną dłonią w lewo, trzymacie pas broni na wysokości kieszeni.",
-      "Tempo dwa – prawą ręką odchylacie pas broni w prawo i, uchwyciwszy go dłonią od dołu, podnosicie dłoń na wysokość brody i wsuwacie prawy łokieć pod pas. (Pas powinien być przerzucony przez prawe przedramię, kilka centymetrów za łokciem. Lewą dłonią, znajdującą się na wysokości lewej górnej kieszeni, trzyma się karabinek skośnie, lufą skierowaną w lewo, w górę. Wylot lufy znajduje się na wysokości brody.",
-      "Tempo trzy – unosicie obie ręce pas broni zarzucacie przez głowę na kark. Prawą ręką chwytacie karabinek za szyjkę kolby, Kciuk znajduję się od wewnątrz, a pozostałe palce zwarte – na zewnątrz. Lewą rękę opuszczacie i trzymacie jak w postawie zasadniczej.",
-      "przez pierś na pas",
-      "Tempo raz – lewą ręką ujmujecie karabinek podchwytem (z dołu) za łoże i nakładkę; dłoń – na wysokości barku, kciuk od wewnątrz, a pozostałe palce – na zewnątrz zwarte. Broń odsuwacie od siebie, do przodu, po czym wysuwacie prawą rękę spod pasa i ujmujecie karabinek nachwytem za szyjkę kolby. Kciuk znajduje się od wewnątrz, a pozostałe palce zwarte – na zewnątrz.",
-      "Tempo dwa – obydwiema rękami podnosicie karabinek i przerzucacie pas broni przez głowę. Następnie opuszczacie go i chwytacie prawą ręką za górną część pasa w odległości 2-3 szerokości dłoni od poprzedniego strzemienia, trzymacie karabinek pionowe przed środkiem ciała, skierowaną magazynkiem w lewo. Wylot lufy na wysokości brody.",
-      "Tempo trzy – przyciągacie pas do siebie i zarzucacie karabinek przez prawe ramię w położenie „na pas”, a lewą rękę szybko opuszczacie i trzymacie jak w postawie zasadniczej.",
-      "„przez pierś broń na tempa – ĆWICZ”, „tempo - RAZ” „tempo – DWA”, „tempo – TRZY”",
-      "(Ćwiczą aż będą wykonywać bez większego problemu)"
+      "Przechodzimy do ćwiczeń na tempa.",
+      "„Na pas” → „przez pierś”.",
+      "Tempo raz – prawą dłoń przesuwacie po pasie broni w górę, zdejmujecie karabinek z ramienia i lewą ręką chwytacie za przednią część nakładki; broń pionowo przed środkiem ciała, magazynek w lewo, wylot lufy na wysokości brody.",
+      "Tempo dwa – prawą ręką odchylacie pas w prawo, chwytacie go od dołu i wsuwacie prawy łokieć pod pas.",
+      "Tempo trzy – unosicie ręce, zarzucacie pas przez głowę na kark, prawą ręką chwytacie szyjkę kolby, lewą opuszczacie.",
+      "„Przez pierś” → „na pas”.",
+      "Tempo raz – lewą ręką chwytacie broń od dołu za łoże i nakładkę, odsuwacie ją od siebie, prawą rękę wysuwacie spod pasa i chwytacie szyjkę kolby.",
+      "Tempo dwa – podnosicie karabinek i przerzucacie pas przez głowę; prawą ręką chwytacie górną część pasa, broń pionowo przed sobą.",
+      "Tempo trzy – przyciągacie pas do siebie i zarzucacie karabinek na prawe ramię w położenie „na pas”.",
+      "„Na pas” → „przez plecy”.",
+      "Tempo raz – lewą ręką chwytacie pas poniżej prawego barku, prawą ręką chwytacie karabinek za trzewik kolby.",
+      "Tempo dwa – prawą ręką unosicie karabinek, a lewą zarzucacie pas przez głowę na lewe ramię; następnie opuszczacie ręce.",
+      "„Przez plecy” → „na pas”.",
+      "Tempo raz – lewą ręką chwytacie pas poniżej lewego barku, prawą ręką chwytacie trzewik kolby.",
+      "Tempo dwa – unosicie karabinek, lewą ręką przerzucacie pas przez głowę na prawe ramię, prawą chwytacie pas na wysokości górnej kieszeni.",
+      "Po opanowaniu temp ćwiczymy bez temp: „Przez pierś – BROŃ”, „Na pas – BROŃ”, „Przez plecy – BROŃ”, „Na pas – BROŃ”."
     ],
     "react": [
       "żołnierz nie przechylaj tułowia",
-      "żołnierz za nisko podnosisz broń podczas zarzucania pasa broni przez głowę",
-      "żołnierz masz niewłaściwy układ palców po zakończeniu chwytu, mówiłem „kciuk od wewnątrz, a pozostałe palce zwarte – na zewnątrz”",
-      "żołnierz broń masz zbyt skośnie/pionowo ułożoną, wylot lufy ma być na wysokości brody",
-      "„na pas” „przez plecy”",
-      "Tempo raz – lewą ręką chwytacie pas broni nieco poniżej prawego barku (kciuk do wewnątrz, dłoń zamknięta). Prawą ręką chwytacie karabinek za kolbę (zgiętymi palcami ujmuje się trzewik kolby od spodu).",
-      "Tempo dwa – prawą ręką unosicie karabinek do góry, a lewą zarzucacie pas karabinka przez głowę na lewe ramię. Broń opuszczacie na długość pasa, a ręce opuszczacie i trzymacie jak w postawie zasadniczej.",
-      "„przez plecy” „na pas”",
-      "Tempo raz – lewą ręką chwytacie pas karabinka nieco poniżej lewego barku; kciuk od wewnątrz, dłoń zamknięta. Prawą ręką chwytacie karabinek za trzewik kolby.",
-      "Tempo dwa – prawą ręką unosicie karabinek do góry, a lewą przerzucacie pas broni przez głowę na prawe ramię. Następnie prawą ręką chwytacie pas na wysokości prawej górnej kieszeni, a lewa szybko opuszcza się i trzyma jak w postawie zasadniczej.",
-      "„przez plecy broń na tempa – ĆWICZ”, „tempo - RAZ” „tempo – DWA”,",
-      "REAGOWAĆ:",
-      "żołnierz nie przechylaj tułowia",
-      "żołnierz za nisko podnosisz broń podczas zarzucania pasa broni przez głowę",
-      "żołnierz źle chwyciłeś pas i teraz musisz przesunąć po nim dłoń aby mieć na wysokości kieszeni",
-      "Teraz przejdziemy do wykonywania chwytów karabinkiem bez temp na komendę",
-      "„Przez pierś - BROŃ!”, „Na pas - BROŃ!”,",
-      "„Przez plecy - BROŃ!”, „Na pas - BROŃ!”,",
-      "REAGOWAĆ:",
-      "Wszystko co wyżej"
+      "żołnierz za nisko podnosisz broń podczas przerzucania pasa przez głowę",
+      "żołnierz popraw układ palców – kciuk od wewnątrz, pozostałe palce zwarte na zewnątrz",
+      "żołnierz ustaw broń prawidłowo – wylot lufy na wysokości brody",
+      "żołnierz chwyć pas od razu w prawidłowym miejscu, bez późniejszego poprawiania dłoni"
     ],
     "stop": "PRZERWIJ ĆWICZENIE (30 sek. przed końcem czasu, sygnał od egzaminującego)",
     "closing": [
