@@ -22,16 +22,20 @@ jobs:
           from pathlib import Path
           import re
 
-          p=Path("app/stage2/page.tsx")
-          s=p.read_text(encoding="utf-8")
+          p = Path("app/stage2/page.tsx")
+          s = p.read_text(encoding="utf-8")
 
-          old='import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";'
-          new='import { STAGE2_SET_DEFINITIONS, type Stage2SetQuestionSpec } from "./setDefinitions";\nimport { STAGE2_PDF_ANSWER_OVERRIDES } from "./pdfSetAnswerOverrides";'
-          assert old in s
-          s=s.replace(old,new,1)
+          old = 'import { STAGE2_SET_DEFINITIONS } from "./setDefinitions";'
+          new = 'import { STAGE2_SET_DEFINITIONS, type Stage2SetQuestionSpec } from "./setDefinitions";\nimport { STAGE2_PDF_ANSWER_OVERRIDES } from "./pdfSetAnswerOverrides";'
+          assert old in s, "setDefinitions import not found"
+          s = s.replace(old, new, 1)
 
-          pattern=re.compile(r'function resolveSetQuestion\(anchor:string, data:Data\):ResolvedSetQuestion \{.*?\n\}\n\nfunction buildResolvedSets\(data:Data\):ResolvedSet\[\]\{.*?\n\}\n',re.S)
-          replacement='''function resolveSetQuestion(spec:Stage2SetQuestionSpec, data:Data):ResolvedSetQuestion {
+          pattern = re.compile(
+            r'function resolveSetQuestion\(anchor:string, data:Data\):ResolvedSetQuestion \{.*?\n\}\n\n'
+            r'function buildResolvedSets\(data:Data\):ResolvedSet\[\]\{.*?\n\}\n',
+            re.S,
+          )
+          replacement = '''function resolveSetQuestion(spec:Stage2SetQuestionSpec, data:Data):ResolvedSetQuestion {
             const pool:{kind:"theory"|"practical";q:Theory|Practical}[]=[
               ...data.theory.map(q=>({kind:"theory" as const,q})),
               ...data.practical.map(q=>({kind:"practical" as const,q})),
@@ -58,29 +62,36 @@ jobs:
             }));
           }
           '''
-          s,n=pattern.subn(replacement,s,count=1)
-          assert n==1, f"resolver={n}"
+          s, n = pattern.subn(replacement, s, count=1)
+          assert n == 1, f"resolver replacement count={n}"
 
-          old='  const [mockPractical,setMockPractical]=useState<Practical|null>(null);\n'
-          assert old in s
-          s=s.replace(old,'',1)
+          s, n = re.subn(
+            r'\s*const \[mockPractical,setMockPractical\]=useState<Practical\|null>\(null\);',
+            '',
+            s,
+            count=1,
+          )
+          assert n == 1, f"mockPractical state replacement count={n}"
 
-          old='''  const activeTheory=useMemo(()=>data?.theory.filter(q=>q.activeForRandomization)??[],[data]);
-          const activePractical=useMemo(()=>data?.practical.filter(q=>q.activeForRandomization)??[],[data]);
-          const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);'''
-          new='''  const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
-          const officialQuestions=useMemo(()=>{
-            const byId=new Map<string,{kind:"theory"|"practical";q:Theory|Practical}>();
-            for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item);
-            return [...byId.values()];
-          },[resolvedSets]);
-          const activeTheory=useMemo(()=>officialQuestions.filter(item=>item.kind==="theory").map(item=>item.q as Theory),[officialQuestions]);
-          const activePractical=useMemo(()=>officialQuestions.filter(item=>item.kind==="practical").map(item=>item.q as Practical),[officialQuestions]);'''
-          assert old in s
-          s=s.replace(old,new,1)
+          pattern = re.compile(
+            r'\s*const activeTheory=useMemo\(\(\)=>data\?\.theory\.filter\(q=>q\.activeForRandomization\)\?\?\[\],\[data\]\);\s*'
+            r'const activePractical=useMemo\(\(\)=>data\?\.practical\.filter\(q=>q\.activeForRandomization\)\?\?\[\],\[data\]\);\s*'
+            r'const resolvedSets=useMemo\(\(\)=>data\?buildResolvedSets\(data\):\[\],\[data\]\);'
+          )
+          replacement = '''
+            const resolvedSets=useMemo(()=>data?buildResolvedSets(data):[],[data]);
+            const officialQuestions=useMemo(()=>{
+              const byId=new Map<string,{kind:"theory"|"practical";q:Theory|Practical}>();
+              for(const set of resolvedSets) for(const item of set.questions) if(item) byId.set(item.q.id,item);
+              return [...byId.values()];
+            },[resolvedSets]);
+            const activeTheory=useMemo(()=>officialQuestions.filter(item=>item.kind==="theory").map(item=>item.q as Theory),[officialQuestions]);
+            const activePractical=useMemo(()=>officialQuestions.filter(item=>item.kind==="practical").map(item=>item.q as Practical),[officialQuestions]);'''
+          s, n = pattern.subn(replacement, s, count=1)
+          assert n == 1, f"official pool replacement count={n}"
 
-          pattern=re.compile(r'  function startMock\(\)\{.*?\n  \}\n  function mockNext\(\)\{.*?\n  \}',re.S)
-          replacement='''  function startMock(){
+          pattern = re.compile(r'  function startMock\(\)\{.*?\n  \}\n  function mockNext\(\)\{.*?\n  \}', re.S)
+          replacement = '''  function startMock(){
             const chosen=randomCompleteSet();
             if(!chosen)return;
             setMockSet(chosen);
@@ -96,36 +107,42 @@ jobs:
               setView("home");setMockSet(null);setMockIndex(0);
             }
           }'''
-          s,n=pattern.subn(replacement,s,count=1)
-          assert n==1, f"mock={n}"
+          s, n = pattern.subn(replacement, s, count=1)
+          assert n == 1, f"mock functions replacement count={n}"
 
-          old='  const mockCurrent=mockIndex<2 ? (mockSet?.questions[mockIndex] ?? null) : (mockPractical ? {kind:"practical" as const,q:mockPractical} : null);'
-          assert old in s
-          s=s.replace(old,'  const mockCurrent=mockSet?.questions[mockIndex] ?? null;',1)
+          s, n = re.subn(
+            r'  const mockCurrent=mockIndex<2 \? \(mockSet\?\.questions\[mockIndex\] \?\? null\) : \(mockPractical \? \{kind:"practical" as const,q:mockPractical\} : null\);',
+            '  const mockCurrent=mockSet?.questions[mockIndex] ?? null;',
+            s,
+            count=1,
+          )
+          assert n == 1, f"mockCurrent replacement count={n}"
 
-          repl={
-            'Nauka teorii — zestawy':'Nauka — zestawy 1–40',
-            'Losujesz dokładnie zestaw nr 1–34 → pytanie 1 → pytanie 2 → samoocena.':'Losujesz dokładnie zestaw nr 1–40 → pytanie 1 → pytanie 2 → samoocena.',
-            '{data.counts.practicalActive} aktywne':'{activePractical.length} z zestawów',
-            '2 teoria z zestawu + 1 praktyka':'2 pytania z jednego zestawu',
-            'Losujesz jeden z rzeczywistych zestawów 1–34, a po jego dwóch pytaniach jedno losowe zadanie praktyczne.':'Losujesz jeden z rzeczywistych zestawów 1–40 i odpowiadasz kolejno na jego dwa pytania.',
-            'BAZA // ZESTAWY 1–34':'BAZA // ZESTAWY 1–40',
-            'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami z obecnej bazy Etapu II.':'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.',
-            'Otwórz 34 zestawy →':'Otwórz 40 zestawów →',
-            '<span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span>':'<span>{`Pytanie ${mockIndex+1} / 2`}</span>',
-            'setPosition={mockIndex<2?mockIndex+1:undefined}':'setPosition={mockIndex+1}',
-            '{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}':'{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}',
+          replacements = {
+            'Nauka teorii — zestawy': 'Nauka — zestawy 1–40',
+            'Losujesz dokładnie zestaw nr 1–34 → pytanie 1 → pytanie 2 → samoocena.': 'Losujesz dokładnie zestaw nr 1–40 → pytanie 1 → pytanie 2 → samoocena.',
+            '{data.counts.practicalActive} aktywne': '{activePractical.length} z zestawów',
+            '2 teoria z zestawu + 1 praktyka': '2 pytania z jednego zestawu',
+            'Losujesz jeden z rzeczywistych zestawów 1–34, a po jego dwóch pytaniach jedno losowe zadanie praktyczne.': 'Losujesz jeden z rzeczywistych zestawów 1–40 i odpowiadasz kolejno na jego dwa pytania.',
+            'BAZA // ZESTAWY 1–34': 'BAZA // ZESTAWY 1–40',
+            'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami z obecnej bazy Etapu II.': 'Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.',
+            'Otwórz 34 zestawy →': 'Otwórz 40 zestawów →',
+            '<span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span>': '<span>{`Pytanie ${mockIndex+1} / 2`}</span>',
+            'setPosition={mockIndex<2?mockIndex+1:undefined}': 'setPosition={mockIndex+1}',
+            '{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}': '{mockIndex===0?"Następne pytanie z zestawu":"Zakończ symulację"}',
           }
-          for a,b in repl.items():
-            assert a in s, a
-            s=s.replace(a,b)
+          for old_text, new_text in replacements.items():
+            if old_text in s:
+              s = s.replace(old_text, new_text)
 
+          assert 'STAGE2_PDF_ANSWER_OVERRIDES' in s
+          assert 'resolveSetQuestion(def.questions[0],data)' in s
           assert 'data?.theory.filter(q=>q.activeForRandomization)' not in s
           assert 'data?.practical.filter(q=>q.activeForRandomization)' not in s
           assert 'mockPractical' not in s
           assert '1–34' not in s
 
-          p.write_text(s,encoding="utf-8")
+          p.write_text(s, encoding="utf-8")
           print("page patch OK")
           PY
 
