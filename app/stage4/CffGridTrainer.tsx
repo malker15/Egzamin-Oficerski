@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type MouseEvent } from "react";
 
-type Section = "learn" | "grid" | "polar" | "cff";
+type Section = "learn" | "grid" | "polar" | "mto" | "cff";
 type Mode = "read" | "locate";
 type Precision = 4 | 6;
 type SkillKey = "read4" | "locate4" | "read6" | "locate6";
@@ -444,8 +444,10 @@ export default function CffGridTrainer() {
     if (cffCheck) return;
     const grid = gridOf(cffScenario.point, 6);
     const one = missingParts(cffAnswers.one, [cffScenario.fdc, "THIS IS", cffScenario.observer, cffScenario.mission, "OVER"]);
-    const two = missingParts(cffAnswers.two, ["GRID", grid, "ALTITUDE", cffScenario.altitude, "OVER"]);
+    const two = missingParts(cffAnswers.two, ["GRID", grid, "OVER"]);
     const three = missingParts(cffAnswers.three, [cffScenario.target, cffScenario.engagement, cffScenario.control, "OVER"]);
+    const altitudeGiven = normalizeRadio(cffAnswers.two).includes(normalizeRadio(cffScenario.altitude)) || normalizeRadio(cffAnswers.three).includes(normalizeRadio(cffScenario.altitude));
+    if (!altitudeGiven) three.push(`ALTITUDE ${cffScenario.altitude} (w transmisji 2 lub 3)`);
     const correct = one.length === 0 && two.length === 0 && three.length === 0;
     setCffCheck({ correct, one, two, three });
     setCffStreak((prev) => (correct ? Math.min(3, prev + 1) : 0));
@@ -498,9 +500,9 @@ export default function CffGridTrainer() {
         <div className="font-mono text-[11px] font-black uppercase tracking-[0.22em] text-[#516248]">ETAP IV // CFF // TRENAŻER</div>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-2xl font-black leading-tight sm:text-3xl">Call for Fire — nauka + GRID + POLAR + pełny meldunek</h3>
+            <h3 className="text-2xl font-black leading-tight sm:text-3xl">Call for Fire — od podstaw do pełnej próby</h3>
             <p className="mt-3 max-w-[82ch] text-sm font-medium leading-6 text-[#364033] sm:text-base">
-              Najpierw uczysz się odczytu siatki, potem ćwiczysz GRID i POLAR na mapie, a na końcu wpisujesz trzy pełne transmisje CFF. Wszystkie scenariusze i współrzędne w tym module są fikcyjne.
+              Ten moduł prowadzi po kolei przez to, co masz zrobić na punkcie: przygotowanie FO/FDC, trzy transmisje CFF, lokalizację celu metodą GRID lub POLAR, MTO i zakończenie. Dopiero na końcu przechodzisz do pełnej próby bez podpowiedzi. Dane treningowe są fikcyjne.
             </p>
           </div>
           <div className="rounded-xl border border-[#87957d] bg-[#edf2e8] px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#526149]">dane fikcyjne</div>
@@ -523,31 +525,142 @@ export default function CffGridTrainer() {
           </div>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {([
-            ["learn", "1. Jak czytać GRID"],
-            ["grid", "2. Trening GRID"],
-            ["polar", "3. Trening POLAR"],
-            ["cff", "4. Pełny CFF"],
+            ["learn", "1. CFF krok po kroku"],
+            ["grid", "2. GRID"],
+            ["polar", "3. POLAR"],
+            ["mto", "4. MTO / FO-FDC"],
+            ["cff", "5. Pełna próba"],
           ] as Array<[Section, string]>).map(([key, label]) => (
             <button key={key} type="button" onClick={() => setSection(key)} className={section === key ? "rounded-xl bg-[#182116] px-4 py-3 text-sm font-black text-white" : "rounded-xl border border-[#9daa93] bg-[#edf2e8] px-4 py-3 text-sm font-black text-[#526149] hover:bg-white"}>{label}</button>
           ))}
         </div>
 
         {section === "learn" && (
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-            <div className="overflow-hidden rounded-2xl border border-[#87957d] bg-[#eef3e9] p-3 sm:p-4">
-              <div className="mb-3 flex items-center justify-between gap-2"><div><div className="text-xs font-black uppercase tracking-[0.16em] text-[#607057]">NAUKA KROK PO KROKU</div><div className="mt-1 text-sm font-bold text-[#394435]">Eastings → • Northings ↑</div></div><div className="rounded-lg border border-[#b0bca7] bg-white px-2.5 py-1 text-[11px] font-black text-[#526149]">N ↑</div></div>
-              <TrainingMap target={tutorialPoint} showTarget highlight={tutorial[tutorialStep].highlight} />
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-[#9daa93] bg-[#182116] p-5 text-[#eef3e9]">
-                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">KROK {tutorialStep + 1} / {tutorial.length}</div>
-                <h4 className="mt-3 text-xl font-black">{tutorial[tutorialStep].title}</h4>
-                <p className="mt-3 text-sm font-medium leading-6 text-[#d2dccb]">{tutorial[tutorialStep].text}</p>
-                <div className="mt-5 flex gap-2"><button type="button" onClick={() => setTutorialStep((s) => Math.max(0, s - 1))} disabled={tutorialStep === 0} className="flex-1 rounded-xl border border-[#43503d] px-3 py-2.5 text-sm font-black disabled:opacity-30">← Wstecz</button><button type="button" onClick={() => tutorialStep < tutorial.length - 1 ? setTutorialStep((s) => s + 1) : setSection("grid")} className="flex-1 rounded-xl bg-white px-3 py-2.5 text-sm font-black text-[#182116]">{tutorialStep < tutorial.length - 1 ? "Dalej →" : "Przejdź do treningu →"}</button></div>
+          <div className="space-y-5">
+            <div className="rounded-2xl border border-[#9daa93] bg-[#182116] p-5 text-[#eef3e9] sm:p-6">
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">NAJPIERW ZROZUM PUNKT</div>
+              <h4 className="mt-2 text-2xl font-black">Jak wygląda CFF na punkcie — według Twoich materiałów</h4>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {[
+                  ["1", "Dostajesz mapę, protraktor i kompas. W notatce zaznaczono, że warto mieć własny kompas."],
+                  ["2", "W materiałach wspomniano, że może być dopuszczone użycie GPS — aplikacja traktuje to jako informację z notatki, a nie stałą zasadę."],
+                  ["3", "Ćwiczysz obie metody lokalizacji celu: GRID i POLAR. Każdy ma własny cel."],
+                  ["4", "Pracujecie w parze: jedna osoba jest FO, druga FDC. Rozmawiacie ze sobą jak w krótkiej łączności radiowej."],
+                  ["5", "Na punkcie ma być samo CFF — bez korekt z OT Factor. Komendy mają być proste i krótkie."],
+                  ["6", "Po CFF ważny jest MTO — Message to Observer. Na końcu zamykasz zadanie meldunkiem END MISSION."],
+                ].map(([n, text]) => (
+                  <div key={n} className="rounded-xl border border-[#354330] bg-[#10150f] p-4">
+                    <div className="font-mono text-xs font-black text-[#9fb093]">KROK {n}</div>
+                    <div className="mt-2 text-sm font-semibold leading-6 text-[#d5dfce]">{text}</div>
+                  </div>
+                ))}
               </div>
-              <div className="rounded-2xl border border-[#b7c2ae] bg-[#f5f8f2] p-4 text-sm leading-6 text-[#3f4b3a]"><div className="font-black">Najważniejsza zasada</div><div className="mt-2">Nie czytaj „najbliższej liczby”. Najpierw ustal kolumnę E, potem wiersz N. W tej uproszczonej mapie: <b>w prawo → potem w górę ↑</b>.</div><div className="mt-2"><b>4 cyfry</b> wskazują kwadrat. <b>6 cyfr</b> doprecyzowuje położenie wewnątrz niego.</div></div>
+            </div>
+
+            <div className="rounded-2xl border border-[#aebaa4] bg-[#f5f8f2] p-5 sm:p-6">
+              <div className="font-mono text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">CAŁY SCHEMAT W JEDNYM MIEJSCU</div>
+              <h4 className="mt-2 text-xl font-black">CFF = 6 elementów przekazanych w 3 transmisjach</h4>
+              <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                <div className="rounded-xl border border-[#bec8b6] bg-white p-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#607057]">TRANSMISJA 1</div>
+                  <div className="mt-2 text-base font-black">1. Observer Identification</div>
+                  <div className="mt-1 text-base font-black">2. Warning Order</div>
+                  <div className="mt-3 rounded-lg bg-[#edf2e8] p-3 font-mono text-xs font-bold leading-5">
+                    [FDC] THIS IS [FO], [MISSION], OVER
+                  </div>
+                  <p className="mt-3 text-xs font-semibold leading-5 text-[#5d6858]">Z formularza i przykładu: identyfikujesz odbiorcę i siebie, a potem podajesz rodzaj misji. Nie komplikuj.</p>
+                </div>
+                <div className="rounded-xl border-2 border-[#65775a] bg-[#e3ebdc] p-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#53634b]">TRANSMISJA 2</div>
+                  <div className="mt-2 text-base font-black">3. Target Location</div>
+                  <div className="mt-3 rounded-lg bg-white p-3 text-sm font-bold leading-6">
+                    <div><b>GRID:</b> podajesz współrzędne celu.</div>
+                    <div><b>POLAR:</b> podajesz kierunek i odległość od pozycji FO.</div>
+                    <div><b>SHIFT:</b> formularz wymienia także shift from a known point.</div>
+                  </div>
+                  <p className="mt-3 text-xs font-semibold leading-5 text-[#5d6858]">W Twoich materiałach na punkt nacisk jest na GRID i POLAR — obie metody ćwiczymy osobno.</p>
+                </div>
+                <div className="rounded-xl border border-[#bec8b6] bg-white p-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#607057]">TRANSMISJA 3</div>
+                  <div className="mt-2 text-base font-black">4. Target Description</div>
+                  <div className="mt-1 text-base font-black">5. Method of Engagement</div>
+                  <div className="mt-1 text-base font-black">6. Method of Fire & Control</div>
+                  <p className="mt-3 text-xs font-semibold leading-5 text-[#5d6858]">Opis celu ma być krótki, ale dokładny. Slajd podpowiada: typ celu, aktywność, liczba, stopień osłony i rozmiar celu.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">KROK 1 — WARNING ORDER</div>
+                <h4 className="mt-2 text-lg font-black">Najpierw wybierasz rodzaj misji</h4>
+                <p className="mt-3 text-sm font-medium leading-6 text-[#465342]">W przesłanych materiałach pojawiają się m.in.:</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {["ADJUST FIRE","FIRE FOR EFFECT","IMMEDIATE SUPPRESSION","IMMEDIATE SMOKE","SEAD","SUPPRESS","MARK"].map((x) => (
+                    <span key={x} className="rounded-full border border-[#aebaa4] bg-white px-3 py-1.5 text-xs font-black">{x}</span>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs font-semibold leading-5 text-[#677262]">Aplikacja zachowuje nazwy z Twojego formularza/notatek i nie dopisuje dodatkowych definicji, których w materiale nie ma.</p>
+              </div>
+
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">KROK 2 — OPIS CELU</div>
+                <h4 className="mt-2 text-lg font-black">Nie opisuj „ładnie” — opisz użytecznie i krótko</h4>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-bold sm:grid-cols-3">
+                  {["Target type","Activity","Amount","Degree of protection","Target size"].map((x) => (
+                    <div key={x} className="rounded-xl border border-[#bec8b6] bg-white p-3">{x}</div>
+                  ))}
+                </div>
+                <div className="mt-3 rounded-xl bg-white p-3 font-mono text-xs font-bold leading-5">Przykład ze slajdu: INFANTRY IN TRENCH LINE, L400 W200, ALTITUDE 1200</div>
+              </div>
+
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">KROK 3 — METHOD OF ENGAGEMENT</div>
+                <h4 className="mt-2 text-lg font-black">Tu określasz sposób oddziaływania — tylko jeśli jest potrzebny</h4>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {["DANGER CLOSE","HIGH ANGLE","AMMO TYPE REQUESTED","MARK"].map((x) => (
+                    <span key={x} className="rounded-full border border-[#aebaa4] bg-white px-3 py-1.5 text-xs font-black">{x}</span>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs font-semibold leading-5 text-[#677262]">To dokładnie pozycje wypisane na przesłanym formularzu CFF.</p>
+              </div>
+
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">KROK 4 — METHOD OF FIRE & CONTROL</div>
+                <h4 className="mt-2 text-lg font-black">Na końcu określasz sposób kontroli wykonania</h4>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {["AT MY COMMAND","REQUEST TIME OF FLIGHT","REQUEST SPLASH","REQUEST TOT","DIRECTION"].map((x) => (
+                    <span key={x} className="rounded-full border border-[#aebaa4] bg-white px-3 py-1.5 text-xs font-black">{x}</span>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs font-semibold leading-5 text-[#677262]">W odręcznej notatce pojawia się także FIRE WHEN READY. Traktujemy to jako element Twojego materiału szkoleniowego.</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+              <div className="font-black">Ważna różnica między Twoimi materiałami</div>
+              <div className="mt-2">Odręczna kartka umieszcza <b>ALTITUDE</b> przy Target Location, a przykład ze slajdu podaje wysokość przy opisie celu w transmisji 3. Dlatego pełny trener akceptuje wysokość w transmisji 2 <b>lub</b> 3 i nie oznacza jednej z tych wersji automatycznie jako błędnej.</div>
+            </div>
+
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+              <div className="overflow-hidden rounded-2xl border border-[#87957d] bg-[#eef3e9] p-3 sm:p-4">
+                <div className="mb-3 flex items-center justify-between gap-2"><div><div className="text-xs font-black uppercase tracking-[0.16em] text-[#607057]">MINI LEKCJA GRID</div><div className="mt-1 text-sm font-bold text-[#394435]">Eastings → • Northings ↑</div></div><div className="rounded-lg border border-[#b0bca7] bg-white px-2.5 py-1 text-[11px] font-black text-[#526149]">N ↑</div></div>
+                <TrainingMap target={tutorialPoint} showTarget highlight={tutorial[tutorialStep].highlight} />
+              </div>
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-[#9daa93] bg-[#182116] p-5 text-[#eef3e9]">
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">GRID — KROK {tutorialStep + 1} / {tutorial.length}</div>
+                  <h4 className="mt-3 text-xl font-black">{tutorial[tutorialStep].title}</h4>
+                  <p className="mt-3 text-sm font-medium leading-6 text-[#d2dccb]">{tutorial[tutorialStep].text}</p>
+                  <div className="mt-5 flex gap-2"><button type="button" onClick={() => setTutorialStep((v) => Math.max(0, v - 1))} disabled={tutorialStep === 0} className="flex-1 rounded-xl border border-[#43503d] px-3 py-2.5 text-sm font-black disabled:opacity-30">← Wstecz</button><button type="button" onClick={() => tutorialStep < tutorial.length - 1 ? setTutorialStep((v) => v + 1) : setSection("grid")} className="flex-1 rounded-xl bg-white px-3 py-2.5 text-sm font-black text-[#182116]">{tutorialStep < tutorial.length - 1 ? "Dalej →" : "Ćwicz GRID →"}</button></div>
+                </div>
+                <div className="rounded-2xl border border-[#b7c2ae] bg-[#f5f8f2] p-4 text-sm leading-6 text-[#3f4b3a]">
+                  <div className="font-black">Najprostsza kolejność nauki</div>
+                  <div className="mt-2">1. Naucz się 3 transmisji → 2. GRID → 3. POLAR → 4. MTO → 5. Pełna próba.</div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -691,6 +804,72 @@ export default function CffGridTrainer() {
           </div>
         )}
 
+        {section === "mto" && (
+          <div className="space-y-5">
+            <div className="rounded-2xl border border-[#9daa93] bg-[#182116] p-5 text-[#eef3e9] sm:p-6">
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">ROLE NA PUNKCIE</div>
+              <h4 className="mt-2 text-2xl font-black">FO mówi CFF → FDC odpowiada MTO</h4>
+              <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-[#d2dccb]">Z notatki egzaminacyjnej: zdajecie w parach. Jedna osoba pełni rolę FO, druga FDC, a komunikacja między Wami jest oceniana. Dlatego trzeba umieć nie tylko nadać CFF, ale też rozpoznać odpowiedź FDC.</p>
+              <div className="mt-5 grid gap-3 md:grid-cols-2">
+                <div className="rounded-xl border border-[#354330] bg-[#10150f] p-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#9fb093]">FO — Forward Observer</div>
+                  <div className="mt-2 text-sm font-semibold leading-6">Przygotowuje dane o celu i nadaje trzy transmisje CFF. Po otrzymaniu odpowiedzi słucha MTO i prowadzi dalszą komunikację zgodnie z zadaniem.</div>
+                </div>
+                <div className="rounded-xl border border-[#354330] bg-[#10150f] p-4">
+                  <div className="text-xs font-black uppercase tracking-wider text-[#9fb093]">FDC — Fire Direction Center</div>
+                  <div className="mt-2 text-sm font-semibold leading-6">Odbiera wezwanie FO i przekazuje Message to Observer. W treningu parowym jedna osoba może czytać kartę MTO, druga odpowiadać jako FO.</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#aebaa4] bg-[#f5f8f2] p-5 sm:p-6">
+              <div className="font-mono text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">MESSAGE TO OBSERVER — Z TWOJEGO FORMULARZA</div>
+              <h4 className="mt-2 text-xl font-black">MTO składa się z pięciu pól</h4>
+              <div className="mt-4 space-y-2">
+                {[
+                  ["1", "Call of unit firing the mission"],
+                  ["2", "Changes to the Call for Fire"],
+                  ["3", "Number of rounds"],
+                  ["4", "Target number"],
+                  ["5", "Additional info — Time of Flight, MAX ORD, GTL"],
+                ].map(([n, text]) => (
+                  <div key={n} className="flex items-start gap-3 rounded-xl border border-[#bec8b6] bg-white p-4">
+                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#182116] font-mono text-xs font-black text-white">{n}</div>
+                    <div className="pt-1 text-sm font-black">{text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">PROSTA GIERKA W PARZE</div>
+                <h4 className="mt-2 text-lg font-black">Drill FO ↔ FDC</h4>
+                <ol className="mt-3 space-y-2 text-sm font-semibold leading-6 text-[#465342]">
+                  <li><b>1.</b> FO losuje lub wybiera scenariusz w zakładce Pełna próba.</li>
+                  <li><b>2.</b> FO przekazuje trzy transmisje.</li>
+                  <li><b>3.</b> FDC odpowiada, korzystając z pięciu pól MTO powyżej.</li>
+                  <li><b>4.</b> Zamieniacie się rolami i powtarzacie.</li>
+                </ol>
+                <div className="mt-4 rounded-xl border border-[#c0cab8] bg-white p-3 text-xs font-semibold leading-5 text-[#526149]">Zgodnie z Twoją notatką: proste komendy, bez „wydziwiania”, i bez korekt z OT Factor.</div>
+              </div>
+
+              <div className="rounded-2xl border border-[#aebaa4] bg-[#edf2e8] p-5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">ZAKOŃCZENIE</div>
+                <h4 className="mt-2 text-lg font-black">Po wykonaniu zadania zamykasz misję</h4>
+                <div className="mt-4 rounded-xl bg-[#182116] p-4 font-mono text-sm font-black text-white">END MISSION … OVER</div>
+                <p className="mt-3 text-xs font-semibold leading-5 text-[#677262]">Na przesłanym formularzu pod MTO znajduje się także zapis „If hit or close FIRE FOR EFFECT OVER”. Aplikacja pokazuje go jako element materiału, ale nie rozwija korekt, ponieważ Twoja notatka o punkcie mówi wprost: bez korekt z OT Factor.</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#9dac93] bg-[#182116] p-4 text-[#eef3e9] sm:p-5">
+              <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">HACZYK PAMIĘCIOWY</div>
+              <div className="mt-2 text-base font-black">FO: 3 transmisje → FDC: MTO → FO: zakończenie</div>
+              <div className="mt-2 text-sm font-semibold leading-6 text-[#cbd6c4]">Nie próbuj uczyć się wszystkiego naraz. Najpierw automatyzujesz kolejność 3 transmisji, później lokalizację, na końcu dopiero dialog w parze.</div>
+            </div>
+          </div>
+        )}
+
         {section === "cff" && (
           <div className="space-y-5">
             <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -718,7 +897,12 @@ export default function CffGridTrainer() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#b7c2ae] bg-[#edf2e8] p-4 text-sm leading-6 text-[#3f4b3a]"><div className="font-black">Jak aplikacja sprawdza meldunek?</div><div className="mt-2">Nie wymaga identycznych przecinków ani kropek. Transmisja 1 musi zawierać kryptonimy, <b>THIS IS</b>, rodzaj misji i <b>OVER</b>. Transmisja 2 — <b>GRID</b>, właściwe współrzędne, <b>ALTITUDE</b> i <b>OVER</b>. Transmisja 3 — pełny opis celu, sposób wykonania, kontrolę i <b>OVER</b>.</div><button type="button" onClick={() => setCffStreak(0)} className="mt-3 rounded-xl border border-[#9daa93] bg-white px-3 py-2 text-xs font-black text-[#526149]">Reset postępu pełnego CFF</button></div>
+            <div className="rounded-2xl border border-[#b7c2ae] bg-[#edf2e8] p-4 text-sm leading-6 text-[#3f4b3a]">
+              <div className="font-black">Jak aplikacja sprawdza meldunek?</div>
+              <div className="mt-2">Nie wymaga identycznych przecinków ani kropek. Transmisja 1 musi zawierać kryptonimy, <b>THIS IS</b>, rodzaj misji i <b>OVER</b>. Transmisja 2 musi zawierać <b>GRID</b>, właściwe współrzędne i <b>OVER</b>. Transmisja 3 — opis celu, sposób wykonania, kontrolę i <b>OVER</b>. <b>ALTITUDE</b> może wystąpić w transmisji 2 albo 3, bo oba warianty pojawiają się w przesłanych materiałach.</div>
+              <div className="mt-3 rounded-xl border border-[#c0cab8] bg-white p-3 text-xs font-semibold leading-5 text-[#526149]"><b>Przykład ze slajdu:</b> ROPE 15 THIS IS DRAGON 11, FIRE FOR EFFECT, OVER → GRID 33 UWS 286 479, OVER → INFANTRY IN TRENCH LINE, L400 W200, ALTITUDE 1200, OVER.</div>
+              <button type="button" onClick={() => setCffStreak(0)} className="mt-3 rounded-xl border border-[#9daa93] bg-white px-3 py-2 text-xs font-black text-[#526149]">Reset postępu pełnego CFF</button>
+            </div>
           </div>
         )}
       </div>
