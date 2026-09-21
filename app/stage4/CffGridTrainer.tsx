@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type MouseEvent } from "react";
 
-type Section = "learn" | "grid" | "cff";
+type Section = "learn" | "grid" | "polar" | "cff";
 type Mode = "read" | "locate";
 type Precision = 4 | 6;
 type SkillKey = "read4" | "locate4" | "read6" | "locate6";
@@ -22,9 +22,22 @@ type CffScenario = {
 };
 type CffAnswers = { one: string; two: string; three: string };
 type CffCheck = { correct: boolean; one: string[]; two: string[]; three: string[] } | null;
+type PolarScenario = {
+  observer: Point;
+  target: Point;
+  directionMils: number;
+  distanceM: number;
+};
+type PolarResult = {
+  correct: boolean;
+  clickCorrect: boolean;
+  gridCorrect: boolean;
+  selectedGrid?: string;
+} | null;
 
 const LS_PROGRESS = "officer_stage4_cff_grid_progress_v1";
 const LS_CFF_PROGRESS = "officer_stage4_cff_full_progress_v1";
+const LS_POLAR_PROGRESS = "officer_stage4_cff_polar_progress_v1";
 const MAP_MARGIN = 44;
 const MAP_SIZE = 400;
 const CELL = 40;
@@ -71,6 +84,44 @@ function pointX(point: Point) {
 
 function pointY(point: Point) {
   return MAP_MARGIN + (point.row + 1 - (point.nDigit + 0.5) / 10) * CELL;
+}
+
+function pointFromSubgrid(eIndex: number, nIndex: number): Point {
+  const e = clamp(Math.round(eIndex), 0, 99);
+  const n = clamp(Math.round(nIndex), 0, 99);
+  return {
+    col: Math.floor(e / 10),
+    row: 9 - Math.floor(n / 10),
+    eDigit: e % 10,
+    nDigit: n % 10,
+  };
+}
+
+function randomPolarScenario(): PolarScenario {
+  const directions = [
+    { mils: 0, de: 0, dn: 1 },
+    { mils: 800, de: 1, dn: 1 },
+    { mils: 1600, de: 1, dn: 0 },
+    { mils: 2400, de: 1, dn: -1 },
+    { mils: 3200, de: 0, dn: -1 },
+    { mils: 4000, de: -1, dn: -1 },
+    { mils: 4800, de: -1, dn: 0 },
+    { mils: 5600, de: -1, dn: 1 },
+  ];
+  const vector = pick(directions);
+  const step = 4 + Math.floor(Math.random() * 9);
+  const observerE = 18 + Math.floor(Math.random() * 64);
+  const observerN = 18 + Math.floor(Math.random() * 64);
+  const targetE = observerE + vector.de * step;
+  const targetN = observerN + vector.dn * step;
+  const distanceM = Math.round(Math.hypot(vector.de * step, vector.dn * step)) * 100;
+
+  return {
+    observer: pointFromSubgrid(observerE, observerN),
+    target: pointFromSubgrid(targetE, targetN),
+    directionMils: vector.mils,
+    distanceM,
+  };
 }
 
 function skillKey(mode: Mode, precision: Precision): SkillKey {
@@ -129,6 +180,8 @@ function TrainingMap({
   showTarget,
   interactive = false,
   highlight = "none",
+  observer,
+  directionMils,
   onClick,
 }: {
   target: Point;
@@ -136,12 +189,19 @@ function TrainingMap({
   showTarget: boolean;
   interactive?: boolean;
   highlight?: TutorialHighlight;
+  observer?: Point | null;
+  directionMils?: number;
   onClick?: (event: MouseEvent<SVGSVGElement>) => void;
 }) {
   const cellX = MAP_MARGIN + target.col * CELL;
   const cellY = MAP_MARGIN + target.row * CELL;
   const subX = cellX + target.eDigit * (CELL / 10);
   const subY = cellY + (9 - target.nDigit) * (CELL / 10);
+  const observerX = observer ? pointX(observer) : 0;
+  const observerY = observer ? pointY(observer) : 0;
+  const directionAngle = typeof directionMils === "number" ? (directionMils / 6400) * Math.PI * 2 : 0;
+  const directionX = observerX + Math.sin(directionAngle) * 68;
+  const directionY = observerY - Math.cos(directionAngle) * 68;
 
   return (
     <svg
@@ -199,6 +259,19 @@ function TrainingMap({
       <text x={MAP_MARGIN + MAP_SIZE / 2} y={VIEW - 8} textAnchor="middle" fontSize="10" fontWeight="800" letterSpacing="1.5" fill="#61705a">EASTING →</text>
       <text x="12" y={MAP_MARGIN + MAP_SIZE / 2} textAnchor="middle" fontSize="10" fontWeight="800" letterSpacing="1.2" fill="#61705a" transform={`rotate(-90 12 ${MAP_MARGIN + MAP_SIZE / 2})`}>NORTHING →</text>
 
+      {observer && (
+        <g>
+          {typeof directionMils === "number" && (
+            <>
+              <line x1={observerX} y1={observerY} x2={directionX} y2={directionY} stroke="#1f5d96" strokeWidth="3" strokeDasharray="6 5" opacity="0.85" />
+              <circle cx={directionX} cy={directionY} r="4" fill="#1f5d96" />
+            </>
+          )}
+          <circle cx={observerX} cy={observerY} r="10" fill="#1f5d96" stroke="#fff" strokeWidth="3" />
+          <text x={observerX + 13} y={observerY - 11} fontSize="10" fontWeight="900" fill="#173c60">OBS</text>
+        </g>
+      )}
+
       {selected && (
         <g>
           <circle cx={pointX(selected)} cy={pointY(selected)} r="8" fill="#fff" stroke="#1f2937" strokeWidth="3" />
@@ -231,15 +304,23 @@ export default function CffGridTrainer() {
   const [cffAnswers, setCffAnswers] = useState<CffAnswers>({ one: "", two: "", three: "" });
   const [cffCheck, setCffCheck] = useState<CffCheck>(null);
   const [cffStreak, setCffStreak] = useState(0);
+  const [polarScenario, setPolarScenario] = useState<PolarScenario>(() => randomPolarScenario());
+  const [polarGrid, setPolarGrid] = useState("");
+  const [polarSelected, setPolarSelected] = useState<Point | null>(null);
+  const [polarResult, setPolarResult] = useState<PolarResult>(null);
+  const [polarStreak, setPolarStreak] = useState(0);
 
   useEffect(() => {
     setChallenge(randomPoint());
     setCffScenario(randomCffScenario());
+    setPolarScenario(randomPolarScenario());
     try {
       const raw = localStorage.getItem(LS_PROGRESS);
       if (raw) setProgress({ ...defaultProgress, ...JSON.parse(raw) });
       const rawCff = localStorage.getItem(LS_CFF_PROGRESS);
       if (rawCff) setCffStreak(clamp(Number(rawCff) || 0, 0, 3));
+      const rawPolar = localStorage.getItem(LS_POLAR_PROGRESS);
+      if (rawPolar) setPolarStreak(clamp(Number(rawPolar) || 0, 0, 3));
     } catch {}
   }, []);
 
@@ -254,6 +335,12 @@ export default function CffGridTrainer() {
       localStorage.setItem(LS_CFF_PROGRESS, String(cffStreak));
     } catch {}
   }, [cffStreak]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LS_POLAR_PROGRESS, String(polarStreak));
+    } catch {}
+  }, [polarStreak]);
 
   function nextChallenge() {
     setChallenge(randomPoint());
@@ -318,6 +405,41 @@ export default function CffGridTrainer() {
     setSelected({ col, row, eDigit, nDigit });
   }
 
+  function handlePolarMapClick(event: MouseEvent<SVGSVGElement>) {
+    if (polarResult) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * VIEW;
+    const y = ((event.clientY - rect.top) / rect.height) * VIEW;
+    if (x < MAP_MARGIN || y < MAP_MARGIN || x >= MAP_MARGIN + MAP_SIZE || y >= MAP_MARGIN + MAP_SIZE) return;
+    const relX = x - MAP_MARGIN;
+    const relY = y - MAP_MARGIN;
+    const col = clamp(Math.floor(relX / CELL), 0, 9);
+    const row = clamp(Math.floor(relY / CELL), 0, 9);
+    const localX = relX - col * CELL;
+    const localY = relY - row * CELL;
+    const eDigit = clamp(Math.floor((localX / CELL) * 10), 0, 9);
+    const nDigit = clamp(9 - Math.floor((localY / CELL) * 10), 0, 9);
+    setPolarSelected({ col, row, eDigit, nDigit });
+  }
+
+  function checkPolar() {
+    if (polarResult || !polarSelected || cleanGrid(polarGrid).length !== 6) return;
+    const targetGrid = gridOf(polarScenario.target, 6);
+    const selectedGrid = gridOf(polarSelected, 6);
+    const clickCorrect = selectedGrid === targetGrid;
+    const gridCorrect = cleanGrid(polarGrid) === targetGrid;
+    const correct = clickCorrect && gridCorrect;
+    setPolarResult({ correct, clickCorrect, gridCorrect, selectedGrid });
+    setPolarStreak((prev) => (correct ? Math.min(3, prev + 1) : 0));
+  }
+
+  function nextPolarScenario() {
+    setPolarScenario(randomPolarScenario());
+    setPolarGrid("");
+    setPolarSelected(null);
+    setPolarResult(null);
+  }
+
   function checkFullCff() {
     if (cffCheck) return;
     const grid = gridOf(cffScenario.point, 6);
@@ -366,6 +488,9 @@ export default function CffGridTrainer() {
   const modelTwo = `GRID ${cffGrid}, ALTITUDE ${cffScenario.altitude}, OVER.`;
   const modelThree = `${cffScenario.target}, ${cffScenario.engagement}, ${cffScenario.control}, OVER.`;
   const canCheckCff = cffAnswers.one.trim() && cffAnswers.two.trim() && cffAnswers.three.trim();
+  const polarObserverGrid = gridOf(polarScenario.observer, 6);
+  const polarTargetGrid = gridOf(polarScenario.target, 6);
+  const canCheckPolar = !!polarSelected && cleanGrid(polarGrid).length === 6;
 
   return (
     <section className="overflow-hidden rounded-[1.6rem] border border-[#66785a] bg-[#dfe7d7] text-[#11170f] shadow-xl shadow-black/20">
@@ -373,9 +498,9 @@ export default function CffGridTrainer() {
         <div className="font-mono text-[11px] font-black uppercase tracking-[0.22em] text-[#516248]">ETAP IV // CFF // TRENAŻER</div>
         <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-2xl font-black leading-tight sm:text-3xl">Call for Fire — nauka + GRID + pełny meldunek</h3>
+            <h3 className="text-2xl font-black leading-tight sm:text-3xl">Call for Fire — nauka + GRID + POLAR + pełny meldunek</h3>
             <p className="mt-3 max-w-[82ch] text-sm font-medium leading-6 text-[#364033] sm:text-base">
-              Najpierw uczysz się odczytu siatki, potem ćwiczysz GRID na mapie, a na końcu wpisujesz trzy pełne transmisje CFF. Wszystkie scenariusze i współrzędne w tym module są fikcyjne.
+              Najpierw uczysz się odczytu siatki, potem ćwiczysz GRID i POLAR na mapie, a na końcu wpisujesz trzy pełne transmisje CFF. Wszystkie scenariusze i współrzędne w tym module są fikcyjne.
             </p>
           </div>
           <div className="rounded-xl border border-[#87957d] bg-[#edf2e8] px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#526149]">dane fikcyjne</div>
@@ -398,11 +523,12 @@ export default function CffGridTrainer() {
           </div>
         </div>
 
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {([
             ["learn", "1. Jak czytać GRID"],
             ["grid", "2. Trening GRID"],
-            ["cff", "3. Pełny CFF"],
+            ["polar", "3. Trening POLAR"],
+            ["cff", "4. Pełny CFF"],
           ] as Array<[Section, string]>).map(([key, label]) => (
             <button key={key} type="button" onClick={() => setSection(key)} className={section === key ? "rounded-xl bg-[#182116] px-4 py-3 text-sm font-black text-white" : "rounded-xl border border-[#9daa93] bg-[#edf2e8] px-4 py-3 text-sm font-black text-[#526149] hover:bg-white"}>{label}</button>
           ))}
@@ -450,6 +576,119 @@ export default function CffGridTrainer() {
             </div>
             <div className="rounded-2xl border border-[#9dac93] bg-[#182116] p-4 text-[#eef3e9] sm:p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">CEL TRENINGOWY</div><div className="mt-1 text-base font-black">3 poprawne z rzędu = opanowane</div></div><button type="button" onClick={() => setProgress(defaultProgress)} className="rounded-xl border border-[#43503d] bg-[#10150f] px-3 py-2 text-xs font-black text-[#c5d1bd] hover:bg-[#202a1d]">Reset postępu GRID</button></div></div>
           </>
+        )}
+
+
+        {section === "polar" && (
+          <div className="space-y-5">
+            <div className="rounded-2xl border border-[#aebaa4] bg-[#f5f8f2] p-4 sm:p-5">
+              <div className="font-mono text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">POLAR — JAK TO CZYTAĆ</div>
+              <h4 className="mt-2 text-xl font-black">Pozycja obserwatora + kierunek + odległość = położenie celu</h4>
+              <p className="mt-3 text-sm font-medium leading-6 text-[#465342]">
+                W metodzie POLAR stanowisko kierowania ogniem musi znać pozycję obserwatora. Obserwator podaje kierunek do celu i odległość; jeżeli różnica wysokości jest istotna, dochodzi również przesunięcie pionowe. W tym ćwiczeniu dodatkowo przeliczasz POLAR na punkt na mapie i 6-cyfrowy GRID, żeby zrozumieć geometrię.
+              </p>
+              <div className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-8">
+                {[
+                  ["0", "N"], ["800", "NE"], ["1600", "E"], ["2400", "SE"],
+                  ["3200", "S"], ["4000", "SW"], ["4800", "W"], ["5600", "NW"],
+                ].map(([mils, dir]) => (
+                  <div key={mils} className="rounded-xl border border-[#bec8b6] bg-white px-2 py-3 text-center">
+                    <div className="font-mono text-sm font-black">{mils}</div>
+                    <div className="mt-1 text-[10px] font-black uppercase tracking-wider text-[#687461]">{dir}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-xl border border-[#c0cab8] bg-[#edf2e8] px-3 py-3 text-xs font-semibold leading-5 text-[#526149]">
+                Hak: <b>0/6400 = północ</b>, <b>1600 = wschód</b>, <b>3200 = południe</b>, <b>4800 = zachód</b>. Kierunek liczysz zgodnie z ruchem wskazówek zegara od północy.
+              </div>
+            </div>
+
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
+              <div className="overflow-hidden rounded-2xl border border-[#87957d] bg-[#eef3e9] p-3 sm:p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="text-xs font-black uppercase tracking-[0.16em] text-[#607057]">MAPA POLAR</div>
+                    <div className="mt-1 text-sm font-bold text-[#394435]">Niebieski = obserwator • linia = kierunek • klik = Twój cel</div>
+                  </div>
+                  <div className="rounded-lg border border-[#b0bca7] bg-white px-2.5 py-1 text-[11px] font-black text-[#526149]">N ↑</div>
+                </div>
+                <TrainingMap
+                  target={polarScenario.target}
+                  observer={polarScenario.observer}
+                  directionMils={polarScenario.directionMils}
+                  selected={polarSelected}
+                  showTarget={!!polarResult}
+                  interactive={!polarResult}
+                  onClick={handlePolarMapClick}
+                />
+                <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-black uppercase tracking-wider">
+                  <span className="rounded-full bg-[#1f5d96] px-2.5 py-1 text-white">OBS — obserwator</span>
+                  <span className="rounded-full border border-[#87957d] bg-white px-2.5 py-1 text-[#526149]">biały celownik — Twój wybór</span>
+                  {polarResult && <span className="rounded-full bg-[#9f2f24] px-2.5 py-1 text-white">czerwony — poprawny cel</span>}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-[#9daa93] bg-[#182116] p-4 text-[#eef3e9] sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">FIKCYJNE DANE POLAR</div>
+                    <span className={polarStreak >= 3 ? "rounded-full bg-emerald-200 px-2.5 py-1 text-[11px] font-black text-emerald-950" : "rounded-full border border-[#43503d] px-2.5 py-1 text-[11px] font-black"}>{statusLabel(polarStreak)}</span>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center justify-between gap-4 rounded-xl border border-[#354330] bg-[#10150f] px-3 py-2.5"><span className="text-[10px] font-black uppercase tracking-wider text-[#8fa184]">OBSERVER GRID</span><span className="font-mono font-black">{polarObserverGrid}</span></div>
+                    <div className="flex items-center justify-between gap-4 rounded-xl border border-[#354330] bg-[#10150f] px-3 py-2.5"><span className="text-[10px] font-black uppercase tracking-wider text-[#8fa184]">DIRECTION</span><span className="font-mono font-black">{polarScenario.directionMils} mil</span></div>
+                    <div className="flex items-center justify-between gap-4 rounded-xl border border-[#354330] bg-[#10150f] px-3 py-2.5"><span className="text-[10px] font-black uppercase tracking-wider text-[#8fa184]">DISTANCE</span><span className="font-mono font-black">{polarScenario.distanceM} m</span></div>
+                  </div>
+                  <p className="mt-4 text-xs leading-5 text-[#aabd9a]">Na tej uproszczonej mapie jedna duża kratka odpowiada 1000 m, a jedna dziesiąta kratki — 100 m.</p>
+                </div>
+
+                <div className="rounded-2xl border border-[#aebaa4] bg-[#f5f8f2] p-4 sm:p-5">
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#607057]">ZADANIE</div>
+                  <h4 className="mt-2 text-lg font-black">Wyznacz cel z danych POLAR.</h4>
+                  <ol className="mt-3 space-y-2 text-sm font-medium leading-6 text-[#4e5a49]">
+                    <li><b>1.</b> Zacznij od niebieskiego OBS.</li>
+                    <li><b>2.</b> Idź w podanym kierunku.</li>
+                    <li><b>3.</b> Odłóż podaną odległość.</li>
+                    <li><b>4.</b> Kliknij cel i wpisz jego GRID 6-cyfrowy.</li>
+                  </ol>
+                  <input
+                    value={polarGrid}
+                    onChange={(e) => !polarResult && setPolarGrid(cleanGrid(e.target.value))}
+                    inputMode="numeric"
+                    maxLength={6}
+                    disabled={!!polarResult}
+                    placeholder="GRID celu, np. 145263"
+                    className="mt-4 w-full rounded-xl border border-[#9fad96] bg-white px-4 py-3 font-mono text-xl font-black tracking-[0.2em] outline-none focus:border-[#465540] disabled:opacity-70"
+                  />
+                  <div className="mt-3 rounded-xl border border-[#c0cab8] bg-white px-3 py-2 text-sm font-bold text-[#526149]">
+                    {polarSelected ? `Twój klik: GRID ${gridOf(polarSelected, 6)}` : "Kliknij na mapie miejsce, w którym według Ciebie znajduje się cel."}
+                  </div>
+
+                  {!polarResult ? (
+                    <button type="button" onClick={checkPolar} disabled={!canCheckPolar} className="mt-4 w-full rounded-xl bg-[#182116] px-4 py-3 text-sm font-black text-white transition hover:bg-[#263322] disabled:cursor-not-allowed disabled:opacity-35">Sprawdź POLAR</button>
+                  ) : (
+                    <div className="mt-4 space-y-3">
+                      <div className={polarResult.correct ? "rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-sm font-bold leading-6 text-emerald-950" : "rounded-xl border border-red-300 bg-red-50 p-3 text-sm font-bold leading-6 text-red-950"}>
+                        {polarResult.correct ? "✓ Poprawnie. Punkt i GRID zgadzają się — seria POLAR rośnie o 1." : `✕ Nie tym razem. Poprawny punkt to GRID ${polarTargetGrid}. ${!polarResult.clickCorrect ? `Twój klik: ${polarResult.selectedGrid}. ` : ""}${!polarResult.gridCorrect ? `Wpisałeś GRID: ${cleanGrid(polarGrid)}.` : ""}`}
+                      </div>
+                      <button type="button" onClick={nextPolarScenario} className="w-full rounded-xl bg-[#182116] px-4 py-3 text-sm font-black text-white hover:bg-[#263322]">Nowe zadanie POLAR</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#9dac93] bg-[#182116] p-4 text-[#eef3e9] sm:p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="text-[11px] font-black uppercase tracking-[0.18em] text-[#aabd9a]">WAŻNE W CFF</div>
+                  <div className="mt-1 text-base font-black">POLAR ≠ transmisja wynikowego GRID-u</div>
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[#cbd6c4]">W metodzie POLAR FDC zna położenie obserwatora, a Ty przekazujesz położenie celu względem siebie — przede wszystkim kierunek i odległość. Ten moduł każe dodatkowo znaleźć GRID tylko po to, żebyś nauczył się prawidłowo odkładać kierunek i dystans na mapie.</p>
+                </div>
+                <button type="button" onClick={() => setPolarStreak(0)} className="rounded-xl border border-[#43503d] bg-[#10150f] px-3 py-2 text-xs font-black text-[#c5d1bd] hover:bg-[#202a1d]">Reset POLAR</button>
+              </div>
+            </div>
+          </div>
         )}
 
         {section === "cff" && (
