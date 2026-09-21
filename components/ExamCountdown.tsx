@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const EXAM_DATE = new Date("2026-09-30T00:00:00+02:00").getTime();
+const EXAM_DATE = new Date("2026-10-19T00:00:00+02:00").getTime();
 
 type Remaining = {
   days: number;
@@ -54,7 +54,7 @@ export default function ExamCountdown() {
           </div>
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#697763]">Termin egzaminu</div>
-            <div className="mt-1 text-sm font-semibold text-[#d5d9ce]">30 września 2026</div>
+            <div className="mt-1 text-sm font-semibold text-[#d5d9ce]">19 października 2026</div>
           </div>
         </div>
         <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[#66725e]">
