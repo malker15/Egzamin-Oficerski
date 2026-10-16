@@ -6,6 +6,7 @@ import OralCoach from "./OralCoach";
 import AdaptiveExaminer from "./AdaptiveExaminer";
 import SemanticCoach from "./SemanticCoach";
 import StudyAnswerPanel from "./StudyAnswerPanel";
+import JarkowePomieszadlo from "./JarkowePomieszadlo";
 import { STAGE2_SET_DEFINITIONS, type Stage2SetQuestionSpec } from "./setDefinitions";
 import { STAGE2_PDF_ANSWER_OVERRIDES } from "./pdfSetAnswerOverrides";
 import { STAGE2_ANSWER_OVERRIDES } from "./answerOverrides";
@@ -14,7 +15,7 @@ import { STAGE2_ANSWER_OVERRIDES_21_34 } from "./answerOverrides21to34";
 import { STAGE2_PRACTICAL_OVERRIDES } from "./practicalOverrides";
 
 type Rating = 0 | 1 | 2 | 3 | 4;
-type View = "home" | "theory" | "practical" | "mock" | "sets" | "coach" | "examiner" | "semantic";
+type View = "home" | "theory" | "practical" | "mock" | "sets" | "coach" | "examiner" | "semantic" | "jarkowe";
 type Progress = Record<string, { rating: Rating; seen: number; updatedAt: number }>;
 type Theory = { id:string; category:string; question:string; keyPoints:string[]; fullAnswer:string; activeForRandomization:boolean };
 type Practical = { id:string; category:string; practicalKind:string; question:string; openingCue:string; steps:string[]; checklist:{id:string;text:string}[]; fullAnswer:string; activeForRandomization:boolean };
@@ -312,6 +313,17 @@ function mockNext(){
         </button>
       </div>
 
+      <button onClick={()=>setView("jarkowe")} className="w-full overflow-hidden rounded-[1.65rem] border border-violet-700/60 bg-gradient-to-r from-violet-950/70 via-[#19141f] to-neutral-900 p-6 text-left shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-violet-500 sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-violet-300">NOWOŚĆ // 119 FISZEK // 2 DNI</div>
+            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">🌀 Jarkowe Pomieszadło</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-violet-100/70">Kompletnie nowa baza: aktywne odtwarzanie, mnemotechnika, obrazkowe historie, powroty do błędów i mocne mieszanie działów w drugim dniu.</p>
+          </div>
+          <span className="rounded-xl border border-violet-600/60 bg-violet-950/50 px-4 py-2 text-sm font-black text-violet-100">Zacznij plan →</span>
+        </div>
+      </button>
+
       <button onClick={openSets} className="w-full rounded-[1.65rem] border border-[#657658] bg-[#172015] p-6 text-left transition hover:bg-[#1c2718] sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">BAZA // ZESTAWY 1–40</div><h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Podgląd wszystkich zestawów egzaminacyjnych</h2><p className="mt-2 text-sm leading-6 text-[#9eaa96]">Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.</p></div>
@@ -361,5 +373,6 @@ function mockNext(){
     {view==="coach"&&<OralCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="examiner"&&<AdaptiveExaminer questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="semantic"&&<SemanticCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
+    {view==="jarkowe"&&<JarkowePomieszadlo onExit={()=>setView("home")}/>} 
   </div></main>;
 }
