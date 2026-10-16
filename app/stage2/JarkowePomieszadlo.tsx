@@ -36,6 +36,10 @@ const DATA_PARTS = [
   "/stage2/jarkowe_v1_02.txt",
   "/stage2/jarkowe_v1_03.txt",
   "/stage2/jarkowe_v1_04.txt",
+  "/stage2/jarkowe_v1_05.txt",
+  "/stage2/jarkowe_v1_06.txt",
+  "/stage2/jarkowe_v1_07.txt",
+  "/stage2/jarkowe_v1_08.txt",
 ];
 
 const blockMeta: Record<number, { title: string; subtitle: string }> = {
