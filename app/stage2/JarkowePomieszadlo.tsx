@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Rating = 0 | 1 | 2;
 type Day = 1 | 2;
-type Screen = "dashboard" | "study";
+type Screen = "dashboard" | "study" | "browse";
 
 type StoryPanel = { icon: string; title: string; caption: string };
 type FlashCard = {
@@ -63,6 +63,16 @@ const categoryVisual: Record<string, { icon: string; label: string }> = {
   "Szkolenie strzeleckie": { icon: "🎯", label: "sprzęt i bezpieczeństwo" },
   "Wykorzystanie doświadczeń": { icon: "🔁", label: "obserwacja i poprawa" },
 };
+
+const categoryOrder = [
+  "OPBMR",
+  "Historia",
+  "Taktyka",
+  "POPL",
+  "Prawo konfliktów zbrojnych",
+  "Szkolenie strzeleckie",
+  "Wykorzystanie doświadczeń",
+];
 
 function shuffle<T>(items: T[]) {
   const out = [...items];
@@ -138,6 +148,28 @@ async function loadDeck(): Promise<DeckData> {
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
   const data = JSON.parse(await new Response(stream).text()) as DeckData;
   if (data.cards.length !== 119) throw new Error("Jarkowe Pomieszadło: baza nie ma 119 pytań.");
+  const expected: Record<string, number> = {
+    OPBMR: 10,
+    Historia: 50,
+    Taktyka: 6,
+    POPL: 5,
+    "Prawo konfliktów zbrojnych": 15,
+    "Szkolenie strzeleckie": 30,
+    "Wykorzystanie doświadczeń": 3,
+  };
+  const ids = new Set<string>();
+  const counts: Record<string, number> = {};
+  for (const card of data.cards) {
+    if (!card.id || !card.category || !card.question || !card.answer || !card.mnemonic || !card.day1Block) {
+      throw new Error(`Jarkowe Pomieszadło: niepełna karta ${card.id || "bez kodu"}.`);
+    }
+    if (ids.has(card.id)) throw new Error(`Jarkowe Pomieszadło: powtórzony kod ${card.id}.`);
+    ids.add(card.id);
+    counts[card.category] = (counts[card.category] ?? 0) + 1;
+  }
+  for (const [category, count] of Object.entries(expected)) {
+    if (counts[category] !== count) throw new Error(`Jarkowe Pomieszadło: zła liczba kart w dziale ${category}.`);
+  }
   return data;
 }
 
@@ -156,7 +188,13 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
   const [sessionTitle, setSessionTitle] = useState("");
   const [sessionStarted, setSessionStarted] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [examTimerEnabled, setExamTimerEnabled] = useState(true);
+  const [questionStarted, setQuestionStarted] = useState<number | null>(null);
+  const [questionRemaining, setQuestionRemaining] = useState(60);
+  const [browseCategory, setBrowseCategory] = useState("Wszystkie");
   const [error, setError] = useState("");
+  const byId = useMemo(() => new Map((deck?.cards ?? []).map((c) => [c.id, c])), [deck]);
+  const current = queue.length ? byId.get(queue[0]) ?? null : null;
 
   useEffect(() => {
     loadDeck().then(setDeck).catch((e) => setError(e?.message || "Nie udało się wczytać Jarkowego Pomieszadła."));
@@ -182,8 +220,15 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     return () => window.clearInterval(id);
   }, [sessionStarted, screen]);
 
-  const byId = useMemo(() => new Map((deck?.cards ?? []).map((c) => [c.id, c])), [deck]);
-  const current = queue.length ? byId.get(queue[0]) ?? null : null;
+  useEffect(() => {
+    if (screen !== "study" || sessionKind !== "exam" || !examTimerEnabled || !current || revealed) return;
+    const started = questionStarted ?? Date.now();
+    if (!questionStarted) setQuestionStarted(started);
+    const tick = () => setQuestionRemaining(Math.max(0, 60 - Math.floor((Date.now() - started) / 1000)));
+    tick();
+    const id = window.setInterval(tick, 250);
+    return () => window.clearInterval(id);
+  }, [screen, sessionKind, examTimerEnabled, current, revealed, questionStarted]);
 
   const stats = useMemo(() => {
     const cards = deck?.cards ?? [];
@@ -201,11 +246,22 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
 
   const day1Done = useMemo(() => (deck?.cards ?? []).filter((c) => progress[c.id]?.day1Done).length, [deck, progress]);
   const day2Done = useMemo(() => (deck?.cards ?? []).filter((c) => progress[c.id]?.day2Done).length, [deck, progress]);
-  const weakCards = useMemo(() => (deck?.cards ?? []).filter((c) => {
-    const p = progress[c.id];
-    return !p || p.rating < 2 || p.streak < 2;
+  const ratedWeakCards = useMemo(() => (deck?.cards ?? []).filter((c) => {
+    const rating = progress[c.id]?.rating;
+    return rating === 0 || rating === 1;
   }), [deck, progress]);
   const trapCards = useMemo(() => (deck?.cards ?? []).filter((c) => c.warning || /\d/.test(c.answer)), [deck]);
+  const nextDay1Block = useMemo(() => {
+    if (!deck) return null;
+    for (let block = 1; block <= 9; block++) {
+      if (deck.cards.some((c) => c.day1Block === block && !progress[c.id]?.day1Done)) return block;
+    }
+    return null;
+  }, [deck, progress]);
+  const browseCards = useMemo(() => {
+    const cards = deck?.cards ?? [];
+    return browseCategory === "Wszystkie" ? cards : cards.filter((c) => c.category === browseCategory);
+  }, [deck, browseCategory]);
 
   function begin(cards: FlashCard[], kind: SessionKind, title: string, targetDay: Day) {
     if (!cards.length) return;
@@ -220,6 +276,8 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     setSessionTitle(title);
     setSessionStarted(Date.now());
     setElapsed(0);
+    setQuestionStarted(Date.now());
+    setQuestionRemaining(60);
     setScreen("study");
   }
 
@@ -230,17 +288,12 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
   }
 
   function startWeak() {
-    if (!deck) return;
-    const cards = deck.cards.filter((c) => {
-      const p = progress[c.id];
-      return !p?.day1Done || p.rating < 2 || p.streak < 2;
-    });
-    begin(interleave(cards), "weak", "Dzień 2 • najpierw odzyskujemy słabe", 2);
+    begin(interleave(ratedWeakCards), "weak", "Ratuj słabe • tylko oceny 0 i 1", day);
   }
 
-  function startMix() {
+  function startMix(count: 10 | 20 | 30 = 20) {
     if (!deck) return;
-    begin(weightedMix(deck.cards, progress, 30), "mix", "Dzień 2 • Jarkowe Pomieszadło 30", 2);
+    begin(weightedMix(deck.cards, progress, count), "mix", `Jarkowe Pomieszadło ${count}`, 2);
   }
 
   function startExam() {
@@ -253,9 +306,20 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     begin(weightedMix(trapCards, progress, Math.min(30, trapCards.length)), "traps", "Pułapki, liczby i miejsca do potwierdzenia", 2);
   }
 
-  function rate(rating: Rating) {
+  function continueLearning() {
+    if (!deck) return;
+    if (day === 1) {
+      if (nextDay1Block) startBlock(nextDay1Block);
+      else if (ratedWeakCards.length) begin(interleave(ratedWeakCards), "weak", "Dzień 1 • ratuj oceny 0 i 1", 1);
+      else startMix(20);
+      return;
+    }
+    if (ratedWeakCards.length) startWeak();
+    else startMix(20);
+  }
+
+  const rate = useCallback((rating: Rating) => {
     if (!current) return;
-    const previous = progress[current.id];
     const nextAttempt = (attempts[current.id] ?? 0) + 1;
     setAttempts((a) => ({ ...a, [current.id]: nextAttempt }));
     setProgress((p) => ({
@@ -279,7 +343,9 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     setQueue(rest);
     setRevealed(false);
     setHint(false);
-  }
+    setQuestionStarted(Date.now());
+    setQuestionRemaining(60);
+  }, [attempts, current, day, queue, sessionKind]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -296,10 +362,29 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [screen, current, revealed, queue, attempts, progress, day, sessionKind]);
+  }, [screen, current, revealed, rate]);
 
   if (error) return <div className="rounded-2xl border border-red-900 bg-red-950/20 p-5 text-red-200">{error}</div>;
   if (!deck) return <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-neutral-300">Wczytuję 119 kart Jarkowego Pomieszadła…</div>;
+
+  if (screen === "browse") {
+    return <div className="space-y-5">
+      <section className="rounded-[1.75rem] border border-violet-700/50 bg-gradient-to-br from-violet-950/60 via-neutral-900 to-neutral-950 p-6 sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div><div className="font-mono text-xs font-black uppercase tracking-[.2em] text-violet-300">119 KART // PEŁNY SPIS</div><h2 className="mt-2 text-3xl font-black">Wszystkie fiszki</h2><p className="mt-2 text-sm text-neutral-400">Wybierz dział i wejdź w dowolną kartę. Odpowiedź nadal pozostaje zakryta, dopóki sam jej nie odsłonisz.</p></div>
+          <button onClick={() => setScreen("dashboard")} className="rounded-xl border border-violet-700/60 px-4 py-2 text-sm font-bold text-violet-100">← Wróć</button>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">{["Wszystkie", ...categoryOrder].map((category) => <button key={category} onClick={() => setBrowseCategory(category)} className={`rounded-full border px-3 py-2 text-xs font-bold ${browseCategory === category ? "border-violet-500 bg-violet-950/60 text-violet-100" : "border-neutral-700 bg-neutral-950 text-neutral-400"}`}>{category}</button>)}</div>
+      </section>
+      <section className="grid gap-2 md:grid-cols-2">{browseCards.map((card) => {
+        const p = progress[card.id];
+        const status = p ? `${p.rating} • ${p.rating === 0 ? "nie wiem" : p.rating === 1 ? "częściowo" : "umiem"}` : "niepoznana";
+        return <button key={card.id} onClick={() => begin([card], "mix", `Wszystkie fiszki • ${card.category}`, day)} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4 text-left transition hover:border-violet-700">
+          <div className="flex items-start justify-between gap-3"><div><div className="font-mono text-xs font-black text-violet-300">{card.id} • {card.category}</div><div className="mt-2 text-sm font-bold leading-5 text-white">{card.question}</div></div><span className="shrink-0 rounded-full border border-neutral-700 px-2.5 py-1 text-[10px] font-bold text-neutral-400">{status}</span></div>
+        </button>;
+      })}</section>
+    </div>;
+  }
 
   if (screen === "study") {
     if (!current) {
@@ -311,7 +396,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
           <p className="mt-3 max-w-2xl text-sm leading-6 text-neutral-300">W tej sesji przeszedłeś {initialIds.length} kart bazowych. Słabe odpowiedzi wracały po kilku innych pytaniach, więc trenowałeś odtwarzanie, a nie rozpoznawanie tekstu.</p>
           <div className="mt-5 flex flex-wrap gap-2">
             <button onClick={() => setScreen("dashboard")} className="rounded-xl bg-white px-5 py-3 text-sm font-black text-neutral-950">Wróć do planu</button>
-            {day === 2 && <button onClick={startMix} className="rounded-xl border border-violet-600 bg-violet-950/40 px-5 py-3 text-sm font-black text-violet-100">Jeszcze 30 pomieszanych</button>}
+            {day === 2 && <button onClick={() => startMix(20)} className="rounded-xl border border-violet-600 bg-violet-950/40 px-5 py-3 text-sm font-black text-violet-100">Jeszcze 20 pomieszanych</button>}
           </div>
           <div className="mt-4 text-xs text-neutral-500">Czas sesji: {formatTime(elapsed)} • zaliczone w tym dniu: {uniqueDone}/119</div>
         </section>
@@ -329,6 +414,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
           <div className="mt-1 text-xs text-neutral-500">Space = pokaż/ukryj • po odsłonięciu klawisze 0 / 1 / 2</div>
         </div>
         <div className="flex gap-2">
+          {sessionKind === "exam" && examTimerEnabled && <span className={`rounded-xl border px-3 py-2 font-mono text-xs font-black ${questionRemaining === 0 ? "border-red-800 bg-red-950/40 text-red-200" : "border-amber-800 bg-amber-950/30 text-amber-200"}`}>{questionRemaining === 0 ? "CZAS" : `${questionRemaining} s`}</span>}
           <span className="rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-2 font-mono text-xs text-neutral-300">{formatTime(elapsed)}</span>
           <button onClick={() => setScreen("dashboard")} className="rounded-xl border border-neutral-700 px-3 py-2 text-xs font-bold">Przerwij</button>
         </div>
@@ -414,6 +500,11 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
       <button onClick={() => setDay(2)} className={`rounded-2xl border p-5 text-left transition ${day === 2 ? "border-violet-500 bg-violet-950/40" : "border-neutral-800 bg-neutral-900"}`}><div className="text-xs font-black uppercase tracking-[.16em] text-violet-300">DZIEŃ 2</div><div className="mt-1 text-xl font-black">Odzyskaj z pamięci i pomieszaj</div><div className="mt-2 text-sm text-neutral-400">Najpierw 0/1 → potem mieszane działy → próbne serie po 10</div><div className="mt-3 font-mono text-xs text-neutral-500">{day2Done}/119 sprawdzone dnia 2</div></button>
     </div>
 
+    <section className="rounded-[1.6rem] border border-violet-700/50 bg-gradient-to-r from-violet-950/35 via-neutral-900 to-neutral-900 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4"><div><div className="font-mono text-xs font-black uppercase tracking-[.18em] text-violet-300">TWÓJ NASTĘPNY KROK</div><div className="mt-1 text-lg font-black">{day === 1 ? (nextDay1Block ? `Blok ${nextDay1Block} z 9` : ratedWeakCards.length ? "Ratuj oceny 0 i 1" : "Pierwsze przejście zakończone") : ratedWeakCards.length ? `${ratedWeakCards.length} kart z oceną 0 lub 1` : "Mieszanie wszystkich działów"}</div></div><div className="min-w-[180px] flex-1 sm:max-w-sm"><div className="mb-2 flex justify-between font-mono text-[11px] text-neutral-400"><span>{day1Done}/119 poznanych</span><span>{Math.round(day1Done / 119 * 100)}%</span></div><div className="h-2 overflow-hidden rounded-full bg-neutral-800"><div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.round(day1Done / 119 * 100)}%` }} /></div></div></div>
+      <button onClick={continueLearning} className="mt-4 w-full rounded-2xl bg-white px-5 py-4 text-base font-black text-neutral-950 hover:bg-neutral-200">KONTYNUUJ NAUKĘ →</button>
+    </section>
+
     {day === 1 ? <section className="rounded-[1.6rem] border border-neutral-800 bg-neutral-900 p-5 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[.18em] text-violet-300">PLAN // DZIEŃ 1</div><h3 className="mt-1 text-2xl font-black">9 bloków, żeby nie utknąć na pierwszym dziale</h3></div><div className="text-xs text-neutral-500">Po blokach 3 i 6 zrób dłuższą przerwę.</div></div>
       <div className="mt-5 grid gap-3 md:grid-cols-2">{Object.entries(blockMeta).map(([key, meta]) => {
@@ -430,12 +521,17 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
       <div className="font-mono text-xs font-black uppercase tracking-[.18em] text-violet-300">PLAN // DZIEŃ 2</div>
       <h3 className="mt-1 text-2xl font-black">Nie czytamy od początku. Wydobywamy odpowiedzi z głowy.</h3>
       <div className="mt-5 grid gap-3 md:grid-cols-2">
-        <button onClick={startWeak} className="rounded-2xl border border-red-900/50 bg-red-950/15 p-5 text-left hover:border-red-700"><div className="text-2xl">🧯</div><div className="mt-2 text-lg font-black">1. Ratuj 0 i 1</div><p className="mt-2 text-sm leading-6 text-neutral-400">{weakCards.length} kart wymaga jeszcze pewnego odtworzenia. Po błędzie odpowiedź wróci później, nie od razu.</p></button>
-        <button onClick={startMix} className="rounded-2xl border border-violet-800/60 bg-violet-950/20 p-5 text-left hover:border-violet-600"><div className="text-2xl">🌀</div><div className="mt-2 text-lg font-black">2. Pomieszadło 30</div><p className="mt-2 text-sm leading-6 text-neutral-400">30 kart z różnych działów. Słabe mają większą szansę wejścia, ale aplikacja unika serii jednego tematu.</p></button>
-        <button onClick={startExam} className="rounded-2xl border border-neutral-700 bg-neutral-950 p-5 text-left hover:border-neutral-500"><div className="text-2xl">🎓</div><div className="mt-2 text-lg font-black">3. Próbny egzamin — 10</div><p className="mt-2 text-sm leading-6 text-neutral-400">Losowe 10 pytań. Odpowiadasz na głos jak przed komisją i dopiero potem sprawdzasz kartę.</p></button>
-        <button onClick={startTraps} className="rounded-2xl border border-amber-900/60 bg-amber-950/15 p-5 text-left hover:border-amber-700"><div className="text-2xl">⚠️</div><div className="mt-2 text-lg font-black">4. Pułapki i liczby</div><p className="mt-2 text-sm leading-6 text-neutral-400">Parametry, daty oraz karty z uwagami o rozbieżnościach źródeł. To zostawiamy na końcowe doszlifowanie.</p></button>
+        <button disabled={!ratedWeakCards.length} onClick={startWeak} className="rounded-2xl border border-red-900/50 bg-red-950/15 p-5 text-left hover:border-red-700 disabled:cursor-not-allowed disabled:opacity-45"><div className="text-2xl">🧯</div><div className="mt-2 text-lg font-black">1. Ratuj 0 i 1</div><p className="mt-2 text-sm leading-6 text-neutral-400">{ratedWeakCards.length ? `${ratedWeakCards.length} kart ma dokładnie ocenę 0 lub 1. Po błędzie wrócą później, nie od razu.` : "Nie masz teraz żadnych kart z oceną 0 lub 1."}</p></button>
+        <div className="rounded-2xl border border-violet-800/60 bg-violet-950/20 p-5 text-left"><div className="text-2xl">🌀</div><div className="mt-2 text-lg font-black">2. Pomieszadło</div><p className="mt-2 text-sm leading-6 text-neutral-400">Wybierz długość. Słabe karty mają większą szansę wejścia, ale działy są przeplatane.</p><div className="mt-4 grid grid-cols-3 gap-2">{([10, 20, 30] as const).map((count) => <button key={count} onClick={() => startMix(count)} className="rounded-xl border border-violet-700 bg-violet-950/50 px-3 py-2 text-sm font-black text-violet-100 hover:bg-violet-900/50">{count}</button>)}</div></div>
+        <div className="rounded-2xl border border-neutral-700 bg-neutral-950 p-5 text-left"><div className="text-2xl">🎓</div><div className="mt-2 text-lg font-black">3. Próbny egzamin — 10</div><p className="mt-2 text-sm leading-6 text-neutral-400">Odpowiadasz jak przed komisją, potem odsłaniasz odpowiedź i oceniasz się.</p><label className="mt-3 flex cursor-pointer items-center gap-2 text-xs font-bold text-neutral-400"><input type="checkbox" checked={examTimerEnabled} onChange={(e) => setExamTimerEnabled(e.target.checked)} className="h-4 w-4 accent-violet-500" /> minutnik 60 s na pytanie</label><button onClick={startExam} className="mt-4 w-full rounded-xl border border-neutral-600 bg-neutral-900 px-3 py-2 text-sm font-black hover:border-neutral-400">Rozpocznij</button></div>
+        <button onClick={startTraps} className="rounded-2xl border border-amber-900/60 bg-amber-950/15 p-5 text-left hover:border-amber-700"><div className="text-2xl">⚠️</div><div className="mt-2 text-lg font-black">4. Pułapki Jarka</div><p className="mt-2 text-sm leading-6 text-neutral-400">Parametry, daty oraz karty z uwagami o rozbieżnościach źródeł. To zostawiamy na końcowe doszlifowanie.</p></button>
       </div>
     </section>}
+
+    <section className="grid gap-3 md:grid-cols-2">
+      <button onClick={() => setScreen("browse")} className="rounded-2xl border border-neutral-700 bg-neutral-900 p-5 text-left hover:border-violet-700"><div className="text-2xl">🗂️</div><div className="mt-2 text-lg font-black">Wszystkie fiszki</div><p className="mt-2 text-sm leading-6 text-neutral-400">Pełne 119 kart z podziałem na działy. Możesz wejść bezpośrednio w dowolne pytanie.</p></button>
+      {day === 1 && <button disabled={!ratedWeakCards.length} onClick={() => begin(interleave(ratedWeakCards), "weak", "Ratuj słabe • tylko oceny 0 i 1", 1)} className="rounded-2xl border border-red-900/50 bg-red-950/15 p-5 text-left hover:border-red-700 disabled:cursor-not-allowed disabled:opacity-45"><div className="text-2xl">🧯</div><div className="mt-2 text-lg font-black">Ratuj słabe</div><p className="mt-2 text-sm leading-6 text-neutral-400">{ratedWeakCards.length ? `${ratedWeakCards.length} kart z oceną 0 lub 1.` : "Pojawi się tutaj, gdy jakaś karta dostanie ocenę 0 lub 1."}</p></button>}
+    </section>
 
     <section className="grid gap-4 lg:grid-cols-3">
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5"><div className="text-xl">🧠</div><h3 className="mt-2 font-black">Najpierw odtwórz</h3><p className="mt-2 text-sm leading-6 text-neutral-400">Nie czytaj odpowiedzi dwa razy. Spróbuj powiedzieć ją na głos, nawet jeśli będzie niepełna. Dopiero potem sprawdź.</p></div>
