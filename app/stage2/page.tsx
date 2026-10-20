@@ -168,7 +168,7 @@ export default function Stage2Page(){
   const completeSets=useMemo(()=>resolvedSets.filter(s=>s.questions.every(Boolean)),[resolvedSets]);
   const unresolvedSets=useMemo(()=>resolvedSets.filter(s=>!s.questions.every(Boolean)),[resolvedSets]);
   const summary=useMemo(()=>{
-    const all=[...activeTheory,...activePractical];
+    const all=activeTheory;
     let seen=0,weak=0,strong=0;
     for(const q of all){
       const r=progress[q.id]?.rating;
@@ -177,7 +177,7 @@ export default function Stage2Page(){
       if(r!==undefined&&r>=3)strong++;
     }
     return{total:all.length,seen,weak,strong,unseen:all.length-seen};
-  },[activeTheory,activePractical,progress]);
+  },[activeTheory,progress]);
 
   function setQuestion(q:Theory|Practical){
     setCurrent(q);setRevealed(false);setFull(false);setChecked({});
@@ -296,29 +296,35 @@ function mockNext(){
         </div>
       </button>
 
+      <button onClick={startPractical} className="w-full rounded-[1.65rem] border border-[#56664c] bg-[#121911] p-6 text-left transition hover:-translate-y-0.5 hover:border-[#809174] sm:p-7">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">AKTUALNA BAZA // {activePractical.length} ZADAŃ</div>
+            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">Pytania praktyczne</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#9eaa96]">Zadania praktyczne pozostają bez zmian. Wykonujesz je jak kierownik zajęć, następnie sprawdzasz odpowiedź i odhaczasz checklistę.</p>
+          </div>
+          <span className="rounded-xl border border-[#718365] bg-[#202a1c] px-4 py-2 text-sm font-black text-[#c9d5bd]">Ćwicz praktykę →</span>
+        </div>
+      </button>
+
       <div className="pt-5">
         <div className="font-mono text-xs font-black uppercase tracking-[0.22em] text-neutral-500">ARCHIWUM // STARE PYTANIA</div>
-        <h2 className="mt-2 text-2xl font-black text-white">Stare pytania i zestawy</h2>
-        <p className="mt-2 text-sm leading-6 text-neutral-400">Poprzednia baza została zachowana do powtórek i porównania. Nie jest już głównym materiałem do nauki.</p>
+        <h2 className="mt-2 text-2xl font-black text-white">Stare pytania teoretyczne i zestawy</h2>
+        <p className="mt-2 text-sm leading-6 text-neutral-400">Poprzednia baza teorii została zachowana do powtórek i porównania. Nie jest już głównym materiałem do nauki.</p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-5">{[["Stare pytania",summary.total],["Przerobione",summary.seen],["Niepoznane",summary.unseen],["Do poprawy",summary.weak],["Mocne",summary.strong]].map(([a,b])=><Card key={String(a)} className="p-4"><div className="text-xs text-neutral-500">{a}</div><div className="mt-1 text-2xl font-bold">{b}</div></Card>)}</div>
+      <div className="grid gap-3 sm:grid-cols-5">{[["Stara teoria",summary.total],["Przerobione",summary.seen],["Niepoznane",summary.unseen],["Do poprawy",summary.weak],["Mocne",summary.strong]].map(([a,b])=><Card key={String(a)} className="p-4"><div className="text-xs text-neutral-500">{a}</div><div className="mt-1 text-2xl font-bold">{b}</div></Card>)}</div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <button onClick={()=>startTheorySet()} className="rounded-2xl border border-[#56664c] bg-[#121911] p-6 text-left hover:border-[#809174]">
           <div className="text-sm text-[#91a482]">{completeSets.length} starych zestawów</div>
           <div className="mt-2 text-xl font-bold">Stare zestawy 1–40</div>
           <p className="mt-2 text-sm text-neutral-400">Losujesz zestaw ze starej bazy: pytanie 1 → pytanie 2 → samoocena.</p>
         </button>
-        <button onClick={startPractical} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500">
-          <div className="text-sm text-neutral-400">{activePractical.length} aktywne</div>
-          <div className="mt-2 text-xl font-bold">Stare pytania praktyczne</div>
-          <p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p>
-        </button>
         <button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200">
-          <div className="text-sm text-neutral-600">2 teoria z zestawu + 1 praktyka</div>
-          <div className="mt-2 text-xl font-bold">Symulacja — stare pytania</div>
-          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden ze starych zestawów 1–40, odpowiadasz na dwa pytania teoretyczne, a następnie na jedno zadanie praktyczne.</p>
+          <div className="text-sm text-neutral-600">2 stare pytania teoretyczne + 1 aktualna praktyka</div>
+          <div className="mt-2 text-xl font-bold">Symulacja mieszana</div>
+          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden ze starych zestawów 1–40, a następnie jedno aktualne zadanie praktyczne.</p>
         </button>
       </div>
 
