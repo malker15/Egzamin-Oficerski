@@ -14,8 +14,8 @@ const stages = [
   {
     href: "/stage2",
     roman: "II",
-    title: "Teoria i praktyka",
-    description: "Odpowiedzi ustne, checklisty zadań praktycznych, powtórki i symulacja 2+1.",
+    title: "Pytania główne",
+    description: "119 aktualnych pytań, aktywne odtwarzanie, mnemotechniki, powtórki i próbne serie.",
     status: "Gotowy",
     ready: true,
     code: "MOD-02",
