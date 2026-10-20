@@ -147,7 +147,7 @@ async function loadDeck(): Promise<DeckData> {
   const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
   const data = JSON.parse(await new Response(stream).text()) as DeckData;
-  if (data.cards.length !== 119) throw new Error("Jarkowe Pomieszadło: baza nie ma 119 pytań.");
+  if (data.cards.length !== 119) throw new Error("Pytania główne: baza nie ma 119 pytań.");
   const expected: Record<string, number> = {
     OPBMR: 10,
     Historia: 50,
@@ -161,14 +161,14 @@ async function loadDeck(): Promise<DeckData> {
   const counts: Record<string, number> = {};
   for (const card of data.cards) {
     if (!card.id || !card.category || !card.question || !card.answer || !card.mnemonic || !card.day1Block) {
-      throw new Error(`Jarkowe Pomieszadło: niepełna karta ${card.id || "bez kodu"}.`);
+      throw new Error(`Pytania główne: niepełna karta ${card.id || "bez kodu"}.`);
     }
-    if (ids.has(card.id)) throw new Error(`Jarkowe Pomieszadło: powtórzony kod ${card.id}.`);
+    if (ids.has(card.id)) throw new Error(`Pytania główne: powtórzony kod ${card.id}.`);
     ids.add(card.id);
     counts[card.category] = (counts[card.category] ?? 0) + 1;
   }
   for (const [category, count] of Object.entries(expected)) {
-    if (counts[category] !== count) throw new Error(`Jarkowe Pomieszadło: zła liczba kart w dziale ${category}.`);
+    if (counts[category] !== count) throw new Error(`Pytania główne: zła liczba kart w dziale ${category}.`);
   }
   return data;
 }
@@ -197,7 +197,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
   const current = queue.length ? byId.get(queue[0]) ?? null : null;
 
   useEffect(() => {
-    loadDeck().then(setDeck).catch((e) => setError(e?.message || "Nie udało się wczytać Jarkowego Pomieszadła."));
+    loadDeck().then(setDeck).catch((e) => setError(e?.message || "Nie udało się wczytać pytań głównych."));
   }, []);
 
   useEffect(() => {
@@ -293,7 +293,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
 
   function startMix(count: 10 | 20 | 30 = 20) {
     if (!deck) return;
-    begin(weightedMix(deck.cards, progress, count), "mix", `Jarkowe Pomieszadło ${count}`, 2);
+    begin(weightedMix(deck.cards, progress, count), "mix", `Pytania główne — seria mieszana ${count}`, 2);
   }
 
   function startExam() {
@@ -365,7 +365,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
   }, [screen, current, revealed, rate]);
 
   if (error) return <div className="rounded-2xl border border-red-900 bg-red-950/20 p-5 text-red-200">{error}</div>;
-  if (!deck) return <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-neutral-300">Wczytuję 119 kart Jarkowego Pomieszadła…</div>;
+  if (!deck) return <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-neutral-300">Wczytuję 119 pytań głównych…</div>;
 
   if (screen === "browse") {
     return <div className="space-y-5">
@@ -484,9 +484,9 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     <section className="overflow-hidden rounded-[1.8rem] border border-violet-700/50 bg-gradient-to-br from-violet-950/70 via-[#17131d] to-neutral-950 p-6 sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="font-mono text-xs font-black uppercase tracking-[.22em] text-violet-300">ETAP II // NOWY TRYB</div>
-          <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">Jarkowe Pomieszadło</h2>
-          <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-neutral-300 sm:text-base">119 kompletnie nowych pytań z PDF. Najpierw próbujesz odtworzyć odpowiedź, potem dostajesz poprawny rdzeń, skojarzenie i — tam gdzie pomaga — prosty obraz lub mini-komiks. Postęp tego trybu jest oddzielony od całego pozostałego Etapu II.</p>
+          <div className="font-mono text-xs font-black uppercase tracking-[.22em] text-violet-300">ETAP II // GŁÓWNA BAZA</div>
+          <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">Pytania główne</h2>
+          <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-neutral-300 sm:text-base">119 aktualnych pytań Etapu II. Najpierw próbujesz odtworzyć odpowiedź, potem dostajesz poprawny rdzeń, skojarzenie i — tam gdzie pomaga — prosty obraz lub mini-komiks. Postęp tej bazy jest oddzielony od starych pytań i zestawów.</p>
         </div>
         <button onClick={onExit} className="rounded-xl border border-violet-700/60 bg-black/20 px-4 py-2 text-sm font-bold text-violet-100">← Menu Etapu II</button>
       </div>
@@ -542,7 +542,7 @@ export default function JarkowePomieszadlo({ onExit }: { onExit: () => void }) {
     <section className="rounded-2xl border border-[#4c5d43] bg-[#121911] p-5">
       <div className="font-mono text-[10px] font-black uppercase tracking-[.18em] text-[#91a482]">ZASADA OPANOWANIA</div>
       <p className="mt-2 text-sm leading-6 text-[#bdc9b4]">Karta jest „opanowana” dopiero po dwóch kolejnych odpowiedziach na poziomie 2, z czego co najmniej jedna musi przypaść na Dzień 2. Samo obejrzenie odpowiedzi nie podnosi postępu.</p>
-      <div className="mt-4 flex flex-wrap gap-2"><button onClick={() => { if (confirm("Wyczyścić tylko postęp Jarkowego Pomieszadła? Pozostały Etap II zostanie bez zmian.")) setProgress({}); }} className="rounded-xl border border-red-900/60 bg-red-950/20 px-4 py-2 text-xs font-black text-red-200">Resetuj tylko Pomieszadło</button></div>
+      <div className="mt-4 flex flex-wrap gap-2"><button onClick={() => { if (confirm("Wyczyścić postęp pytań głównych? Stare pytania i zestawy pozostaną bez zmian.")) setProgress({}); }} className="rounded-xl border border-red-900/60 bg-red-950/20 px-4 py-2 text-xs font-black text-red-200">Resetuj pytania główne</button></div>
     </section>
   </div>;
 }
