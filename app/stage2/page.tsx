@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { supabase } from "../../lib/supabaseClient";
 import OralCoach from "./OralCoach";
 import AdaptiveExaminer from "./AdaptiveExaminer";
@@ -31,15 +32,6 @@ const ratings: { value:Rating; label:string; short:string }[] = [
   {value:3,label:"Samodzielnie",short:"3"},
   {value:4,label:"Płynnie",short:"4"},
 ];
-
-function shuffle<T>(a:T[]) {
-  const x=[...a];
-  for(let i=x.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [x[i],x[j]]=[x[j],x[i]];
-  }
-  return x;
-}
 
 function pickWeighted<T extends {id:string}>(items:T[], p:Progress){
   const pool = items.flatMap(q => Array.from({length: Math.max(1, 6 - (p[q.id]?.rating ?? 0))}, () => q));
@@ -162,7 +154,7 @@ export default function Stage2Page(){
   useEffect(()=>{(async()=>{
     const {data:s}=await supabase.auth.getSession();
     if(!s.session?.user){location.href="/";return;}
-    try{setData(await loadData())}catch(e:any){setError(e?.message||"Nie udało się wczytać bazy.")}
+    try{setData(await loadData())}catch(e:unknown){setError(e instanceof Error?e.message:"Nie udało się wczytać bazy.")}
   })()},[]);
   useEffect(()=>{try{const s=localStorage.getItem(LS);if(s)setProgress(JSON.parse(s))}catch{}finally{setProgressLoaded(true)}},[]);
   useEffect(()=>{if(progressLoaded)localStorage.setItem(LS,JSON.stringify(progress))},[progress,progressLoaded]);
@@ -254,7 +246,7 @@ function mockNext(){
 }
   function openSets(){setSelectedSetNumber(1);setExpandedAnswers({});setView("sets");}
 
-  if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><a href="/" className="mt-5 inline-block underline">Wróć do startu</a></Card></div></main>;
+  if(error)return <main className="min-h-screen bg-neutral-950 p-6 text-neutral-100"><div className="mx-auto max-w-3xl"><Card><h1 className="text-xl font-bold">Etap II</h1><p className="mt-4 text-red-300">{error}</p><Link href="/" className="mt-5 inline-block underline">Wróć do startu</Link></Card></div></main>;
   if(!data)return <main className="grid min-h-screen place-items-center bg-neutral-950 text-neutral-300">Wczytuję Etap II…</main>;
 
   const QuestionView=({q,kind,exam=false,setNumber,setPosition}:{q:Theory|Practical;kind:"theory"|"practical";exam?:boolean;setNumber?:number;setPosition?:number})=><div className="space-y-5">
@@ -288,46 +280,52 @@ function mockNext(){
 
   return <main className="min-h-screen bg-neutral-950 text-neutral-100"><div className="mx-auto max-w-5xl px-4 py-8">
     <header className="mb-6 flex flex-wrap items-center gap-3">
-      <div><p className="text-xs font-semibold uppercase tracking-[.2em] text-neutral-500">Egzamin oficerski</p><h1 className="text-2xl font-bold">Etap II — teoria i praktyka</h1></div>
-      <div className="ml-auto flex gap-2"><a href="/" className="rounded-xl border border-neutral-700 px-4 py-2 text-sm font-semibold">Start</a>{view!=="home"&&view!=="coach"&&view!=="examiner"&&view!=="semantic"&&<Btn kind="secondary" onClick={()=>setView("home")}>Menu Etapu II</Btn>}</div>
+      <div><p className="text-xs font-semibold uppercase tracking-[.2em] text-neutral-500">Egzamin oficerski</p><h1 className="text-2xl font-bold">Etap II — pytania główne</h1></div>
+      <div className="ml-auto flex gap-2"><Link href="/" className="rounded-xl border border-neutral-700 px-4 py-2 text-sm font-semibold">Start</Link>{view!=="home"&&view!=="coach"&&view!=="examiner"&&view!=="semantic"&&<Btn kind="secondary" onClick={()=>setView("home")}>Menu Etapu II</Btn>}</div>
     </header>
 
     {view==="home"&&<div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-5">{[["Aktywne",summary.total],["Przerobione",summary.seen],["Niepoznane",summary.unseen],["Do poprawy",summary.weak],["Mocne",summary.strong]].map(([a,b])=><Card key={String(a)} className="p-4"><div className="text-xs text-neutral-500">{a}</div><div className="mt-1 text-2xl font-bold">{b}</div></Card>)}</div>
+      <button onClick={()=>setView("jarkowe")} className="w-full overflow-hidden rounded-[1.65rem] border border-[#718365] bg-gradient-to-r from-[#202d1c] via-[#172015] to-neutral-900 p-6 text-left shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-[#9bad8d] sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-5">
+          <div>
+            <div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#b5c8a7]">GŁÓWNA BAZA // 119 PYTAŃ // AKTYWNA NAUKA</div>
+            <h2 className="mt-2 text-3xl font-black text-white sm:text-4xl">Pytania główne</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#c0cbb8]">Aktualna baza Etapu II. Uczysz się przez odtwarzanie odpowiedzi, skojarzenia, historie obrazkowe, inteligentne powroty do błędów i mieszanie działów.</p>
+          </div>
+          <span className="rounded-xl border border-[#829576] bg-[#283523] px-5 py-3 text-sm font-black text-[#e0ead8]">Rozpocznij naukę →</span>
+        </div>
+      </button>
+
+      <div className="pt-5">
+        <div className="font-mono text-xs font-black uppercase tracking-[0.22em] text-neutral-500">ARCHIWUM // STARE PYTANIA</div>
+        <h2 className="mt-2 text-2xl font-black text-white">Stare pytania i zestawy</h2>
+        <p className="mt-2 text-sm leading-6 text-neutral-400">Poprzednia baza została zachowana do powtórek i porównania. Nie jest już głównym materiałem do nauki.</p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-5">{[["Stare pytania",summary.total],["Przerobione",summary.seen],["Niepoznane",summary.unseen],["Do poprawy",summary.weak],["Mocne",summary.strong]].map(([a,b])=><Card key={String(a)} className="p-4"><div className="text-xs text-neutral-500">{a}</div><div className="mt-1 text-2xl font-bold">{b}</div></Card>)}</div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <button onClick={()=>startTheorySet()} className="rounded-2xl border border-[#56664c] bg-[#121911] p-6 text-left hover:border-[#809174]">
-          <div className="text-sm text-[#91a482]">{completeSets.length} zestawy egzaminacyjne</div>
-          <div className="mt-2 text-xl font-bold">Nauka — zestawy 1–40</div>
-          <p className="mt-2 text-sm text-neutral-400">Losujesz dokładnie zestaw nr 1–40 → pytanie 1 → pytanie 2 → samoocena.</p>
+          <div className="text-sm text-[#91a482]">{completeSets.length} starych zestawów</div>
+          <div className="mt-2 text-xl font-bold">Stare zestawy 1–40</div>
+          <p className="mt-2 text-sm text-neutral-400">Losujesz zestaw ze starej bazy: pytanie 1 → pytanie 2 → samoocena.</p>
         </button>
         <button onClick={startPractical} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-left hover:border-neutral-500">
           <div className="text-sm text-neutral-400">{activePractical.length} aktywne</div>
-          <div className="mt-2 text-xl font-bold">Nauka praktyki</div>
+          <div className="mt-2 text-xl font-bold">Stare pytania praktyczne</div>
           <p className="mt-2 text-sm text-neutral-400">Wykonujesz zadanie jak kierownik zajęć, potem odhaczasz checklistę.</p>
         </button>
         <button onClick={startMock} className="rounded-2xl border border-neutral-600 bg-white p-6 text-left text-neutral-950 hover:bg-neutral-200">
           <div className="text-sm text-neutral-600">2 teoria z zestawu + 1 praktyka</div>
-          <div className="mt-2 text-xl font-bold">Symulacja Etapu II</div>
-          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden z rzeczywistych zestawów 1–40, odpowiadasz na jego dwa pytania teoretyczne, a następnie na jedno losowe zadanie praktyczne.</p>
+          <div className="mt-2 text-xl font-bold">Symulacja — stare pytania</div>
+          <p className="mt-2 text-sm text-neutral-600">Losujesz jeden ze starych zestawów 1–40, odpowiadasz na dwa pytania teoretyczne, a następnie na jedno zadanie praktyczne.</p>
         </button>
       </div>
 
-      <button onClick={()=>setView("jarkowe")} className="w-full overflow-hidden rounded-[1.65rem] border border-violet-700/60 bg-gradient-to-r from-violet-950/70 via-[#19141f] to-neutral-900 p-6 text-left shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:border-violet-500 sm:p-7">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-violet-300">NOWOŚĆ // 119 FISZEK // 2 DNI</div>
-            <h2 className="mt-2 text-2xl font-black text-white sm:text-3xl">🌀 Jarkowe Pomieszadło</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-violet-100/70">Kompletnie nowa baza: aktywne odtwarzanie, mnemotechnika, obrazkowe historie, powroty do błędów i mocne mieszanie działów w drugim dniu.</p>
-          </div>
-          <span className="rounded-xl border border-violet-600/60 bg-violet-950/50 px-4 py-2 text-sm font-black text-violet-100">Zacznij plan →</span>
-        </div>
-      </button>
-
       <button onClick={openSets} className="w-full rounded-[1.65rem] border border-[#657658] bg-[#172015] p-6 text-left transition hover:bg-[#1c2718] sm:p-7">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">BAZA // ZESTAWY 1–40</div><h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Podgląd wszystkich zestawów egzaminacyjnych</h2><p className="mt-2 text-sm leading-6 text-[#9eaa96]">Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami zgodnymi z arkuszem „Zestawy pytań 1–40”.</p></div>
-          <span className="rounded-xl border border-[#718365] bg-[#202a1c] px-4 py-2 text-sm font-black text-[#c9d5bd]">Otwórz 40 zestawów →</span>
+          <div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">ARCHIWUM // ZESTAWY 1–40</div><h2 className="mt-2 text-xl font-black text-white sm:text-2xl">Podgląd starych zestawów</h2><p className="mt-2 text-sm leading-6 text-[#9eaa96]">Otwórz dowolny numer i zobacz oba pytania wraz z odpowiedziami ze starego arkusza „Zestawy pytań 1–40”.</p></div>
+          <span className="rounded-xl border border-[#718365] bg-[#202a1c] px-4 py-2 text-sm font-black text-[#c9d5bd]">Otwórz stare zestawy →</span>
         </div>
       </button>
 
@@ -355,7 +353,7 @@ function mockNext(){
     </div>}
 
     {view==="sets"&&selectedSet&&<div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">PODGLĄD // 40 ZESTAWÓW</div><h2 className="mt-2 text-2xl font-black">Zestawy egzaminacyjne Etapu II</h2><p className="mt-1 text-sm text-neutral-400">Wybierz numer zestawu. Pytania pochodzą z arkusza „Zestawy pytań 1–40”; odpowiedzi zostały dopasowane i zweryfikowane.</p></div><Btn onClick={()=>selectedSet.questions.every(Boolean)&&startTheorySet(selectedSet)} disabled={!selectedSet.questions.every(Boolean)}>Ćwicz zestaw nr {selectedSet.number}</Btn></div>
+      <div className="flex flex-wrap items-end justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.2em] text-[#91a482]">ARCHIWUM // 40 STARYCH ZESTAWÓW</div><h2 className="mt-2 text-2xl font-black">Stare zestawy Etapu II</h2><p className="mt-1 text-sm text-neutral-400">Wybierz numer starego zestawu. Pytania pochodzą z arkusza „Zestawy pytań 1–40”; odpowiedzi zostały dopasowane i zweryfikowane.</p></div><Btn onClick={()=>selectedSet.questions.every(Boolean)&&startTheorySet(selectedSet)} disabled={!selectedSet.questions.every(Boolean)}>Ćwicz stary zestaw nr {selectedSet.number}</Btn></div>
       <div className="grid grid-cols-5 gap-2 sm:grid-cols-9 lg:grid-cols-17">{resolvedSets.map(s=><button key={s.number} onClick={()=>{setSelectedSetNumber(s.number);setExpandedAnswers({})}} className={cls("rounded-xl border px-2 py-3 text-sm font-black transition",selectedSetNumber===s.number?"border-[#91a482] bg-[#d9e2d2] text-[#10150f]":"border-neutral-800 bg-neutral-900 text-neutral-300 hover:border-neutral-600",!s.questions.every(Boolean)&&"border-amber-900/60")}>{s.number}</button>)}</div>
       <Card className="border-[#56664c] bg-[#121911]"><div className="flex items-center justify-between gap-3"><div><div className="font-mono text-xs font-black uppercase tracking-[0.18em] text-[#91a482]">ZESTAW EGZAMINACYJNY</div><h3 className="mt-1 text-3xl font-black">Zestaw nr {selectedSet.number}</h3></div><SetBadge number={selectedSet.number}/></div></Card>
       <div className="grid gap-4 lg:grid-cols-2">{selectedSet.questions.map((item,index)=>{
@@ -369,7 +367,7 @@ function mockNext(){
 
     {view==="theory"&&current&&activeSet&&<QuestionView q={current} kind={activeSet.questions[activeSetIndex]?.kind ?? "theory"} setNumber={activeSet.number} setPosition={activeSetIndex+1}/>} 
     {view==="practical"&&current&&<QuestionView q={current} kind="practical"/>}
-    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja Etapu II • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockIndex<2?mockSet.number:undefined} setPosition={mockIndex<2?mockIndex+1:undefined}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}</Btn></div>}</div>}
+    {view==="mock"&&mockSet&&mockCurrent&&<div className="space-y-4"><div className="flex items-center justify-between gap-3 text-sm text-neutral-400"><span>Symulacja na starych pytaniach • zestaw nr <b className="text-white">{mockSet.number}</b></span><span>{mockIndex<2?`Teoria ${mockIndex+1} / 2`:"Praktyka 1 / 1"}</span></div><QuestionView q={mockCurrent.q} kind={mockCurrent.kind} exam setNumber={mockIndex<2?mockSet.number:undefined} setPosition={mockIndex<2?mockIndex+1:undefined}/>{revealed&&<div className="flex justify-end"><Btn onClick={mockNext}>{mockIndex===0?"Następne pytanie z zestawu":mockIndex===1?"Przejdź do zadania praktycznego":"Zakończ symulację"}</Btn></div>}</div>}
     {view==="coach"&&<OralCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="examiner"&&<AdaptiveExaminer questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
     {view==="semantic"&&<SemanticCoach questions={activeTheory} progress={progress} onRate={recordCoachRating} onExit={()=>setView("home")}/>} 
